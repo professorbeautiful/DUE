@@ -607,12 +607,13 @@ The function
 DUEstart
 \emph default
 () will initialize the window.
- The first time run, an environment object .DUEenvironment is created in
- .GlobalEnv, and copied to an object called 
+ The first time run, an environment object DUEenvironmentDefault is created in
+ .GlobalEnv, and copied to an object called DUEenv, which can be modified and
+ will not be overwritten.
 \emph on
 DUEenv
 \emph default
- which will hold both the working scenario data and the configuration data
+ will hold both the working scenario data and the configuration data
  for the components on the window.
  One can save a copy of DUEenv under a different name for later re-use,
  assigning it back to 
