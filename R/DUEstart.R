@@ -37,11 +37,12 @@ DUEstart =
     for (image in c("img.prob", "img.contour")) for (field in c("vscale", 
                                                                 "hscale")) DUEenv$DUEconfig[image, field] <- ifelse(substring(version$os, 
                                                                                                                               1, 7) == "mingw32", 1.2, 0.9)
-    if (substring(version$os, 1, 6) == "darwin") {
-      returnval = try(system("/usr/bin/open /Applications/Utilities/X11.app &"))
-      if (class(returnval) == "try-error") 
-        stop("X11 is required.  Make sure it is installed in Applications/Utilities")
-    }
+# TODO: make sure that X11 is running, can be run, or die gracefully.
+#     if (substring(version$os, 1, 6) == "darwin") {
+#       returnval = try(system("/usr/bin/open /Applications/Utilities/X11.app &"))
+#       if (class(returnval) == "try-error") 
+#         stop("X11 is required.  Make sure it is installed in Applications/Utilities")
+#     }
     DUEenv$tkWindow <- tktoplevel()
     tkbind(DUEenv$tkWindow, "<Button-1>", function(x, y) cat(x, y, "\n"))
     tktitle(DUEenv$tkWindow) <- "Dose Choice: threshold parameters, personal utilities, probabilities, and E(U)"
