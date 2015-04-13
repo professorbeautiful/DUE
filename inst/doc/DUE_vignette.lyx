@@ -8,7 +8,7 @@
 % Meta information - fill between {} and do not remove %
 % \VignetteIndexEntry{Interactive environment for exploring relationships between priors, utilities, and choice of dose, when toxicity and response are determined by patient-specific thresholds.  Handles mixture models.}
 % \VignetteDepends{mvbutils, tkrplot, tcltk}
-% \VignetteKeywords{clinical trial, decision theory, dose-response, toxicity, cancer}
+% \VignetteKeywords{clinical trial, decision theory, dose-response, toxicity, cancer, utility}
 % \VignettePackage{DUE}
 \end_preamble
 \use_default_options false
