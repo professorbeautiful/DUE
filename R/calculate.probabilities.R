@@ -6,6 +6,12 @@ pmvnorm.mixture = function(Rrange, Trange) {
                                     sigma=vEpsilon + DUEenv$the.variances.pop[[i]])) )
 }
 
+partialCumulative = 
+  function(i, RorT) {
+    DUEenv$proportions[i] * pnorm(logdose, 
+                                  mean=DUEenv$the.means.pop[[i]] [RorT], 
+                                  sd=sqrt(DUEenv$the.variances.pop[[i]] [RorT,RorT]))
+  }
 calculate.probabilities <-
 function(log10dose) {
 
@@ -18,24 +24,17 @@ function(log10dose) {
 
 	logdose = log(10) * log10dose
 	
-	p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, 
-		function(i)
-			DUEenv$proportions[i] * pnorm(logdose, 
-				mean=DUEenv$the.means.pop[[i]] [1], 
-				sd=sqrt(DUEenv$the.variances.pop[[i]] [1,1])) ))
-	p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, 
-		function(i)
-			DUEenv$proportions[i] * pnorm(logdose, 
-				mean=DUEenv$the.means.pop[[i]] [2], 
-				sd=sqrt(DUEenv$the.variances.pop[[i]] [2,2])) ))
-   	p.rt <- pmvnorm.mixture(
-	   			Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
-   	p.rT <- pmvnorm.mixture(
-   	   			Rrange=c(logdose, Inf), Trange=c(-Inf, logdose))
-   	p.Rt <- pmvnorm.mixture(
-   	   			Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
-  	p.RT <- pmvnorm.mixture(
-   	   			Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
+	p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, RorT=1) )
+	p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, RorT=2) )
+
+	p.rt <- pmvnorm.mixture(
+	  Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
+	p.rT <- pmvnorm.mixture(
+	  Rrange=c(logdose, Inf), Trange=c(-Inf, logdose))
+	p.Rt <- pmvnorm.mixture(
+	  Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
+	p.RT <- pmvnorm.mixture(
+	  Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
 	
 	##  Adjustments for refractoriness
 	p.R.marginal <- (1-DUEenv$refractory)*p.R.marginal
