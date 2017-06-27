@@ -1,6 +1,7 @@
 DUEstart = 
   function (inits, config) 
   {
+    logdose<<-1
     require("mvtnorm")
     require("tcltk")
     require("tkrplot")
