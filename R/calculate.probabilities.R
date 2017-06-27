@@ -1,12 +1,14 @@
+pmvnorm.mixture = function(Rrange, Trange) {
+  vEpsilon =  diag(rep(1e-8,2))  ### in case a variance got stuck at zero.
+  sum(apply(as.array(1:DUEenv$nPops), 1, function(i)
+    DUEenv$proportions[i] * pmvnorm(lower=c(Rrange[1], Trange[1]), upper=c(Rrange[2], Trange[2]), 
+                                    mean=DUEenv$the.means.pop[[i]],
+                                    sigma=vEpsilon + DUEenv$the.variances.pop[[i]])) )
+}
+
 calculate.probabilities <-
 function(log10dose) {
-	pmvnorm.mixture = function(Rrange, Trange) {
-		vEpsilon =  diag(rep(1e-8,2))  ### in case a variance got stuck at zero.
-		sum(apply(as.array(1:DUEenv$nPops), 1, function(i)
-			DUEenv$proportions[i] * pmvnorm(lower=c(Rrange[1], Trange[1]), upper=c(Rrange[2], Trange[2]), 
-				mean=DUEenv$the.means.pop[[i]],
-				sigma=vEpsilon + DUEenv$the.variances.pop[[i]])) )
-	}
+
 	####  p.R.marginal :  marginal probability of response  ####
 	####  p.T.marginal :  marginal probability of toxicity  ####
 	####  p.rt:  probability of non-response and non-toxicity  ####
