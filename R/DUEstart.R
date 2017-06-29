@@ -1,3 +1,22 @@
+DUEstartShiny = 
+  function (inits, config) 
+  {
+    logdose<<-1
+    require("mvtnorm")
+    data(DUEenvironmentDefault)
+    assign("DUEenv", DUEenvironmentDefault, 
+           pos=1)
+    for(objname in names(DUEenv$DUEinits.default))
+      assign(objname, get(objname, DUEenv$DUEinits.default), envir=DUEenv)
+    DUEenv$bgWindow <- "darkblue"
+    DUEenv$label.utilitychoice <- "X"
+    setupProbLines()
+    DUEenv$label.utilityTitle <- "Utility functions"
+    #### End of DUEstartShiny ####    
+  }
+
+
+
 DUEstart = 
   function (inits, config) 
   {
