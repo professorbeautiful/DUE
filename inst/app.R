@@ -37,7 +37,12 @@ ui <- fluidPage(
 server <- function(input, output) {
   DUEenv=reactiveValues()
   shinyDebuggingPanel::makeDebuggingPanelOutput(session) 
-  
+  observe({
+    input$Additive
+    DUEenv$U.rt = utilityChoices$Additive$U.rt
+    
+    
+  })
   output$linePlot <- renderPlot({
     
     plotProbsAndEUsimplified()
