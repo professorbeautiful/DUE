@@ -24,7 +24,7 @@ server <- function(input, output) {
    
    output$linePlot <- renderPlot({
   
-    plotProbsAndEU()
+    plotProbsAndEUsimplified()
    })
 }
 
