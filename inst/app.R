@@ -35,16 +35,65 @@ ui <- fluidPage(
 
 
 server <- function(input, output) {
-  DUEenv=reactiveValues()
+  source("plotProbsAndEUsimplified.R", local = TRUE)
+  DUEstartShiny = 
+    function () 
+    {
+      logdose<<-1
+      require("mvtnorm")
+      data(DUEenvironmentDefault)
+      isolate({
+        for(objname in names(DUEenvironmentDefault$DUEinits.default))
+          eval(parse(text=print(paste0(
+            "DUEenv$", objname, " <- get('",
+            objname, "', DUEenvironmentDefault$DUEinits.default)"
+          ))) )
+        DUEenv$bgWindow <- "darkblue"
+        print(DUEenv$bgWindow)
+      })
+      DUEenv$label.utilitychoice <- "X"
+      # setupProbLines()
+      DUEenv$label.utilityTitle <- "Utility functions"
+      DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
+      #### End of DUEstartShiny ####    
+    }
+  
+  
+  DUEenv = reactiveValues()
+  
+  DUEget = function(objname) DUEenv[[objname]]
+  ##### Create Utility Choice Buttons ####
+  isolate({
+    DUEenv$utilityChoices <- list(
+      "Additive"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT= 0),
+      "Simple"     = data.frame(U.rt=0, U.rT= 0,  U.Rt=1, U.RT= 0),
+      "Cautious"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT=-1),
+      "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
+    )
+    DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
+  })
+  DUEstartShiny()
   shinyDebuggingPanel::makeDebuggingPanelOutput(session) 
   observe({
     input$Additive
-    DUEenv$U.rt = utilityChoices$Additive$U.rt
-    
-    
+    TheseUvalues = DUEenv$utilityChoices$Additive
+    isolate ({
+      DUEenv$U.rt <- TheseUvalues$U.rt
+      DUEenv$U.Rt <- TheseUvalues$U.Rt
+      DUEenv$U.rT <- TheseUvalues$U.rT
+      DUEenv$U.RT <- TheseUvalues$U.RT
+    })
+    print("Finished Additive observer")
+  })
+  observe({
+    input$Simple
+    TheseUvalues = DUEenv$utilityChoices$Simple
+    DUEenv$U.rt = TheseUvalues$U.rt
+    DUEenv$U.Rt = TheseUvalues$U.Rt
+    DUEenv$U.rT = TheseUvalues$U.rT
+    DUEenv$U.RT = TheseUvalues$U.RT
   })
   output$linePlot <- renderPlot({
-    
     plotProbsAndEUsimplified()
   })
 }
