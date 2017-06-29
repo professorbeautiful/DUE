@@ -1,5 +1,6 @@
 ## exportPattern("^[[:alpha:]]+")
 importFrom(utils, data, menu, read.delim, select.list)
+export(DUEget)
 export(DUErestart)
 export(DUEstart)
 export(DUEstop)
