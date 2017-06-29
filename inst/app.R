@@ -9,23 +9,35 @@
 
 library(shiny)
 library(DUE)
-ui <- fluidPage(
-   
-   # Application title
-   titlePanel("Attempt 2: DUE Shiny"),
+library(shinyBS)
 
-      mainPanel(
-         plotOutput("linePlot")
-      )
-   )
+ui <- fluidPage(
+  
+  # Application title
+  titlePanel("Attempt 2: DUE Shiny"),
+  
+    fluidRow(
+      column(6, "insert graph here"), 
+      column(6,
+             plotOutput("linePlot")
+      )), 
+    fluidRow(
+        column(6, "insert graph here"), 
+        column(6,
+              bsButton(inputId="Additive", "Additive"),
+              bsButton(inputId="Simple", "Simple"),
+              bsButton(inputId="Cautious", "Cautious"),
+              bsButton(inputId="Aggressive", "Aggressive")
+        ))
+  )
 
 
 server <- function(input, output) {
-   
-   output$linePlot <- renderPlot({
   
+  output$linePlot <- renderPlot({
+    
     plotProbsAndEUsimplified()
-   })
+  })
 }
 
 # Run the application 
