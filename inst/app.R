@@ -8,12 +8,14 @@
 #
 
 library(shiny)
+library(shinyDebuggingPanel)
 library(DUE)
+
 ui <- fluidPage(
    
    # Application title
    titlePanel("Attempt 2: DUE Shiny"),
-
+   shinyDebuggingPanel::withDebuggingPanel() ,
       mainPanel(
          plotOutput("linePlot")
       )
@@ -21,7 +23,7 @@ ui <- fluidPage(
 
 
 server <- function(input, output) {
-   
+  shinyDebuggingPanel::makeDebuggingPanelOutput(session) 
    output$linePlot <- renderPlot({
   
     plotProbsAndEU()
