@@ -14,7 +14,7 @@ partialCumulative =
   }
 
 calculate.probabilities <-
-  function(log10dose) {
+  function(log10dose, utility) {
     
     ####  p.R.marginal :  marginal probability of response  ####
     ####  p.T.marginal :  marginal probability of toxicity  ####
@@ -22,6 +22,9 @@ calculate.probabilities <-
     ####  p.rT:  probability of non-response and toxicity      ####
     ####  p.Rt:  probability of response and non-toxicity      ####
     ####  p.RT:  probability of response and toxicity          ####
+    
+    if(missing(utility))
+      utility = DUEenv$utility
     
     logdose = log(10) * log10dose
     
@@ -60,8 +63,15 @@ calculate.probabilities <-
     
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
     #read.Uvalues()  ### copies from the sliders to the vector "utility"
-    expected.utility <- sum(pQuadrants*DUEenv$utility)
-    if(	browseIf(FALSE, message="Let's check on utility")) browser()
+    expected.utility <- sum(pQuadrants*utility)
+    if(	browseIf(exp(logdose) > 950, message="Let's check on utility")) {
+      #browser()
+      cat("---- ", exp(logdose), " ----\n")
+      print(pQuadrants)
+      print(utility)
+      print(DUEenv$utility)
+      print(expected.utility)
+    }
     probability.vector <- c(
       R=p.R.marginal,
       T=p.T.marginal,

@@ -8,7 +8,7 @@ plotProbsAndEUsimplified <- reactive( {
   }
   DUEenv$sevenprobs <- 
     sapply(log10(DUEenv$doseValues), 
-           calculate.probabilities)
+           calculate.probabilities, utility=DUEenv$utility)
   
   highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
   highest.EU <- max(DUEenv$sevenprobs["EU",])
