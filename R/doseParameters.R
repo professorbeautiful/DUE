@@ -2,36 +2,33 @@ doseParameters <-
 function (minDose, maxDose, nDoses, nDoseTicks, favoriteDose, 
 	resetToDefaults = FALSE) 
 {
-	if (resetToDefaults) {
-		assign("minDose", 10, envir=DUEenv)
-		assign("maxDose", 1000, envir=DUEenv)
-		assign("nDoses", 50, envir=DUEenv)
-		assign("nDoseTicks", 7, envir=DUEenv)
-		assign("favoriteDose", 100, envir=DUEenv)
-		assign("favoriteLogDose", 2, envir=DUEenv)
+  if (resetToDefaults) {
+    minDose = 10
+		maxDose = 1000
+		nDoses = 50
+		nDoseTicks =  7
+		favoriteDose = 100 
+		favoriteLogDose = 2
 	}
 	if (!missing(minDose)) 
-		assign("minDose", minDose, envir=DUEenv)
+		DUEput("minDose", minDose)
 	if (!missing(maxDose)) 
-		assign("maxDose", maxDose, envir=DUEenv)
+		DUEput("maxDose", maxDose)
 	if (!missing(nDoses)) 
-		assign("nDoses", nDoses, envir=DUEenv)
+		DUEput("nDoses", nDoses)
 	if (!missing(nDoseTicks)) 
-		assign("nDoseTicks", nDoseTicks, envir=DUEenv)
-	if (!missing(favoriteDose)) {
-		assign("favoriteDose", favoriteDose, envir=DUEenv)
-	}
-	assign("favoriteLogDose", log10(DUEenv$favoriteDose), envir=DUEenv)
-	with(DUEenv, {
-		doseValues = 10^seq(log10(minDose), log10(maxDose), length= nDoses)
-		assign("doseValues", doseValues, envir=DUEenv)
-		doseTicks = round(10^seq(log10(minDose), log10(maxDose), length= nDoseTicks), digits=1)
-		assign("doseTicks", doseTicks, envir=DUEenv)
-		cat("Current dose parameters are:\n")
-		print(doseValues)
-		print(doseTicks)
-	})
-	returnvalue = with(DUEenv, c(minDose, maxDose, nDoses, nDoseTicks, favoriteDose))
+		DUEput("nDoseTicks", nDoseTicks)
+	if (!missing(favoriteDose)) 
+		DUEput("favoriteDose", favoriteDose)
+	DUEput("favoriteLogDose", log10(favoriteDose))
+	doseValues = 10^seq(log10((minDose)), log10((maxDose)), length= nDoses)
+	DUEput("doseValues", doseValues)
+	doseTicks = round(10^seq(log10((minDose)), log10((maxDose)), length= nDoseTicks), digits=1)
+	DUEput("doseTicks", doseTicks)
+	cat("Current dose parameters are:\n")
+	print(doseValues)
+	print(doseTicks)
+	returnvalue = c(minDose, maxDose, nDoses, nDoseTicks, favoriteDose)
 	names(returnvalue) = c("minDose", "maxDose", "nDoses", "nDoseTicks", "favoriteDose")
 	load.and.replot.images()
 	return(returnvalue)
