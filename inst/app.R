@@ -14,10 +14,11 @@ library(DUE)
 
 browseUs = 'calculate.probabilities'
 
+desc <- packageDescription('DUE')
+
 ui <- fluidPage(
-  
-  # Application title
-  titlePanel("Attempt 2: DUE Shiny"),
+  titlePanel(paste("DUE Shiny app: date = ",
+                   desc$Date, "  Version = ", desc$Version)),
   shinyDebuggingPanel::withDebuggingPanel() ,
   
     fluidRow(
