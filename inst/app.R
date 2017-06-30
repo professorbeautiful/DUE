@@ -34,7 +34,7 @@ ui <- fluidPage(
   )
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   source("plotProbsAndEUsimplified.R", local = TRUE)
   DUEstartShiny = 
     function () 
