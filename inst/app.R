@@ -60,8 +60,11 @@ server <- function(input, output, session) {
   
   
   DUEenv = reactiveValues()
-  
+  #### Overrides - DUEget, DUEput  ####
   DUEget = function(objname) DUEenv[[objname]]
+  DUEput = function(objname, value) 
+    DUEenv[[objname]] = value
+  doseParameters(resetToDefaults = TRUE)
   ##### Create Utility Choice Buttons ####
   isolate({
     DUEenv$utilityChoices <- list(
