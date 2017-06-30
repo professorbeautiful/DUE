@@ -12,6 +12,8 @@ library(shinyDebuggingPanel)
 library(shinyBS)
 library(DUE)
 
+browseUs = 'calculate.probabilities'
+
 ui <- fluidPage(
   
   # Application title
@@ -27,11 +29,11 @@ ui <- fluidPage(
     column(6, "insert graph here"), 
     column(3,
            fluidRow(
-                  bsButton(inputId="Additive", "Additive"),
-                  bsButton(inputId="Simple", "Simple")),
+             bsButton(inputId="Additive", "Additive")),
            fluidRow(
-                  bsButton(inputId="Cautious", "Cautious"),
-                  bsButton(inputId="Aggressive", "Aggressive"))
+             bsButton(inputId="Simple", "Simple"),
+             bsButton(inputId="Cautious", "Cautious"),
+             bsButton(inputId="Aggressive", "Aggressive"))
     ),
     column(3,
            "Responsive, but not yet activated",
