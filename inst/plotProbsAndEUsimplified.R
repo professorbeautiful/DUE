@@ -1,4 +1,6 @@
 plotProbsAndEUsimplified <- reactive( {
+  DUEenv$utility  ### To make sure the reactivity happens.
+  cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convert <- function(x, i=7) {
     #### Map [-1, 1] to [0,1]  for plotting utility against right axis.
     if(i!=7) return(x);
