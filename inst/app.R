@@ -98,6 +98,7 @@ server <- function(input, output, session) {
     updateNumericInput(session=session, 'U.RT', value=DUEenv$U.RT)
   })
   resetButtonStyles = function(whichButton) {
+    cat("resetButtonStyles: whichButton = ", whichButton, '\n')
     for(button in DUEenv$utilityChoiceNames) 
       updateButton(session, button,
                    style='default')
@@ -147,23 +148,14 @@ server <- function(input, output, session) {
     DUEenv$utility = TheseUvalues
     updateUtilities(TheseUvalues)
     
-    if (identical(TheseUvalues, DUEenv$utilityChoices$Aggressive))
-    {updateButton(session, 'Aggressive', style='success')}
-    
-    if (identical(TheseUvalues, DUEenv$utilityChoices$Simple))
-    {updateButton(session, 'Simple', style='success')}
-    
-    if (identical(TheseUvalues,DUEenv$utilityChoices$Cautious))
-    {updateButton(session, 'Cautious', style='success')} 
-    
-    if (identical(TheseUvalues, DUEenv$utilityChoices$Additive))  
-    {updateButton(session, 'Additive', style='success')} 
-    
-    else
-    {for(button in DUEenv$utilityChoiceNames) 
-      updateButton(session, button,
-                   style='default')}
-    
+    for(button in DUEenv$utilityChoiceNames) {
+      if (all(TheseUvalues == DUEenv$utilityChoices[[button]]))
+        updateButton(session, button, style='success')
+      else
+        updateButton(session, button, style='default')
+      
+    }
+      
   })
   
   
