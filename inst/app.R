@@ -1,12 +1,3 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
 library(shinyDebuggingPanel)
 library(shinyBS)
@@ -29,6 +20,7 @@ ui <- fluidPage(
   fluidRow(
     column(6, "insert graph here"), 
     column(3,
+           "Choose a Preset Option",
            fluidRow(
              bsButton(inputId="Additive", "Additive")),
            fluidRow(
@@ -37,7 +29,7 @@ ui <- fluidPage(
              bsButton(inputId="Aggressive", "Aggressive"))
     ),
     column(3,
-           "Responsive, but not yet activated",
+           "Or Enter Custom Values Below:",
            fluidRow(
                   numericInput(inputId="U.rt", "U.rt", value=0),
                   numericInput(inputId="U.rT", "U.rT", value=0)),
@@ -98,6 +90,7 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   DUEstartShiny()
+  
   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
     updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
@@ -111,13 +104,13 @@ server <- function(input, output, session) {
     updateButton(session, whichButton,
                  style='success')
     }
+  
   updateUtilities = function(TheseUvalues) {
     DUEenv$U.rt = TheseUvalues$U.rt
     DUEenv$U.Rt = TheseUvalues$U.Rt
     DUEenv$U.rT = TheseUvalues$U.rT
     DUEenv$U.RT = TheseUvalues$U.RT
   }
-  
   
   observe({
     input$Additive
@@ -149,6 +142,31 @@ server <- function(input, output, session) {
       DUEenv$utilityChoices$Aggressive
     updateUtilities(TheseUvalues)
   })
+  observe({
+    TheseUvalues = data.frame(U.rt = input$U.rt , U.rT = input$U.rT, U.Rt = input$U.Rt, U.RT = input$U.RT)
+    DUEenv$utility = TheseUvalues
+    updateUtilities(TheseUvalues)
+    
+    if (identical(TheseUvalues, DUEenv$utilityChoices$Aggressive))
+    {updateButton(session, 'Aggressive', style='success')}
+    
+    if (identical(TheseUvalues, DUEenv$utilityChoices$Simple))
+    {updateButton(session, 'Simple', style='success')}
+    
+    if (identical(TheseUvalues,DUEenv$utilityChoices$Cautious))
+    {updateButton(session, 'Cautious', style='success')} 
+    
+    if (identical(TheseUvalues, DUEenv$utilityChoices$Additive))  
+    {updateButton(session, 'Additive', style='success')} 
+    
+    else
+    {for(button in DUEenv$utilityChoiceNames) 
+      updateButton(session, button,
+                   style='default')}
+    
+  })
+  
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified()
   })
