@@ -8,6 +8,7 @@ browseUs = 'calculate.probabilities'
 desc <- packageDescription('DUE')
 
 ui <- fluidPage(
+  includeCSS('DUE.css'),
   titlePanel(paste("DUE Shiny app: date = ",
                    desc$Date, "  Version = ", desc$Version)),
   shinyDebuggingPanel::withDebuggingPanel() ,
@@ -24,9 +25,14 @@ ui <- fluidPage(
            fluidRow(
              bsButton(inputId="Additive", "Additive")),
            fluidRow(
-             bsButton(inputId="Simple", "Simple"),
+             tagAppendAttributes(
+               bsButton(inputId="Simple", "Simple"),
+               class='RTobj'),
              bsButton(inputId="Cautious", "Cautious"),
-             bsButton(inputId="Aggressive", "Aggressive"))
+             tagAppendAttributes(
+               bsButton(inputId="Aggressive", "Aggressive"),
+               class='RTobj')
+           )
     ),
     column(3,
            "Or Enter Custom Values Below:",
@@ -34,8 +40,11 @@ ui <- fluidPage(
                   numericInput(inputId="U.rt", "U.rt", value=0),
                   numericInput(inputId="U.rT", "U.rT", value=0)),
            fluidRow(
-                  numericInput(inputId="U.Rt", "U.Rt", value=0),
-                  numericInput(inputId="U.RT", "U.RT", value=0))
+             numericInput(inputId="U.Rt", "U.Rt", value=0),
+             tagAppendAttributes(
+               numericInput(inputId="U.RT", "U.RT", value=0),
+               class='RTobj')
+             )
     )
   )
 )
