@@ -12,39 +12,68 @@ ui <- fluidPage(
   titlePanel(paste("DUE Shiny app: date = ",
                    desc$Date, "  Version = ", desc$Version)),
   shinyDebuggingPanel::withDebuggingPanel() ,
-  
-    fluidRow(
-      column(6, "insert graph here"), 
-      column(6,
-             plotOutput("linePlot")
-      )), 
   fluidRow(
-    column(6, "insert graph here"), 
-    column(3,
-           "Choose a Preset Option",
+    column(6, "insert contour graph here"), 
+    column(6, plotOutput("linePlot"))
+  ),
+  fluidRow(
+    column(6, "insert contour controllers here"), 
+    column(6, 
+           div(
+             br(),
+             h2("Controller for Utility Values", style="text-align:center"),
+             fluidRow(           
+               column(6, h3("Enter Custom Values Below:")),
+               column(6, h3("Or choose a Preset Option"),
+                      bsButton(inputId="Additive", 
+                               HTML("Additive<br>R=+1, T=-1")))
+             )),
            fluidRow(
-             bsButton(inputId="Additive", "Additive")),
-           fluidRow(
-             tagAppendAttributes(
-               bsButton(inputId="Simple", "Simple"),
-               class='RTobj'),
-             bsButton(inputId="Cautious", "Cautious"),
-             tagAppendAttributes(
-               bsButton(inputId="Aggressive", "Aggressive"),
-               class='RTobj')
+             fluidRow(
+               column(4, h2("t", style="text-align:center;")),
+               column(2, h2("T", style="text-align:center;"))
+             ),
+             column(1, h2("r")),
+             column(2, 
+                    tagAppendAttributes(
+                      numericInput(inputId="U.rt", "U.rt", value=0),
+                      class='rtobj')),
+             column(2, offset=1,
+                    tagAppendAttributes(
+                      numericInput(inputId="U.rT", "U.rT", value=-1),
+                      class='rTobj')),
+               column(4,
+                      br(), 
+                      span(class='rTobj', '←') ,   
+                      # LEFTWARDS ARROW
+                      # Unicode: U+2190, UTF-8: E2 86 90,
+                      tagAppendAttributes(
+                        bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                        class='rTobj')
+                      )
+           ),
+           br(),
+           column(1, h2("R")),
+           column(2, 
+                  tagAppendAttributes(
+                    numericInput(inputId="U.Rt", "U.Rt", value=1),
+                    class='Rtobj')),
+           column(2, offset=1,
+                  tagAppendAttributes(
+                    numericInput(inputId="U.RT", "U.RT", value=0),
+                    class='RTobj'))
+           ,
+           column(4, 
+                  span(class='RTobj', '←') ,   
+                  tagAppendAttributes(
+                    bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                    class='RTobj'),
+                  br(),
+                  span(class='RTobj', '←') ,   
+                  tagAppendAttributes(
+                    bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                    class='RTobj')
            )
-    ),
-    column(3,
-           "Or Enter Custom Values Below:",
-           fluidRow(
-                  numericInput(inputId="U.rt", "U.rt", value=0),
-                  numericInput(inputId="U.rT", "U.rT", value=0)),
-           fluidRow(
-             numericInput(inputId="U.Rt", "U.Rt", value=0),
-             tagAppendAttributes(
-               numericInput(inputId="U.RT", "U.RT", value=0),
-               class='RTobj')
-             )
     )
   )
 )
@@ -54,6 +83,8 @@ server <- function(input, output, session) {
   shinyDebuggingPanel::makeDebuggingPanelOutput(session) 
   
   source("plotProbsAndEUsimplified.R", local = TRUE)
+  source("utilityControllers.R", local = TRUE)
+  
   DUEstartShiny = 
     function () 
     {
@@ -113,7 +144,7 @@ server <- function(input, output, session) {
                    style='default')
     updateButton(session, whichButton,
                  style='success')
-    }
+  }
   
   updateUtilities = function(TheseUvalues) {
     DUEenv$U.rt = TheseUvalues$U.rt
@@ -163,7 +194,7 @@ server <- function(input, output, session) {
       else
         updateButton(session, button, style='default')
     }
-      
+    
   })
   
   
