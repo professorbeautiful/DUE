@@ -21,10 +21,10 @@ ui <- fluidPage(
     column(6, 
            div(
              br(),
-             h2("Controller for Utility Values", style="text-align:center"),
+             h2("Controller for Utility Values", style="text-align:center; color:blue"),
              fluidRow(           
-               column(6, h3("Enter Custom Values Below:")),
-               column(6, h3("Or choose a Preset Option"),
+               column(6, h3("Enter Custom Values Below:", style="text-align:center; color:blue")),
+               column(6, h3("Or choose a Preset Option", style="text-align:center; color:blue"),
                       bsButton(inputId="Additive", 
                                HTML("Additive<br>R=+1, T=-1")))
              )),
@@ -64,12 +64,12 @@ ui <- fluidPage(
                     class='RTobj'))
            ,
            column(4, 
-                  span(class='RTobj', '←') ,   
+                  span(class='RTobj', '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
                   tagAppendAttributes(
                     bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
                     class='RTobj'),
                   br(),
-                  span(class='RTobj', '←') ,   
+                  span(class='RTobj', '⬉') ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                   tagAppendAttributes(
                     bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
                     class='RTobj')
