@@ -80,7 +80,7 @@ ui <- fluidPage(
 
 
 server <- function(input, output, session) {
-  shinyDebuggingPanel::makeDebuggingPanelOutput(session) 
+  try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
   
   source("plotProbsAndEUsimplified.R", local = TRUE)
   source("utilityControllers.R", local = TRUE)
