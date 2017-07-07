@@ -44,7 +44,7 @@ ui <- fluidPage(
                       class='rTobj')),
                column(4,
                       br(), 
-                      span(class='rTobj', '←') ,   
+                      span(class='rTobj', '⬅︎') ,   
                       # LEFTWARDS ARROW
                       # Unicode: U+2190, UTF-8: E2 86 90,
                       tagAppendAttributes(
@@ -69,7 +69,7 @@ ui <- fluidPage(
                     bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
                     class='RTobj'),
                   br(),
-                  span(class='RTobj', '⬉') ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
+                  span(class='RTobj', '⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                   tagAppendAttributes(
                     bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
                     class='RTobj')
