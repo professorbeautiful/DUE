@@ -199,7 +199,7 @@ server <- function(input, output, session) {
   
   
   output$linePlot <- renderPlot({
-    plotProbsAndEUreactive(DUEenv)
+    plotProbsAndEUsimplified(DUEenv)
   })
 }
 
