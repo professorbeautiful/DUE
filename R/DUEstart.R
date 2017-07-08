@@ -86,7 +86,7 @@ DUEstart =
     DUEenv$label.utilitychoice <- tklabel(DUEenv$tkWindow, 
                                           text = "X", fg = "red", font = DUEenv$fontForLabels)
     DUEutilityControls()
-    setupProbLines()
+    setupProbLinesTK()
     DUEenv$label.utilityTitle <- tklabel(DUEenv$tkWindow, 
                                          text = "Utility functions", font = DUEenv$fontForLabels, 
                                          bg = "darkblue", fg = "white")

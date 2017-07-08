@@ -1,4 +1,4 @@
-probLineCallback <-
+probLineCallbackTK <-
 function(nam) {
 ### FIXED by replacing the "with" construct by explicit references.
 	whichWidth = which(
