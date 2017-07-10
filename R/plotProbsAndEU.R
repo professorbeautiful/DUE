@@ -11,10 +11,10 @@ plotProbsAndEU <-
 
 calculate.probabilities.allDoses <- function( DUEenv) {
  # DUEenv$utility  ### To make sure the reactivity happens.
-  theDUEenv = DUEenv
+  #theDUEenv = DUEenv
   DUEenv$sevenprobs <- 
     sapply(log10(DUEenv$doseValues), 
-           calculate.probabilities, DUEenv=theDUEenv, utility=theDUEenv$utility)
+           calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility)
   
   DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
   DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
