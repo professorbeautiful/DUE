@@ -1,7 +1,8 @@
-plotThresholdContour = function (plot.title = "Contour plot for thresholds") 
+plotThresholdContour = function (plot.title = "Contour plot for thresholds", theDUEenv=DUEenv) 
 {
-    DUEcopy()
-    cexQ = 4; OKfont = c("sans serif", "bold")
+  #scoping error; had to assign DUEenv to theDUEenv -promise already under evaluation: recursive default argument reference or earlier problems?
+  DUEenv=theDUEenv  
+  cexQ = 4; OKfont = c("sans serif", "bold")
     recalculate.means.and.variances()
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
         log10(DUEenv$doseValues)))
