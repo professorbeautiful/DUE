@@ -3,7 +3,8 @@ plotProbsAndEU <-
     if(DUEenv$settingSliderValues == TRUE)
       return
     read.Uvalues()  ### copies from the sliders to the vector "utility"
-    DUEenv$sevenprobs <- DUEenv$sevenprobs <- sapply(log10(DUEenv$doseValues), calculate.probabilities)
+    DUEenv$sevenprobs <- DUEenv$sevenprobs <- 
+      sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
     plotProbsAndEUsimplified(DUEenv)
   }
 
@@ -13,7 +14,7 @@ calculate.probabilities.allDoses <- function( DUEenv) {
   theDUEenv = DUEenv
   DUEenv$sevenprobs <- 
     sapply(log10(DUEenv$doseValues), 
-           calculate.probabilities, DUEenv=theDUEenv, utility=DUEenv$utility)
+           calculate.probabilities, DUEenv=theDUEenv, utility=theDUEenv$utility)
   
   DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
   DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
