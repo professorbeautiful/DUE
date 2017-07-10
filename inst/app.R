@@ -7,6 +7,17 @@ browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
 
+probLineNames <<- 
+  c("R", "T", "rt","rT","Rt","RT","EU")
+make_linethicknessButton = function(labelNum)
+  column(1,
+         tagAppendAttributes(
+         bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
+         style=paste0('text-color:', DUEenv$rt.outcome.colors[labelNum]) ) )
+linethicknessButtons = 
+  lapply(1:length(probLineNames), make_linethicknessButton)   
+print(linethicknessButtons)
+
 ui <- fluidPage(
   includeCSS('DUE.css'),
   titlePanel(paste("DUE Shiny app: date = ",
@@ -14,7 +25,10 @@ ui <- fluidPage(
   shinyDebuggingPanel::withDebuggingPanel() ,
   fluidRow(
     column(6, "insert contour graph here"), 
-    column(6, plotOutput("linePlot"))
+    column(6, plotOutput("linePlot")
+           , wellPanel(fluidRow(column(1,  HTML("Line thickness<br>controls")), column(1, ""),
+                                linethicknessButtons))
+    )
   ),
   fluidRow(
     column(6, "insert contour controllers here"), 
@@ -24,33 +38,34 @@ ui <- fluidPage(
              h2("Controller for Utility Values", style="text-align:center; color:blue"),
              fluidRow(           
                column(6, h3("Enter Custom Values Below:", style="text-align:center; color:blue")),
-               column(6, h3("Or choose a Preset Option", style="text-align:center; color:blue"),
-                      bsButton(inputId="Additive", 
-                               HTML("Additive<br>R=+1, T=-1")))
+               column(6, h3("Or choose a Preset Option", style="text-align:center; color:blue"))
              )),
            fluidRow(
              fluidRow(
                column(4, h2("t", style="text-align:center;")),
-               column(2, h2("T", style="text-align:center;"))
-             ),
-             column(1, h2("r")),
-             column(2, 
-                    tagAppendAttributes(
-                      numericInput(inputId="U.rt", "U.rt", value=0),
+               column(2, h2("T", style="text-align:center;")),
+               column(offset=6.5, width = 3, HTML("&nbsp;"),
+                      bsButton(inputId="Additive", 
+                               HTML("Additive<br>R=+1, T=-1"))
+               )),
+               column(1, h2("r")),
+               column(2, 
+                      tagAppendAttributes(
+                        numericInput(inputId="U.rt", "U.rt", value=0),
                       class='rtobj')),
              column(2, offset=1,
                     tagAppendAttributes(
                       numericInput(inputId="U.rT", "U.rT", value=-1),
                       class='rTobj')),
-               column(4,
-                      br(), 
-                      span(class='rTobj', '⬅︎') ,   
-                      # LEFTWARDS ARROW
-                      # Unicode: U+2190, UTF-8: E2 86 90,
-                      tagAppendAttributes(
-                        bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                        class='rTobj')
-                      )
+             column(4,
+                    br(), 
+                    span(class='rTobj', '⬅︎') ,   
+                    # LEFTWARDS ARROW
+                    # Unicode: U+2190, UTF-8: E2 86 90,
+                    tagAppendAttributes(
+                      bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                      class='rTobj')
+             )
            ),
            br(),
            column(1, h2("R")),
@@ -81,13 +96,22 @@ ui <- fluidPage(
 
 server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
+  DUEenv = reactiveValues()
+  
+  #setupProbLines(DUEenv)
+  probLineNames <<- 
+    c("R", "T", "rt","rT","Rt","RT","EU")
+  probLabels  <<- list()
+  probLineWidthChoices <<- c(0, 1, 5)
+  probLineWidths <- rep(probLineWidthChoices[2], 7) 
+  names(probLineWidths) <- probLineNames
+  #probLineWidths["EU"] <- probLineWidthChoices[3] #5
+  DUEenv$probLineWidths <- probLineWidths 
   
   source("plotProbsAndEUsimplified.R", local = TRUE)
-  source("utilityControllers.R", local = TRUE)
+  # source("utilityControllers.R", local = TRUE)
   
-  DUEstartShiny = 
-    function () 
-    {
+  
       logdose<<-1
       require("mvtnorm")
       data(DUEenvironmentDefault)
@@ -105,11 +129,9 @@ server <- function(input, output, session) {
       DUEenv$label.utilityTitle <- "Utility functions"
       DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
       #### End of DUEstartShiny ####    
-    }
+    
   
-  
-  DUEenv = reactiveValues()
-  #### Overrides - DUEget, DUEput  ####
+  #### Overrides - DUEget, DUEput -- unnecessary! ####
   DUEget = function(objname) DUEenv[[objname]]
   DUEput = function(objname, value) 
     DUEenv[[objname]] = value
@@ -129,7 +151,48 @@ server <- function(input, output, session) {
     DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
     DUEput('testing', 'testing')  ### OK
   })
-  DUEstartShiny()
+  
+  
+  linethicknessObserving= function(label)  { 
+      inputId = paste0('linethickness_', label)
+      input[[inputId]]  ## for reactivity
+      cat("observed click on linethicknessButton ", label, "\n")
+      isolate({
+        whichWidth = which(
+          DUEenv$probLineWidths[label]==probLineWidthChoices)
+        whichWidth = whichWidth + 1
+        if(whichWidth > length(probLineWidthChoices))
+          whichWidth = 1
+        DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+        updateButton(session, inputId, 
+                     label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                  `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                     size = switch(whichWidth, `1`='small',
+                                   `2`='', `3`='large'))
+      })
+    }
+  observe(linethicknessObserving('R'))
+  observe(linethicknessObserving('T'))
+  observe(linethicknessObserving('rt'))
+  observe(linethicknessObserving('rT'))
+  observe(linethicknessObserving('Rt'))
+  observe(linethicknessObserving('RT'))
+  observe(linethicknessObserving('EU'))
+  
+  # for(label in probLabels)  #label = "EU"
+  #   observe(
+  #     {
+  #     input[[paste0('linethickness_', label)]]
+  #     cat("observed click on linethicknessButton ", label, "\n")
+  #     isolate({
+  #       whichWidth = which(
+  #         DUEenv$probLineWidths[label]==probLineWidthChoices)
+  #       whichWidth = whichWidth + 1
+  #       if(whichWidth > length(probLineWidthChoices))
+  #         whichWidth = 1
+  #       DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+  #     })
+  #   })
   
   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)

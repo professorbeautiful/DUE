@@ -10,10 +10,10 @@ plotProbsAndEU <-
 
 calculate.probabilities.allDoses <- function( DUEenv) {
  # DUEenv$utility  ### To make sure the reactivity happens.
-
+  theDUEenv = DUEenv
   DUEenv$sevenprobs <- 
     sapply(log10(DUEenv$doseValues), 
-           calculate.probabilities, utility=DUEenv$utility)
+           calculate.probabilities, DUEenv=theDUEenv, utility=DUEenv$utility)
   
   DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
   DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
@@ -71,5 +71,5 @@ plotProbsAndEUsimplified <- function( DUEenv) {
   segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=DUEenv$rt.outcome.colors["T"])
   segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(DUEenv$highest.EU, TRUE), lty=2, lwd=2, 
            col=DUEenv$rt.outcome.colors["EU"])
-  abline(v=DUEget('favoriteDose'), col="green")
+  abline(v=DUEenv$favoriteDose, col="green")
 }

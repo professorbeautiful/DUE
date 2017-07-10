@@ -1,4 +1,4 @@
-setupProbLines <- function() {
+setupProbLines <- function(DUEenv) {
   probLineNames <<- 
     c("R", "T", "rt","rT","Rt","RT","EU")
   probLabels  <<- list()
@@ -7,12 +7,12 @@ setupProbLines <- function() {
   names(DUEenv$probLineWidths) <- probLineNames
   
   # TODO: These initial line width choices should be stored in DUEenv.
-  DUEenv$probLineWidths["Rt"] <- probLineWidthChoices[2]  #1
-  DUEenv$probLineWidths["EU"] <- probLineWidthChoices[3] #5
+  #DUEenv$probLineWidths["Rt"] <- probLineWidthChoices[2]  #1
+  #DUEenv$probLineWidths["EU"] <- probLineWidthChoices[3] #5
 }
 
 setupProbLinesTK = function() {
-  setupProbLines()
+  setupProbLines(DUEenv)
 	delX_ProbLabels = 67
 	#### TODO:  fix: this is Kludgy.
 	getImgHeight <- function(img) 430 # / 0.9 * DUEconfig["img.prob", "vscale"]

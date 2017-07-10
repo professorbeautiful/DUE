@@ -1,4 +1,4 @@
-pmvnorm.mixture = function(Rrange, Trange) {
+pmvnorm.mixture = function(DUEenv, Rrange, Trange) {
   vEpsilon =  diag(rep(1e-8,2))  ### in case a variance got stuck at zero.
   sum(apply(as.array(1:DUEenv$nPops), 1, function(i)
     DUEenv$proportions[i] * pmvnorm(lower=c(Rrange[1], Trange[1]), upper=c(Rrange[2], Trange[2]), 
@@ -7,14 +7,14 @@ pmvnorm.mixture = function(Rrange, Trange) {
 }
 
 partialCumulative = 
-  function(i, RorT) {
+  function(DUEenv, i, RorT) {
     DUEenv$proportions[i] * pnorm(logdose, 
                                   mean=DUEenv$the.means.pop[[i]] [RorT], 
                                   sd=sqrt(DUEenv$the.variances.pop[[i]] [RorT,RorT]))
   }
 
 calculate.probabilities <-
-  function(log10dose, utility) {
+  function(DUEenv, log10dose, utility) {
     
     ####  p.R.marginal :  marginal probability of response  ####
     ####  p.T.marginal :  marginal probability of toxicity  ####
@@ -28,16 +28,16 @@ calculate.probabilities <-
     
     logdose = log(10) * log10dose
     
-    p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, RorT=1) )
-    p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, RorT=2) )
+    p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=1) )
+    p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=2) )
     
-    p.rt <- pmvnorm.mixture(
+    p.rt <- pmvnorm.mixture(DUEenv=DUEenv, 
       Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
-    p.rT <- pmvnorm.mixture(
+    p.rT <- pmvnorm.mixture(DUEenv=DUEenv, 
       Rrange=c(logdose, Inf), Trange=c(-Inf, logdose))
-    p.Rt <- pmvnorm.mixture(
+    p.Rt <- pmvnorm.mixture(DUEenv=DUEenv, 
       Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
-    p.RT <- pmvnorm.mixture(
+    p.RT <- pmvnorm.mixture(DUEenv=DUEenv, 
       Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
     
     ##  Adjustments for refractoriness
@@ -54,7 +54,7 @@ calculate.probabilities <-
     ## toxicity so severe that R cannot happen;  RLE has occurred.
     ## Thus Kdeath = 0 means that RT cannot happen.
     ## But Kdeath = Inf means that RLE never happens.
-    p.RLE <- pmvnorm.mixture(
+    p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
       Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose - DUEenv$Kdeath))
     #cat("p.RLE = ", p.RLE, "\n")
     p.rT <- p.rT + p.RLE
