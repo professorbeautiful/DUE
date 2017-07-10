@@ -26,14 +26,48 @@ ui <- fluidPage(
                    desc$Date, "  Version = ", desc$Version)),
   shinyDebuggingPanel::withDebuggingPanel() ,
   fluidRow(
-    column(6, "insert contour graph here"), 
+    
+    column(6, plotOutput("ThresholdContour")), 
     column(6, plotOutput("linePlot")
            , wellPanel(fluidRow(column(1,  HTML("Line thickness<br>controls")), column(1, ""),
                                 linethicknessButtons))
     )
   ),
   fluidRow(
-    column(6, "insert contour controllers here"), 
+    column(6, 
+           fluidRow(
+             column(4, 
+                    numericInput(inputId = "populationNumber", "# of Populations", value = 1)),
+             column(4, 
+                    numericInput(inputId = "thisPopulation", "This Population", value = 1)),
+             column(4,
+                    numericInput(inputId = "thisPopFraction", "This Populaiton Fraction", value = 1)
+             ),
+             
+             fluidRow(
+               column(2, 
+                      numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 1)),
+               column(2,
+                      numericInput(inputId = "thetaRmean", "Theta R Mean", value= 282)),
+               column(2,
+                      numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
+               column(2,
+                      numericInput(inputId = "correlation", "Correlation", value = .8)),
+               column(2,
+                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = 447)),
+               column(2,
+                      numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
+             ),
+             
+             fluidRow(
+               column(6,
+                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+               column(6,
+                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = .6))
+             )
+             
+           )
+    ), 
     column(6, 
            div(
              br(),
@@ -110,9 +144,8 @@ server <- function(input, output, session) {
   #probLineWidths["EU"] <- probLineWidthChoices[3] #5
   DUEenv$probLineWidths <- probLineWidths 
   
-  #source("plotProbsAndEUsimplified.R", local = TRUE)
+  # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
   # source("utilityControllers.R", local = TRUE)
-  
   
       logdose<<-1
       require("mvtnorm")
@@ -154,6 +187,11 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   
+  isolate({
+    DUEenv$populationThresholds <- list(
+      #add an equivalent to the utility buttons for the population thresholds
+    )
+  })
   
   linethicknessObserving= function(label)  { 
       inputId = paste0('linethickness_', label)
@@ -262,9 +300,33 @@ server <- function(input, output, session) {
     
   })
   
+  observe({
+    tryval = input$thisPopFraction
+    source('shiny.entrybox.popFraction.f.R', local = TRUE)
+  })
+  observe({
+    #intended to mirror the code for the utility inputs, not sure what to put for "value"
+    updateNumericInput(session = session, 'populationNumber', value=input$populationNumber)
+    updateNumericInput(session = session, 'thisPopulation', value=input$thisPopulation)
+    updateNumericInput(session = session, 'thisPopFraction', value=input$thisPopFraction)
+    updateNumericInput(session = session, 'popFractionFollows', value=input$popFractionFollows)
+    updateNumericInput(session = session, 'thetaRmean', value=input$thetaRmean)
+    updateNumericInput(session = session, 'thetaR.CV', value=input$thetaR.CV)
+    updateNumericInput(session = session, 'correlation', value=input$correlation)
+    updateNumericInput(session = session, 'thetaTmean', value=input$thetaTmean)
+    updateNumericInput(session = session, 'thetaT.CV', value=input$thetaT.CV)
+    updateNumericInput(session = session, 'probRefractory', value=input$probRefractory)
+    updateNumericInput(session = session, 'responseLimitingTox', value=input$responseLimitingTox)
+  })
+  
   
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
+  })
+  
+  output$ThresholdContour<- renderPlot({
+    print('called plotThresholdContour')
+    plotThresholdContour(DUEenv)
   })
 }
 
