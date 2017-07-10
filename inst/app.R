@@ -7,13 +7,15 @@ browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
 
-probLineNames <<- 
-  c("R", "T", "rt","rT","Rt","RT","EU")
+data(DUEenvironmentDefault)
+probLineNames = DUEenvironmentDefault$probLineNames
+rt.outcome.colors = DUEenvironmentDefault$rt.outcome.colors
+
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
-         bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-         style=paste0('text-color:', DUEenv$rt.outcome.colors[labelNum]) ) )
+         bsButton(paste0('linethickness_', label<-DUEenvironmentDefault$probLineNames[labelNum]), label=label),
+         style=paste0('text-color:', DUEenvironmentDefault$rt.outcome.colors[labelNum]) ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
@@ -108,7 +110,7 @@ server <- function(input, output, session) {
   #probLineWidths["EU"] <- probLineWidthChoices[3] #5
   DUEenv$probLineWidths <- probLineWidths 
   
-  source("plotProbsAndEUsimplified.R", local = TRUE)
+  #source("plotProbsAndEUsimplified.R", local = TRUE)
   # source("utilityControllers.R", local = TRUE)
   
   
