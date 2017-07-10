@@ -9,11 +9,13 @@ desc <- packageDescription('DUE')
 
 probLineNames <<- 
   c("R", "T", "rt","rT","Rt","RT","EU")
+
+data("DUEenvironmentDefault")
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
          bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-         style=paste0('text-color:', DUEenv$rt.outcome.colors[labelNum]) ) )
+         style=paste0('text-color:', DUEenvironmentDefault$rt.outcome.colors[labelNum]) ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
@@ -24,14 +26,48 @@ ui <- fluidPage(
                    desc$Date, "  Version = ", desc$Version)),
   shinyDebuggingPanel::withDebuggingPanel() ,
   fluidRow(
-    column(6, "insert contour graph here"), 
+    
+    column(6, plotOutput("ThresholdContour")), 
     column(6, plotOutput("linePlot")
            , wellPanel(fluidRow(column(1,  HTML("Line thickness<br>controls")), column(1, ""),
                                 linethicknessButtons))
     )
   ),
   fluidRow(
-    column(6, "insert contour controllers here"), 
+    column(6, 
+           fluidRow(
+             column(4, 
+                    numericInput(inputId = "populationNumber", "# of Populations", value = 1)),
+             column(4, 
+                    numericInput(inputId = "thisPopulation", "This Population", value = 1)),
+             column(4,
+                    numericInput(inputId = "thisPopFraction", "This Populaiton Fraction", value = 1)
+             ),
+             
+             fluidRow(
+               column(2, 
+                      numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 1)),
+               column(2,
+                      numericInput(inputId = "thetaRmean", "Theta R Mean", value= 282)),
+               column(2,
+                      numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
+               column(2,
+                      numericInput(inputId = "correlation", "Correlation", value = .8)),
+               column(2,
+                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = 447)),
+               column(2,
+                      numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
+             ),
+             
+             fluidRow(
+               column(6,
+                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+               column(6,
+                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = .6))
+             )
+             
+           )
+    ), 
     column(6, 
            div(
              br(),
@@ -109,9 +145,6 @@ server <- function(input, output, session) {
   DUEenv$probLineWidths <- probLineWidths 
   
   source("plotProbsAndEUsimplified.R", local = TRUE)
-  # source("utilityControllers.R", local = TRUE)
-  
-  
       logdose<<-1
       require("mvtnorm")
       data(DUEenvironmentDefault)
@@ -152,6 +185,11 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   
+  isolate({
+    DUEenv$populationThresholds <- list(
+      #add an equivalent to the utility buttons for the population thresholds
+    )
+  })
   
   linethicknessObserving= function(label)  { 
       inputId = paste0('linethickness_', label)
@@ -179,22 +217,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
   
-  # for(label in probLabels)  #label = "EU"
-  #   observe(
-  #     {
-  #     input[[paste0('linethickness_', label)]]
-  #     cat("observed click on linethicknessButton ", label, "\n")
-  #     isolate({
-  #       whichWidth = which(
-  #         DUEenv$probLineWidths[label]==probLineWidthChoices)
-  #       whichWidth = whichWidth + 1
-  #       if(whichWidth > length(probLineWidthChoices))
-  #         whichWidth = 1
-  #       DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-  #     })
-  #   })
-  
-  observe({
+   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
     updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
     updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
@@ -214,6 +237,10 @@ server <- function(input, output, session) {
     DUEenv$U.Rt = TheseUvalues$U.Rt
     DUEenv$U.rT = TheseUvalues$U.rT
     DUEenv$U.RT = TheseUvalues$U.RT
+  }
+  
+  updateContour = function(TheseParameters) {
+    
   }
   
   observe({
@@ -260,9 +287,33 @@ server <- function(input, output, session) {
     
   })
   
+  observe({
+    tryval = input$thisPopFraction
+    source('shiny.entrybox.popFraction.f.R', local = TRUE)
+  })
+  observe({
+    #intended to mirror the code for the utility inputs, not sure what to put for "value"
+    updateNumericInput(session = session, 'populationNumber', value=input$populationNumber)
+    updateNumericInput(session = session, 'thisPopulation', value=input$thisPopulation)
+    updateNumericInput(session = session, 'thisPopFraction', value=input$thisPopFraction)
+    updateNumericInput(session = session, 'popFractionFollows', value=input$popFractionFollows)
+    updateNumericInput(session = session, 'thetaRmean', value=input$thetaRmean)
+    updateNumericInput(session = session, 'thetaR.CV', value=input$thetaR.CV)
+    updateNumericInput(session = session, 'correlation', value=input$correlation)
+    updateNumericInput(session = session, 'thetaTmean', value=input$thetaTmean)
+    updateNumericInput(session = session, 'thetaT.CV', value=input$thetaT.CV)
+    updateNumericInput(session = session, 'probRefractory', value=input$probRefractory)
+    updateNumericInput(session = session, 'responseLimitingTox', value=input$responseLimitingTox)
+  })
+  
   
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
+  })
+  
+  output$ThresholdContour<- renderPlot({
+    print('called plotThresholdContour')
+    plotThresholdContour(DUEenv)
   })
 }
 
