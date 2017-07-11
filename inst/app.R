@@ -346,7 +346,7 @@ server <- function(input, output, session) {
     #font.main=4, family="HersheySerif")
     ###  Works for title() not for axis().
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
-    #drawQuadrants()
+    drawQuadrants()
     for (iPop in 1:DUEenv$nPops)
       text(DUEenv$the.Ethresholds.pop[[iPop]][1],
            DUEenv$the.Ethresholds.pop[[iPop]][2],
