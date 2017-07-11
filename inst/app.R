@@ -219,22 +219,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
   
-  # for(label in probLabels)  #label = "EU"
-  #   observe(
-  #     {
-  #     input[[paste0('linethickness_', label)]]
-  #     cat("observed click on linethicknessButton ", label, "\n")
-  #     isolate({
-  #       whichWidth = which(
-  #         DUEenv$probLineWidths[label]==probLineWidthChoices)
-  #       whichWidth = whichWidth + 1
-  #       if(whichWidth > length(probLineWidthChoices))
-  #         whichWidth = 1
-  #       DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-  #     })
-  #   })
-  
-  observe({
+   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
     updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
     updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
