@@ -330,7 +330,6 @@ server <- function(input, output, session) {
   output$ThresholdContour<- renderPlot({
     DUEenv
     print('called plotThresholdContour')
-    plot.title = "Contour plot for thresholds"
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
@@ -360,7 +359,7 @@ server <- function(input, output, session) {
     axis(2, at = with(DUEenv, doseTicks),
          cex.axis=1.0) # cex.lab=3)
     #font.axis=4, font.lab=2, family="HersheySans")
-    title(main = plot.title, cex.main = 1.5, col.main = "blue")
+    #title(main = plot.title, cex.main = 1.5, col.main = "blue")
     #font.main=4, family="HersheySerif")
     ###  Works for title() not for axis().
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
