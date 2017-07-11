@@ -1,7 +1,9 @@
 drawQuadrants <-
 function () 
 {
-    DUEcopy("favoriteDose")
+  DUEenv = get('DUEenv', envir=parent.frame())
+  
+  DUEcopy("favoriteDose")
     DUEcopy("favoriteLogDose")
     DUEcopy("rt.outcome.strings")
     DUEcopy("rt.outcome.colors")
