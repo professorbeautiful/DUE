@@ -14,8 +14,8 @@ rt.outcome.colors = DUEenvironmentDefault$rt.outcome.colors
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
-         bsButton(paste0('linethickness_', label<-DUEenvironmentDefault$probLineNames[labelNum]), label=label),
-         style=paste0('text-color:', DUEenvironmentDefault$rt.outcome.colors[labelNum]) ) )
+         bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
+                  style=paste0('text-color:', rt.outcome.colors[labelNum]) ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
