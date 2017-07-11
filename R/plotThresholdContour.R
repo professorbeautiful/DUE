@@ -1,4 +1,4 @@
-plotThresholdContour = function (plot.title = "Contour plot for thresholds", theDUEenv=DUEenv) 
+plotThresholdContour = function (theDUEenv=DUEenv) 
 {
   #scoping error; had to assign DUEenv to theDUEenv -promise already under evaluation: recursive default argument reference or earlier problems?
   DUEenv=theDUEenv  
@@ -31,7 +31,7 @@ plotThresholdContour = function (plot.title = "Contour plot for thresholds", the
     axis(2, at = with(DUEenv, doseTicks),
 	cex.axis=1.0) # cex.lab=3)
 	#font.axis=4, font.lab=2, family="HersheySans")
-    title(main = plot.title, cex.main = 1.5, col.main = "blue")
+    #title(main = plot.title, cex.main = 1.5, col.main = "blue")
 		#font.main=4, family="HersheySerif")
     ###  Works for title() not for axis().
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)

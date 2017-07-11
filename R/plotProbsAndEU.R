@@ -39,8 +39,8 @@ plotProbsAndEUsimplified <- function( DUEenv) {
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")
   DUEenv$usrCoords.ProbsAndEU <- par("usr")
   if(browseIf(message="Just finished plot-- not yet done title-- check sevenprobs[1,]")) browser()
-  plot.title="Probabilities and Expected Utility, E(U)"
-  title(main=plot.title, cex.main=2, col.main="blue")
+  # plot.title="Probabilities and Expected Utility, E(U)"
+  # title(main=plot.title, cex.main=2, col.main="blue")
   mtext(side=1, line=2.5, "Dose", cex=2)
   axis(2, at=c(0, 0.33, 0.6, 0.8, 1))
   mtext(side=2, line=2.5, "Probability", cex=2)
