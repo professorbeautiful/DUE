@@ -165,24 +165,24 @@ server <- function(input, output, session) {
   # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
   # source("utilityControllers.R", local = TRUE)
   
-      logdose<<-1
-      require("mvtnorm")
-      data(DUEenvironmentDefault)
-      isolate({
-        for(objname in names(DUEenvironmentDefault$DUEinits.default))
-          eval(parse(text=print(paste0(
-            "DUEenv$", objname, " <- get('",
-            objname, "', DUEenvironmentDefault$DUEinits.default)"
-          ))) )
-        DUEenv$bgWindow <- "darkblue"
-        print(DUEenv$bgWindow)
-      })
-      DUEenv$label.utilitychoice <- "X"
-      # setupProbLines()
-      DUEenv$label.utilityTitle <- "Utility functions"
-      DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
-      #### End of DUEstartShiny ####    
-    
+  logdose<<-1
+  require("mvtnorm")
+  data(DUEenvironmentDefault)
+  isolate({
+    for(objname in names(DUEenvironmentDefault$DUEinits.default))
+      eval(parse(text=print(paste0(
+        "DUEenv$", objname, " <- get('",
+        objname, "', DUEenvironmentDefault$DUEinits.default)"
+      ))) )
+    DUEenv$bgWindow <- "darkblue"
+    print(DUEenv$bgWindow)
+  })
+  DUEenv$label.utilitychoice <- "X"
+  # setupProbLines()
+  DUEenv$label.utilityTitle <- "Utility functions"
+  DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
+  #### End of DUEstartShiny ####    
+  
   
   #### Overrides - DUEget, DUEput -- unnecessary! ####
   DUEget = function(objname) DUEenv[[objname]]
@@ -212,23 +212,23 @@ server <- function(input, output, session) {
   })
   
   linethicknessObserving= function(label)  { 
-      inputId = paste0('linethickness_', label)
-      input[[inputId]]  ## for reactivity
-      cat("observed click on linethicknessButton ", label, "\n")
-      isolate({
-        whichWidth = which(
-          DUEenv$probLineWidths[label]==probLineWidthChoices)
-        whichWidth = whichWidth + 1
-        if(whichWidth > length(probLineWidthChoices))
-          whichWidth = 1
-        DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-        updateButton(session, inputId, 
-                     label=switch(whichWidth, `1`=paste0('(',label,')'),
-                                  `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
-                     size = switch(whichWidth, `1`='small',
-                                   `2`='', `3`='large'))
-      })
-    }
+    inputId = paste0('linethickness_', label)
+    input[[inputId]]  ## for reactivity
+    cat("observed click on linethicknessButton ", label, "\n")
+    isolate({
+      whichWidth = which(
+        DUEenv$probLineWidths[label]==probLineWidthChoices)
+      whichWidth = whichWidth + 1
+      if(whichWidth > length(probLineWidthChoices))
+        whichWidth = 1
+      DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+      updateButton(session, inputId, 
+                   label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                   size = switch(whichWidth, `1`='small',
+                                 `2`='', `3`='large'))
+    })
+  }
   observe(linethicknessObserving('R'))
   observe(linethicknessObserving('T'))
   observe(linethicknessObserving('rt'))
@@ -237,7 +237,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
   
-   observe({
+  observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
     updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
     updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
