@@ -41,7 +41,7 @@ ui <- fluidPage(
              column(4, 
                     numericInput(inputId = "thisPopulation", "This Population", value = 1)),
              column(4,
-                    numericInput(inputId = "thisPopFraction", "This Populaiton Fraction", value = 1)
+                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 1)
              ),
              
              fluidRow(
