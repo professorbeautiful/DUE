@@ -69,6 +69,8 @@ ui <- fluidPage(
            div(style=paste0(
              "border-left:1px solid #000;height:1500px;",
              "border-right:1px solid #000;height:1500px;"),
+             # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
+             # especially the display:flex solution.
              br(), br(), br(), br(),
              div(style='text-align:center; color:lightgreen;',
                  numericInput('favoriteDose', 'selected dose', value=100, min=0))
