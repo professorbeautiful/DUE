@@ -37,7 +37,7 @@ ui <- fluidPage(
     column(6, 
            fluidRow(
              column(4, 
-                    numericInput(inputId = "populationNumber", "# of Populations", value = 1)),
+                    numericInput(inputId = "populationNumber", "# of Populations", value = 1, min = 1)),
              column(4, 
                     numericInput(inputId = "thisPopulation", "This Population", value = 1)),
              column(4,
@@ -187,12 +187,7 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   
-  isolate({
-    DUEenv$populationThresholds <- list(
-      #add an equivalent to the utility buttons for the population thresholds
-    )
-  })
-  
+
   linethicknessObserving= function(label)  { 
       inputId = paste0('linethickness_', label)
       input[[inputId]]  ## for reactivity
@@ -289,21 +284,12 @@ server <- function(input, output, session) {
     tryval = input$thisPopFraction
     source('shiny.entrybox.popFraction.f.R', local = TRUE)
   })
-  observe({
-    #intended to mirror the code for the utility inputs, not sure what to put for "value"
-    updateNumericInput(session = session, 'populationNumber', value=input$populationNumber)
-    updateNumericInput(session = session, 'thisPopulation', value=input$thisPopulation)
-    updateNumericInput(session = session, 'thisPopFraction', value=input$thisPopFraction)
-    updateNumericInput(session = session, 'popFractionFollows', value=input$popFractionFollows)
-    updateNumericInput(session = session, 'thetaRmean', value=input$thetaRmean)
-    updateNumericInput(session = session, 'thetaR.CV', value=input$thetaR.CV)
-    updateNumericInput(session = session, 'correlation', value=input$correlation)
-    updateNumericInput(session = session, 'thetaTmean', value=input$thetaTmean)
-    updateNumericInput(session = session, 'thetaT.CV', value=input$thetaT.CV)
-    updateNumericInput(session = session, 'probRefractory', value=input$probRefractory)
-    updateNumericInput(session = session, 'responseLimitingTox', value=input$responseLimitingTox)
-  })
   
+  observe({
+    tryval = input$populationNumber
+    source('shiny.entrybox.nPops.f.R', local = TRUE)
+    #updateNumericInput(session = session, populationNumber, value = DUEenv$nPops)
+  })
   
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
