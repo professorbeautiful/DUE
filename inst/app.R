@@ -37,33 +37,33 @@ ui <- fluidPage(
     column(6, 
            fluidRow(
              column(4, 
-                    numericInput(inputId = "populationNumber", "# of Populations", value = 1, min = 1)),
+                    numericInput(inputId = "nPops", "# of Populations", value = DUEenvironmentDefault$nPops, min = 1)),
              column(4, 
                     numericInput(inputId = "thisPopulation", "This Population", value = 1)),
              column(4,
-                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 1)
+                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1)
              ),
              
              fluidRow(
                column(2, 
-                      numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 1)),
+                      numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 2)),
                column(2,
-                      numericInput(inputId = "thetaRmean", "Theta R Mean", value= 282)),
+                      numericInput(inputId = "thetaRmean", "Theta R Mean", value = DUEenvironmentDefault$the.means.pop[[1]] [1])),
                column(2,
-                      numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
+                      numericInput(inputId = "thetaR.CV", "Theta R CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [1])),
                column(2,
-                      numericInput(inputId = "correlation", "Correlation", value = .8)),
+                      numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1])),
                column(2,
-                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = 447)),
+                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = DUEenvironmentDefault$the.means.pop[[1]] [2])),
                column(2,
-                      numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
+                      numericInput(inputId = "thetaT.CV", "Theta T CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [2]))
              ),
              
              fluidRow(
                column(6,
-                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory)),
                column(6,
-                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = .6))
+                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath))
              )
              
            )
@@ -279,18 +279,72 @@ server <- function(input, output, session) {
     }
     
   })
-  
+  ####thisPopFraction input#####
   observe({
     tryval = input$thisPopFraction
-    source('shiny.entrybox.popFraction.f.R', local = TRUE)
+    #source('shiny.entrybox.popFraction.f.R', local = TRUE)
+    #	cat("entrybox.popFraction.f: Callback call: ", sys.call(), "\n")
+    popFractionTemp = as.numeric(tryval) 
+    badtryval<-(is.na(popFractionTemp ) | (popFractionTemp < 0) 
+                | (popFractionTemp > 1 + DUEenv$proportions[DUEenv$whichFollows])) 
+    if (!badtryval){
+      isolate({
+      proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
+      DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
+      #	print(proportions[thisPop])
+      #	print(proportions)
+      #	print(proportions[1:nPops][-whichFollows])
+      #	print(sum(proportions[1:nPops][-whichFollows]))
+      proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
+      cat("proportionDifference = ", proportionDifference, "\n")
+      cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
+      if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
+        DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
+      }else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)){
+        DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] <-
+          DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] * (1 - DUEenv$proportions[DUEenv$thisPop])/sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop])
+      } else {  #### all others are zero
+        if(DUEenv$nPops == 1)
+          DUEenv$proportions[1] <- 1.0
+        else if (DUEenv$thisPop == 1)
+          DUEenv$proportions[2] <- 1 - DUEenv$proportions[1]
+        else
+          DUEenv$proportions[1] <- 1 - DUEenv$proportions[DUEenv$thisPop]
+      }
+      
+      }
+      
+      )
+    }
+    #### When changing proportions (fractions), one has to be dependent.
+    ####  Callback needs to check ranges and modify the dependent fraction to add to 1.
   })
-  
+  ####nPops input#####
   observe({
-    tryval = input$populationNumber
-    source('shiny.entrybox.nPops.f.R', local = TRUE)
-    #updateNumericInput(session = session, populationNumber, value = DUEenv$nPops)
+    nPopsTemp = as.integer(input$nPops)
+    if (!is.null(input$nPops))
+      isolate({
+        if(nPopsTemp < DUEenv$nPops) {
+          DUEenv$proportions = DUEenv$proportions[1:nPopsTemp]/sum(DUEenv$proportions[1:nPopsTemp])
+          if(DUEenv$thisPop > nPopsTemp) 
+            DUEenv$thisPop <- nPopsTemp      
+        }      
+        
+        if(nPopsTemp > DUEenv$nPops) {
+          newPopIndices <- (DUEenv$nPops+1):nPopsTemp
+          DUEenv$proportions[newPopIndices] <- 0 
+          for(i in newPopIndices) {
+            DUEenv$the.means.pop[[i]] <- DUEenv$the.means.pop[[DUEenv$nPops]]
+            DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
+            DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
+          }
+        }
+        DUEenv$nPops <- nPopsTemp
+        #source('shiny.entrybox.nPops.f.R', local = TRUE)
+        updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
+        updateNumericInput(session = session, 'thisPopulation', value = DUEenv$nPops)
+      })
   })
-  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
