@@ -6,7 +6,6 @@ library(DUE)
 browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
-try(rm(DUEenv))
 
 data(DUEenvironmentDefault)
 probLineNames = DUEenvironmentDefault$probLineNames
@@ -47,7 +46,7 @@ ui <- fluidPage(
              
              fluidRow(
                column(2, 
-                      numericInput(inputId = "whichFollows", "Which Population Fraction Follows", value = 2)),
+                      numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 2)),
                column(2,
                       numericInput(inputId = "thetaRmean", "Theta R Mean", value = DUEenvironmentDefault$the.means.pop[[1]] [1])),
                column(2,
@@ -282,46 +281,47 @@ server <- function(input, output, session) {
   })
   ####thisPopFraction input#####
   observe({
-    popFractionTemp = as.numeric(input$thisPopFraction)
+    tryval = input$thisPopFraction
     #source('shiny.entrybox.popFraction.f.R', local = TRUE)
-    popFractionTemp_is_bad <- ( is.na(popFractionTemp ) 
-                                | (popFractionTemp < 0) 
-                                | (popFractionTemp > 1 + DUEenv$proportions[DUEenv$whichFollows])
-    ) 
-    if (popFractionTemp_is_bad){
-      updateNumericInput(thisSession, 'thisPopFraction', value=DUEenv$thisPopFraction)
-    } else
+    #	cat("entrybox.popFraction.f: Callback call: ", sys.call(), "\n")
+    popFractionTemp = as.numeric(tryval) 
+    badtryval<-(is.na(popFractionTemp ) | (popFractionTemp < 0) 
+                | (popFractionTemp > 1 + DUEenv$proportions[DUEenv$whichFollows])) 
+    if (!badtryval){
       isolate({
-        proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
-        DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
-        # Set the "whichFollows" proportion to assure that the probabilities add to one,
-        # by adding all the other probabilities and subtracting the sum from one.
-        proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
-        
-        if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
-          ### if proportionWhichFollows is legitimate...
-          DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
-        } else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)) {
-          # At least one of the others is positive, so the denom is positive.
-          DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] <-
-            DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] * 
-            (1 - DUEenv$proportions[DUEenv$thisPop])/
-            sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop])
-        } else {  #### all except for proportionWhichFollows  are zero
-          if(DUEenv$nPops == 1)   # if there's just one population...
-            DUEenv$proportions[1] <- 1.0
-          else if (DUEenv$thisPop == 1)
-            DUEenv$proportions[2] <- 1 - DUEenv$proportions[1]
-          else
-            DUEenv$proportions[1] <- 1 - DUEenv$proportions[DUEenv$thisPop]
-        }
-      })
+      proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
+      DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
+      #	print(proportions[thisPop])
+      #	print(proportions)
+      #	print(proportions[1:nPops][-whichFollows])
+      #	print(sum(proportions[1:nPops][-whichFollows]))
+      proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
+      cat("proportionDifference = ", proportionDifference, "\n")
+      cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
+      if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
+        DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
+      }else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)){
+        DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] <-
+          DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] * (1 - DUEenv$proportions[DUEenv$thisPop])/sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop])
+      } else {  #### all others are zero
+        if(DUEenv$nPops == 1)
+          DUEenv$proportions[1] <- 1.0
+        else if (DUEenv$thisPop == 1)
+          DUEenv$proportions[2] <- 1 - DUEenv$proportions[1]
+        else
+          DUEenv$proportions[1] <- 1 - DUEenv$proportions[DUEenv$thisPop]
+      }
+      
+      }
+      
+      )
+    }
     #### When changing proportions (fractions), one has to be dependent.
     ####  Callback needs to check ranges and modify the dependent fraction to add to 1.
   })
   ####nPops input#####
   observe({
-    nPopsTemp = as.integer(input$nPops)
+    nPopsTemp=as.integer(input$nPops)
     if (!is.null(input$nPops))
       isolate({
         if(nPopsTemp < DUEenv$nPops) {
@@ -345,7 +345,6 @@ server <- function(input, output, session) {
         updateNumericInput(session = session, 'thisPopulation', value = DUEenv$nPops)
       })
   })
-  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
