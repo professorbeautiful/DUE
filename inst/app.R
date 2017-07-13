@@ -27,7 +27,7 @@ ui <- fluidPage(
   shinyDebuggingPanel::withDebuggingPanel() ,
   fluidRow(
     
-    column(6, plotOutput("ThresholdContour")), 
+    column(6, plotOutput("ThresholdContour", click = 'plot_click')), 
     column(6, plotOutput("linePlot")
            , wellPanel(fluidRow(column(1,  HTML("Line thickness<br>controls")), column(1, ""),
                                 linethicknessButtons))
@@ -334,7 +334,7 @@ server <- function(input, output, session) {
           newPopIndices <- (DUEenv$nPops+1):nPopsTemp
           DUEenv$proportions[newPopIndices] <- 0 
           for(i in newPopIndices) {
-            DUEenv$the.means.pop[[i]] <- DUEenv$the.means.pop[[DUEenv$nPops]]
+            DUEenv$the.means.pop[[i]] <- DUEenv$the.Ethresholds.pop[[DUEenv$nPops]]
             DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
             DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
           }

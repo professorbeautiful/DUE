@@ -3,7 +3,7 @@ recalculate.means.and.variances <-
     for(i in 1:DUEenv$nPops) {
       for(j in 1:nrow(DUEenv$the.variances.pop[[i]])) {
         DUEenv$theLognormalParameters = FromNormalToLognormal(
-          DUEenv$the.Ethresholds.pop[[i]][j], 
+          DUEenv$the.medianThresholds.Pop[[i]][j], 
           DUEenv$the.CVs.pop[[i]][j])
         DUEenv$the.means.pop[[i]][j] <- 
           DUEenv$theLognormalParameters["uStar"]
