@@ -108,9 +108,9 @@ ui <- fluidPage(
                             fluidRow(
                               column(4, h2("t", style="text-align:center;")),
                               column(2, h2("T", style="text-align:center;")),
-                              column(offset=6.5, width = 3, HTML("&nbsp;"),
+                              column(offset=7.5, width = 3, HTML("&nbsp;"),
                                      bsButton(inputId="Additive", 
-                                              HTML("Additive<br>R=+1, T=-1"))
+                                              HTML("Additive<br>R=+1,<br> T=-1"))
                               )),
                             column(1, h2("r")),
                             column(2, 
@@ -121,7 +121,7 @@ ui <- fluidPage(
                                    tagAppendAttributes(
                                      numericInput(inputId="U.rT", "U.rT", value=-1),
                                      class='rTobj')),
-                            column(4,
+                            column(4, 
                                    br(), 
                                    span(class='rTobj', '⬅︎') ,   
                                    # LEFTWARDS ARROW
@@ -131,7 +131,7 @@ ui <- fluidPage(
                                      class='rTobj')
                             )
                           ),
-                          div(style='background-color:lightgrey;'),
+                          div(style='background-color:lightgrey;', ""),
                           fluidRow(style='background-color:lightgrey;',
                                    column(1, h2("R")),
                                    column(2, 
