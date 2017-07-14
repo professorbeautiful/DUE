@@ -3,7 +3,7 @@ recalculate.offdiagonals <- function (correl, .thisPop, theDUEenv=DUEenv)
   #DUEenv = theDUEenv
   DUEenv = get('DUEenv', envir=parent.frame())
   #DUEenv = get('DUEenv', envir = parent.frame(2))
-  #DUEget(c(nPops,the.correlations.pop,the.variances.pop,the.means.pop))
+  #DUEget(c(nPops,the.correlations.pop,the.variances.pop,the.logmedians.pop))
   if (missing(.thisPop)) {
     for (..thisPop in 1:DUEenv$nPops) 
       recalculate.offdiagonals(correl=correl, .thisPop = ..thisPop, theDUEenv=DUEenv )

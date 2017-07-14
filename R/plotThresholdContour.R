@@ -7,7 +7,7 @@ plotThresholdContour = function (plot.title = "Contour plot for thresholds", the
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
         log10(DUEenv$doseValues)))
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
-        #cat("plotThresholdContour: the.means.pop[[i]] = ", DUEenv$the.means.pop[[i]], "\n")
+        cat("plotThresholdContour: the.logmedians.pop[[i]] = ", DUEenv$the.logmedians.pop[[i]], "\n")
         return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
             sigma = DUEenv$the.variances.pop[[i]]))
     })
