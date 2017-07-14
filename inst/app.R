@@ -356,6 +356,14 @@ server <- function(input, output, session) {
     DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
   })
   
+  observe({
+    DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
+  })
+  
+  observe({
+    DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
+  })
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
