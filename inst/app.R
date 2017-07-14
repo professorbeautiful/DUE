@@ -7,6 +7,8 @@ browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
 
+try(rm(DUEenv))
+
 data(DUEenvironmentDefault)
 probLineNames = DUEenvironmentDefault$probLineNames
 rt.outcome.colors = DUEenvironmentDefault$rt.outcome.colors
