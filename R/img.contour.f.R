@@ -48,8 +48,8 @@ function (xClick, yClick)
 		return(c(xCoords, yCoords))
 	}
 	distances = sapply(1:DUEenv$nPops, function(i) {
-			meansPixels = coords2pixels(DUEenv$the.means.pop[[i]]/log(10))
-			if(browseIf()) cat("===========mean for #", i, ": ", DUEenv$the.means.pop[[i]], "\n")
+			meansPixels = coords2pixels(DUEenv$the.logmedians.pop[[i]]/log(10))
+			if(browseIf()) cat("===========mean for #", i, ": ", DUEenv$the.logmedians.pop[[i]], "\n")
 			if(browseIf()) cat("pixels for mean for #", i, ": ", meansPixels, "\n")
 			sqrt(sum((meansPixels - xyPixels)^2))
 		  })
