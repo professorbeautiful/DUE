@@ -50,13 +50,13 @@ ui <- fluidPage(
                column(2, 
                       numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 2)),
                column(2,
-                      numericInput(inputId = "thetaRmean", "Theta R Mean", value = DUEenvironmentDefault$the.logmedians.pop[[1]] [1])),
+                      numericInput(inputId = "thetaRmedian", "Theta R Median", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [1])),
                column(2,
                       numericInput(inputId = "thetaR.CV", "Theta R CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [1])),
                column(2,
                       numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1])),
                column(2,
-                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = DUEenvironmentDefault$the.logmedians.pop[[1]] [2])),
+                      numericInput(inputId = "thetaTmedian", "Theta T Median", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [2])),
                column(2,
                       numericInput(inputId = "thetaT.CV", "Theta T CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [2]))
              ),
@@ -347,6 +347,15 @@ server <- function(input, output, session) {
         updateNumericInput(session = session, 'thisPopulation', value = DUEenv$nPops)
       })
   })
+  
+  observe({
+    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+  })
+  
+  observe({
+    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+  })
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
