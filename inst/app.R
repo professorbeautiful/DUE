@@ -57,10 +57,12 @@ ui <- fluidPage(
                       column(4, style='background-color:lightgray',
                              numericInput(inputId = "thetaRmean", "Theta R Mean", value= 282),
                              numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
-                      column(4, style='background-color:lightgray; min-height: 100%; display: flex;
-    align-items: center; vertical-align:center;',
-                            
-                             numericInput(inputId = "correlation", HTML("<br>Correlation"), value = .8)),
+                      column(4, 
+                            br(),
+                             span(style='background-color:lightgray; min-height: 100%; display: flex;
+    align-items: center; vertical-align:center;display:inline-block;
+                                 vertical-align:middle;',  ### none of this works!
+                                 numericInput(inputId = "correlation", HTML("<br>Correlation"), value = .8))),
                       column(4, style='background-color:lightgray',
                              numericInput(inputId = "thetaTmean", "Theta T Mean", value = 447),
                              numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
@@ -107,7 +109,7 @@ ui <- fluidPage(
                           fluidRow(style='background-color:lightgrey;',
                             fluidRow(
                               column(4, h2("t", style="text-align:center;")),
-                              column(2, h2("T", style="text-align:center;")),s
+                              column(2, h2("T", style="text-align:center;")),
                               column(offset=7, width = 3, HTML("&nbsp;"),
                                      bsButton(inputId="Additive", 
                                               HTML("Additive<br>R=+1,<br> T=-1"))
