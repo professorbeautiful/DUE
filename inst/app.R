@@ -48,13 +48,13 @@ ui <- fluidPage(
                column(2, 
                       numericInput(inputId = "popFractionFollows", "Which Population Fraction Follows", value = 2)),
                column(2,
-                      numericInput(inputId = "thetaRmean", "Theta R Mean", value = DUEenvironmentDefault$the.means.pop[[1]] [1])),
+                      numericInput(inputId = "thetaRmean", "Theta R Mean", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [1])),
                column(2,
                       numericInput(inputId = "thetaR.CV", "Theta R CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [1])),
                column(2,
                       numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1])),
                column(2,
-                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = DUEenvironmentDefault$the.means.pop[[1]] [2])),
+                      numericInput(inputId = "thetaTmean", "Theta T Mean", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [2])),
                column(2,
                       numericInput(inputId = "thetaT.CV", "Theta T CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [2]))
              ),
@@ -334,7 +334,7 @@ server <- function(input, output, session) {
           newPopIndices <- (DUEenv$nPops+1):nPopsTemp
           DUEenv$proportions[newPopIndices] <- 0 
           for(i in newPopIndices) {
-            DUEenv$the.means.pop[[i]] <- DUEenv$the.Ethresholds.pop[[DUEenv$nPops]]
+            DUEenv$the.means.pop[[i]] <- DUEenv$the.medianThresholds.pop[[DUEenv$nPops]]
             DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
             DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
           }
@@ -358,7 +358,7 @@ server <- function(input, output, session) {
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
                                      log10(DUEenv$doseValues)))
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
-      #cat("plotThresholdContour: the.means.pop[[i]] = ", DUEenv$the.means.pop[[i]], "\n")
+      #cat("plotThresholdContour: the.medianThresholds.pop[[i]] = ", DUEenv$the.medianThresholds.pop[[i]], "\n")
       return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.means.pop[[i]]/log(10),
                                              sigma = DUEenv$the.variances.pop[[i]]))
     })
@@ -388,8 +388,8 @@ server <- function(input, output, session) {
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
     drawQuadrants()
     for (iPop in 1:DUEenv$nPops)
-      text(DUEenv$the.Ethresholds.pop[[iPop]][1],
-           DUEenv$the.Ethresholds.pop[[iPop]][2],
+      text(DUEenv$the.medianThresholds.pop[[iPop]][1],
+           DUEenv$the.medianThresholds.pop[[iPop]][2],
            as.character(iPop),
            vfont=OKfont,
            cex = 4, col = "red")
