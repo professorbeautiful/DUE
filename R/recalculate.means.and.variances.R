@@ -3,11 +3,11 @@ recalculate.means.and.variances <-
     for(i in 1:DUEenv$nPops) {
       for(j in 1:nrow(DUEenv$the.variances.pop[[i]])) {
         DUEenv$theLognormalParameters = FromNormalToLognormal(
-          DUEenv$the.medianThresholds.Pop[[i]][j], 
+          DUEenv$the.medianThresholds.pop[[i]][j], 
           DUEenv$the.CVs.pop[[i]][j])
-        DUEenv$the.means.pop[[i]][j] <- 
+        DUEenv$the.logmedians.pop[[i]][j] <- 
           DUEenv$theLognormalParameters["uStar"]
-        #cat("recalculate.means.and.variances: the.means.pop[[i]] = ",   DUEenv$the.means.pop[[i]], "\n")
+        #cat("recalculate.means.and.variances: the.logmedians.pop[[i]] = ",   DUEenv$the.logmedians.pop[[i]], "\n")
         DUEenv$the.variances.pop[[i]][j,j] <- 
           DUEenv$theLognormalParameters["vStar"]
         if(DUEenv$the.variances.pop[[i]][j,j] < 1e-7 ) {
