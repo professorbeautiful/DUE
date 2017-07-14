@@ -37,8 +37,8 @@ plotThresholdContour = function (plot.title = "Contour plot for thresholds", the
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
     drawQuadrants()
     for (iPop in 1:DUEenv$nPops)
-        text(DUEenv$the.Ethresholds.pop[[iPop]][1],
-                DUEenv$the.Ethresholds.pop[[iPop]][2],
+        text(DUEenv$the.medianThresholds.pop[[iPop]][1],
+                DUEenv$the.medianThresholds.pop[[iPop]][2],
                 as.character(iPop),
                 vfont=OKfont,
                 cex = 4, col = "red")
