@@ -5,6 +5,8 @@ library(DUE)
 
 browseUs = 'calculate.probabilities'
 
+try(rm(DUEenv))
+
 desc <- packageDescription('DUE')
 
 data(DUEenvironmentDefault)
