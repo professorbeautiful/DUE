@@ -8,6 +8,7 @@ browseUs = 'calculate.probabilities'
 desc <- packageDescription('DUE')
 
 try(rm(DUEenv))
+try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
 probLineNames = DUEenvironmentDefault$probLineNames
@@ -67,7 +68,7 @@ ui <- fluidPage(
                column(6,
                       numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory, step = .1)),
                column(6,
-                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath))
+                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath, step = .1))
              )
              
            )
@@ -78,7 +79,7 @@ ui <- fluidPage(
              h2("Controller for Utility Values", style="text-align:center; color:blue"),
              fluidRow(           
                column(6, h3("Enter Custom Values Below:", style="text-align:center; color:blue")),
-               column(6, h3("Or choose a Preset Option", style="text-align:center; color:blue"))
+               column(6, h3("Or Choose a Preset Option:", style="text-align:center; color:blue"))
              )),
            fluidRow(
              fluidRow(
@@ -133,6 +134,7 @@ ui <- fluidPage(
   )
 )
 
+####Server starts here####
 
 server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
@@ -370,9 +372,8 @@ server <- function(input, output, session) {
     DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
   })
   
-  
   observe({
-    DUEenv$the.correlations.pop[DUEenv$nPops] [1]= input$correlation
+    DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
     #above value exists; unsure why input does not react
   })
   
@@ -390,8 +391,10 @@ server <- function(input, output, session) {
   
   output$ThresholdContour<- renderPlot({
     DUEenv$the.CVs.pop
+    DUEenv$the.correlations.pop
+    print(DUEenv$the.correlations.pop)
     print('called plotThresholdContour')
-    plot.title = "Contour plot for thresholds"
+    plot.title = "Contour Plot for Thresholds"
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
