@@ -11,11 +11,12 @@ recalculate.offdiagonals <- function (correl, .thisPop, theDUEenv=DUEenv)
   }
   if (!missing(correl)) {
     #cat("recalculate.offdiagonals:  correl=", correl, "\n")
-    DUEenv$the.correlations.pop[[DUEenv$thisPop]] <<- correl
+    DUEenv$the.correlations.pop[[DUEenv$thisPop]] <- correl
     print(DUEenv$the.correlations.pop)
   }
   
-  DUEenv$the.variances.pop[[.thisPop]][2, 1] <<- DUEenv$the.variances.pop[[.thisPop]][1, 2] <<-
+  DUEenv$the.variances.pop[[.thisPop]][2, 1] <- 
+    DUEenv$the.variances.pop[[.thisPop]][1, 2] <-
     DUEenv$the.correlations.pop[[.thisPop]] *
     sqrt(DUEenv$the.variances.pop[[.thisPop]][1, 1]) *
     sqrt(DUEenv$the.variances.pop[[.thisPop]][2, 2])
