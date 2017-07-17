@@ -65,7 +65,7 @@ ui <- fluidPage(
              
              fluidRow(
                column(6,
-                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory)),
+                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory, step = .1)),
                column(6,
                       numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath))
              )
@@ -346,18 +346,20 @@ server <- function(input, output, session) {
         DUEenv$nPops <- nPopsTemp
         #source('shiny.entrybox.nPops.f.R', local = TRUE)
         updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
-        updateNumericInput(session = session, 'thisPopulation', value = DUEenv$nPops)
+        updateNumericInput(session = session, 'thisPop', value = DUEenv$nPops)
       })
   })
   
-  ####additional observes for numericInputs####
+  ####Additional observes for numericInputs####
   
   observe({
-    DUEenv$the.Ethresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
-    DUEenv$the.Ethresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
@@ -367,6 +369,7 @@ server <- function(input, output, session) {
   observe({
     DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
   })
+  
   
   observe({
     DUEenv$the.correlations.pop[DUEenv$nPops] [1]= input$correlation
