@@ -44,9 +44,9 @@ ui <- fluidPage(
              column(4, 
                     numericInput(inputId = "nPops", "# of Populations", value = DUEenvironmentDefault$nPops, min = 1)),
              column(4, 
-                    numericInput(inputId = "thisPop", "This Population", value = 1)),
+                    numericInput(inputId = "thisPop", "This Population", value = 1, min = 1, max = DUEenvironmentDefault$nPops)),
              column(4,
-                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1)
+                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1, min = 0, max = 1)
              ),
              
              fluidRow(
@@ -348,12 +348,24 @@ server <- function(input, output, session) {
         DUEenv$nPops <- nPopsTemp
         #source('shiny.entrybox.nPops.f.R', local = TRUE)
         updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
-        updateNumericInput(session = session, 'thisPop', value = DUEenv$nPops)
+        updateNumericInput(session = session, 'thisPop', value = 1, min = 1, max=DUEenv$nPops)
       })
   })
   
   ####Additional observes for numericInputs####
   
+  observe({
+    DUEenv$thisPop = input$thisPop
+    #browser()
+    isolate({
+      updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1])
+      updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2])
+      updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1])
+      updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2])
+      updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[DUEenv$thisPop])
+      
+  })
+})
   observe({
     DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
     #DUEenv$the.medianThresholds.pop is NULL
