@@ -110,9 +110,10 @@ ui <- fluidPage(
                           ),
                           fluidRow(style='background-color:lightgrey;',
                             fluidRow(
-                              column(4, h2("t", style="text-align:center;")),
+                              column(4, h2("t", style="text-align:center; vertical-align: text-bottom;")),
                               column(2, h2("T", style="text-align:center;")),
-                              column(offset=7, width = 3, HTML("&nbsp;"),
+                              column(offset=7, width = 3, 
+                                     style='vertical-align: text-top;',
                                      bsButton(inputId="Additive", 
                                               HTML("Additive<br>R=+1,<br> T=-1"))
                               )),
