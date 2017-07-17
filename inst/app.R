@@ -35,13 +35,15 @@ ui <- fluidPage(
                                 linethicknessButtons))
     )
   ),
+  
+  ####UI numericInputs####
   fluidRow(
     column(6, 
            fluidRow(
              column(4, 
                     numericInput(inputId = "nPops", "# of Populations", value = DUEenvironmentDefault$nPops, min = 1)),
              column(4, 
-                    numericInput(inputId = "thisPopulation", "This Population", value = 1)),
+                    numericInput(inputId = "thisPop", "This Population", value = 1)),
              column(4,
                     numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1)
              ),
@@ -348,12 +350,14 @@ server <- function(input, output, session) {
       })
   })
   
+  ####additional observes for numericInputs####
+  
   observe({
-    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    DUEenv$the.Ethresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
   })
   
   observe({
-    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+    DUEenv$the.Ethresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
   })
   
   observe({
@@ -364,12 +368,25 @@ server <- function(input, output, session) {
     DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
   })
   
+  observe({
+    DUEenv$the.correlations.pop[DUEenv$nPops] [1]= input$correlation
+    #above value exists; unsure why input does not react
+  })
+  
+  observe({
+    DUEenv$refractory= input$probRefractory
+  })
+  
+  observe({
+    DUEenv$Kdeath= input$responseLimitingTox
+  })
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
   
   output$ThresholdContour<- renderPlot({
-    DUEenv
+    DUEenv$the.CVs.pop
     print('called plotThresholdContour')
     plot.title = "Contour plot for thresholds"
     cexQ = 4; OKfont = c("sans serif", "bold")
