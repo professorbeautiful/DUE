@@ -21,7 +21,8 @@ drawQuadrants <-
     lines(c(favoriteDose, favoriteDose), c(RTlowerbound, 1000), 
           lty = 1, col = "green", lwd = 3)
     lines(c(10^(par()$usr)[1], favoriteDose), c(RTlowerbound, 
-                                                RTlowerbound), lty = 1, col = "green", lwd = 3)
-    abline(h = favoriteDose, lty = 1, col = "green", lwd = 3)
+                                                RTlowerbound), lty = 1, 
+          col = rt.outcome.colors['RT'], lwd = 3)
+    abline(h = favoriteDose, lty = 1, col = "#00FF00", lwd = 3)
   }
 
