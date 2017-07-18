@@ -142,7 +142,7 @@ server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
   DUEenv = reactiveValues()
   
-  #setupProbLines(DUEenv)
+  #### In place of setupProbLines(DUEenv) ####
   probLineNames <<- 
     c("R", "T", "rt","rT","Rt","RT","EU")
   probLabels  <<- list()
