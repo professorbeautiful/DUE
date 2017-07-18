@@ -3,6 +3,8 @@ library(shinyDebuggingPanel)
 library(shinyBS)
 library(DUE)
 
+# Let's try installExprFunction(), to aid debugging with breakpoints.
+
 browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
