@@ -10,6 +10,7 @@ browseUs = 'calculate.probabilities'
 desc <- packageDescription('DUE')
 
 try(rm(DUEenv))
+try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
 probLineNames = DUEenvironmentDefault$probLineNames
@@ -37,15 +38,17 @@ ui <- fluidPage(
                                 linethicknessButtons))
     )
   ),
+  
+  ####UI numericInputs####
   fluidRow(
     column(6, 
            fluidRow(
              column(4, 
                     numericInput(inputId = "nPops", "# of Populations", value = DUEenvironmentDefault$nPops, min = 1)),
              column(4, 
-                    numericInput(inputId = "thisPopulation", "This Population", value = 1)),
+                    numericInput(inputId = "thisPop", "This Population", value = 1, min = 1, max = DUEenvironmentDefault$nPops)),
              column(4,
-                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1)
+                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1, min = 0, max = 1)
              ),
              
              fluidRow(
@@ -65,9 +68,9 @@ ui <- fluidPage(
              
              fluidRow(
                column(6,
-                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory)),
+                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory, step = .1)),
                column(6,
-                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath))
+                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath, step = .1))
              )
              
            )
@@ -78,7 +81,7 @@ ui <- fluidPage(
              h2("Controller for Utility Values", style="text-align:center; color:blue"),
              fluidRow(           
                column(6, h3("Enter Custom Values Below:", style="text-align:center; color:blue")),
-               column(6, h3("Or choose a Preset Option", style="text-align:center; color:blue"))
+               column(6, h3("Or Choose a Preset Option:", style="text-align:center; color:blue"))
              )),
            fluidRow(
              fluidRow(
@@ -133,6 +136,7 @@ ui <- fluidPage(
   )
 )
 
+####Server starts here####
 
 server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
@@ -346,16 +350,36 @@ server <- function(input, output, session) {
         DUEenv$nPops <- nPopsTemp
         #source('shiny.entrybox.nPops.f.R', local = TRUE)
         updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
-        updateNumericInput(session = session, 'thisPopulation', value = DUEenv$nPops)
+        updateNumericInput(session = session, 'thisPop', value = 1, min = 1, max=DUEenv$nPops)
       })
   })
   
+  ####Additional observes for numericInputs####
+  
+  observe({
+    thisPop<-input$thisPop
+    #browser()
+    cat("thisPop is ", thisPop, '\n')
+    isolate({
+      DUEenv$thisPop = input$thisPop
+    })
+          cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+    updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
+    updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
+          cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+    updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
+    updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
+    updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
+    #invalidateLater(millis=5000)
+  })
   observe({
     DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
     DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
@@ -366,14 +390,29 @@ server <- function(input, output, session) {
     DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
   })
   
+  observe({
+    DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+    #above value exists; unsure why input does not react
+  })
+  
+  observe({
+    DUEenv$refractory= input$probRefractory
+  })
+  
+  observe({
+    DUEenv$Kdeath= input$responseLimitingTox
+  })
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
   
   output$ThresholdContour<- renderPlot({
-    DUEenv
+    DUEenv$the.CVs.pop
+    DUEenv$the.correlations.pop
+    print(DUEenv$the.correlations.pop)
     print('called plotThresholdContour')
-    plot.title = "Contour plot for thresholds"
+    plot.title = "Contour Plot for Thresholds"
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),

@@ -1,3 +1,4 @@
+#setupProbLines is deprecated for the Shiny App
 setupProbLines <- function(DUEenv) {
   probLineNames <<- 
     c("R", "T", "rt","rT","Rt","RT","EU")

@@ -17,7 +17,6 @@ recalculate.means.and.variances <-
         }
       }
     }
-    #recalculate.offdiagonals(theDUEenv=DUEenv)
-    #})
+    recalculate.offdiagonals(theDUEenv=DUEenv)
   }
 
