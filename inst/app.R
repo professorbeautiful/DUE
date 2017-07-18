@@ -35,7 +35,7 @@ ui <- fluidPage(
               style='color:blue'),
            h3(style='text-align:center', "r = non-response, t = non-toxicity"),
            fluidRow(
-             plotOutput("ThresholdContour", click=clickOpts(id = 'click-threshold'))), 
+             plotOutput("ThresholdContour", click = 'click_threshold')), 
            h3("Controller for thresholds", style="text-align:center; color:blue"),
            hr(),
            fluidRow(
@@ -339,6 +339,20 @@ server <- function(input, output, session) {
       updateNumericInput(session = session, 'responseLimitingTox', value=input$responseLimitingTox)
     })
     
+    observe({
+      print(input$click_threshold)
+      try({
+        newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
+        if (!is.na(newFavoriteDose)){
+          updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
+          DUEenv$favoriteDose = newFavoriteDose
+        }
+      })
+    })
+    
+    observe({
+      DUEenv$favoriteDose = input$favoriteDose
+    })
     
     output$linePlot <- renderPlot({
       plotProbsAndEUsimplified(DUEenv)
