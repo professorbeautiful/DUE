@@ -22,6 +22,8 @@ calculate.probabilities <-
     ####  p.rT:  probability of non-response and toxicity      ####
     ####  p.Rt:  probability of response and non-toxicity      ####
     ####  p.RT:  probability of response and toxicity          ####
+    ####  p.RLE:  probability of response-limiting toxicity event          ####
+    ##      (a toxicity so severe that R cannot happen, or might as well not have;  RLE has occurred.)
     
     if(missing(utility))
       utility = DUEenv$utility
@@ -55,7 +57,7 @@ calculate.probabilities <-
     p.rT <- p.rT + DUEenv$refractory*p.RT
     p.RT <- p.RT - DUEenv$refractory*p.RT
     
-    ## Adjustments for response-limiting events.
+    ## Adjustments for response-limiting events (RLE)
     ## Kdeath = 0 means that
     ## People whose tox threshold is below logdose will have toxicity.
     ## People whose tox threshold is below logdose - Kdeath will have 
@@ -65,7 +67,7 @@ calculate.probabilities <-
     p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
                              Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose - DUEenv$Kdeath))
     #cat("p.RLE = ", p.RLE, "\n")
-    p.rT <- p.rT + p.RLE
+    p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
     p.RT <- p.RT - p.RLE
     
     
@@ -89,7 +91,8 @@ calculate.probabilities <-
       rT=p.rT,
       Rt=p.Rt,
       RT=p.RT,
-      EU=expected.utility
+      EU=expected.utility,
+      RLE=p.RLE
     )
     return(probability.vector)
   }
@@ -97,7 +100,7 @@ calculate.probabilities <-
 checkcalcs=function(...){
   p7=calculate.probabilities(DUEenv=denv, 3, ...); 
   c(sum=sum(p7[3:6]), 
-    Rsum=p7['Rt']+p7['RT'],
+    Rsum=p7['Rt']+p7['RT']+p7['RLE'],
     Tsum=p7['RT']+p7['rT'],
     p7)
 }
