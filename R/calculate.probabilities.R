@@ -64,7 +64,9 @@ calculate.probabilities <-
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
     #read.Uvalues()  ### copies from the sliders to the vector "utility"
     expected.utility <- sum(pQuadrants*utility)
-    if(	browseIf(exp(logdose) > 950, message="Let's check on utility")) {
+    if(	browseIf(FALSE
+                 #exp(logdose) > 950
+                 , message="Let's check on utility")) {
       #browser()
       cat("---- ", exp(logdose), " ----\n")
       print(pQuadrants)
