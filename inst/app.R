@@ -358,21 +358,21 @@ server <- function(input, output, session) {
   
   observe({
     # installExprFunction(name = 'thisFunc', expr = {
-    isolate(
-      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-    )
+#    isolate(
+#      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+#    )
     thisPop<-input$thisPop
       #browser()
     isolate({
       cat("thisPop is now ", thisPop, '\n')
         DUEenv$thisPop = input$thisPop
-      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+#      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
       updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
       updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
       updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
       updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
       updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
-      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+#      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
     })
     #invalidateLater(millis=5000)
     # })
