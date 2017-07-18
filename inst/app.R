@@ -357,41 +357,62 @@ server <- function(input, output, session) {
   ####Additional observes for numericInputs####
   
   observe({
+    # installExprFunction(name = 'thisFunc', expr = {
+    isolate(
+      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+    )
     thisPop<-input$thisPop
-    #browser()
-    cat("thisPop is ", thisPop, '\n')
+      #browser()
     isolate({
-      DUEenv$thisPop = input$thisPop
+      cat("thisPop is now ", thisPop, '\n')
+        DUEenv$thisPop = input$thisPop
+      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
+      updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
+      updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
+      updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
+      updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
+      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
     })
-          cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-    updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
-    updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
-          cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-    updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
-    updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
-    updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
     #invalidateLater(millis=5000)
+    # })
+    # thisFunc()
   })
   observe({
-    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    input$thetaRmedian
+    isolate({
+      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+      })
     #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
+    input$thetaTmedian
+    isolate({
     DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+    })
     #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
-    DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
+    input$thetaR.CV
+    isolate({
+      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
+    })
   })
   
   observe({
-    DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
+    input$thetaT.CV
+    isolate({
+      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
+    })
   })
   
   observe({
+    input$correlation
+    isolate({
     DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+    })
     #above value exists; unsure why input does not react
   })
   
