@@ -14,7 +14,7 @@ partialCumulative =
   }
 
 calculate.probabilities <-
-  function(DUEenv, log10dose, utility) {
+  function(DUEenv, log10dose, logdose, utility, changes) {
     
     ####  p.R.marginal :  marginal probability of response  ####
     ####  p.T.marginal :  marginal probability of toxicity  ####
@@ -25,20 +25,28 @@ calculate.probabilities <-
     
     if(missing(utility))
       utility = DUEenv$utility
+    else if(is.character(utility)) 
+      utility = DUEenv$utilityChoices[utility]
     
-    logdose = log(10) * log10dose
+    if(!missing(log10dose))
+      logdose = log(10) * log10dose
+    
+    # syscall = sys.call(1)
+    # print(as.list(syscall))
+    if(! missing(changes))
+      eval(parse(text=changes), envir = DUEenv)
     
     p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=1) )
     p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=2) )
     
     p.rt <- pmvnorm.mixture(DUEenv=DUEenv, 
-      Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
+                            Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
     p.rT <- pmvnorm.mixture(DUEenv=DUEenv, 
-      Rrange=c(logdose, Inf), Trange=c(-Inf, logdose))
+                            Rrange=c(logdose, Inf), Trange=c(-Inf, logdose))
     p.Rt <- pmvnorm.mixture(DUEenv=DUEenv, 
-      Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
+                            Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
     p.RT <- pmvnorm.mixture(DUEenv=DUEenv, 
-      Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
+                            Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
     
     ##  Adjustments for refractoriness
     p.R.marginal <- (1-DUEenv$refractory)*p.R.marginal
@@ -55,7 +63,7 @@ calculate.probabilities <-
     ## Thus Kdeath = 0 means that RT cannot happen.
     ## But Kdeath = Inf means that RLE never happens.
     p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
-      Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose - DUEenv$Kdeath))
+                             Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose - DUEenv$Kdeath))
     #cat("p.RLE = ", p.RLE, "\n")
     p.rT <- p.rT + p.RLE
     p.RT <- p.RT - p.RLE
@@ -86,3 +94,10 @@ calculate.probabilities <-
     return(probability.vector)
   }
 
+checkcalcs=function(...){
+  p7=calculate.probabilities(DUEenv=denv, 3, ...); 
+  c(sum=sum(p7[3:6]), 
+    Rsum=p7['Rt']+p7['RT'],
+    Tsum=p7['RT']+p7['rT'],
+    p7)
+}
