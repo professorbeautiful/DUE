@@ -254,7 +254,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
   
-   observe({
+  observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
     updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
     updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
@@ -544,6 +544,9 @@ server <- function(input, output, session) {
            cex = 4, col = "red")
   })
 }
+####Saving interesting results####
+
+save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
 
 # Run the application 
 shinyApp(ui = ui, server = server)
