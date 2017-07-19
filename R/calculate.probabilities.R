@@ -72,8 +72,9 @@ calculate.probabilities <-
     #p.RT <- p.RT - p.RLE
     p.RT <- (p.RT - p.RLE) * (1-DUEenv$refractory)
     
-    browser(text = 'p.RLE problem', condition = (p.RT < 0))
-    
+    if(p.RT < 0)
+      browser(text = 'p.RLE problem')
+        
     
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
     #read.Uvalues()  ### copies from the sliders to the vector "utility"
