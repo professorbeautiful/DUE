@@ -82,7 +82,7 @@ ui <- fluidPage(
                     column(6,
                            numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
                     column(6,
-                           numericInput(inputId = "responseLimitingTox", "log10 (response-limiting gap) (RT->rT)", value = .6))
+                           numericInput(inputId = "responseLimitingTox", "RLE: log10 (response-limiting gap) (RT->rT)", value = .6))
            )
     )
     , 
