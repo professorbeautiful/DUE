@@ -13,14 +13,17 @@ try(rm(DUEenv))
 try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
-probLineNames = DUEenvironmentDefault$probLineNames
-rt.outcome.colors = DUEenvironmentDefault$rt.outcome.colors
+rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#F007E6', rT='#8E9233',
+                      Rt='#009215', RT='#0B8C92', EU='#000000', RLE='#6C9291')
+probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
+#"darkgreen" "red" "darkblue" "magenta" "dark goldenrod" "sea green" "black"
 
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
          bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-                  style=paste0('text-color:', rt.outcome.colors[labelNum]) ) )
+                  style=paste0('color:', rt.outcome.colors[labelNum], ';',
+                               'border-color:', rt.outcome.colors[labelNum], ';') ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
@@ -35,7 +38,7 @@ ui <- fluidPage(
     column(5, 
            h2("Joint prob density of thresholds", br(), 
               style='color:blue'),
-           fluidRow(style='text-align:center; text-color:blue;color:blue; ', 
+           fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
                column(4, offset=2, "R = response", br(), "r = non-response"), 
                column(4, "T = toxicity", br(), "t = non-toxicity")
            ),
@@ -90,7 +93,7 @@ ui <- fluidPage(
              # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
              # especially the display:flex solution.
              br(), br(), br(), br(),
-             div(style='text-align:center; color:lightgreen;',
+             div(style='text-align:center; color:darkgreen; border-color:darkgreen; background-color:lightgrey;',
                  numericInput('favoriteDose', 'selected dose', value=100, min=0))
              # numericInput('favoriteDose', HTML("div('selected dose',
              #   style='text-align:center; color:blue;'"), value=100, min=0)
@@ -98,8 +101,8 @@ ui <- fluidPage(
     ),
     column(5
            , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
-           , (fluidRow(column(2,  HTML("Line thickness controls")), 
-                       linethicknessButtons))
+           , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
+                       linethicknessButtons)
            , plotOutput("linePlot")
            ,
            div(

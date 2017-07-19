@@ -46,7 +46,7 @@ plotProbsAndEUsimplified <- function( DUEenv) {
   mtext(side=2, line=2.5, "Probability", cex=2)
   axis(side = 1, at = DUEenv$doseTicks)
   axis(side = 4, lwd=1, line=-6.5, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
-       col=DUEenv$rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1) )
+       col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1) )
   text(2500, 0.50, "  E(Utility)", srt=90, cex=2) 
   
   linetypes = c(rep(1,6), 1)
@@ -60,16 +60,16 @@ plotProbsAndEUsimplified <- function( DUEenv) {
     if(linewidths[i] > 0) {
       lines(DUEenv$doseValues, convertEU(DUEenv$sevenprobs[i,], i==EUindex),
             lty=linetypes[i], lwd=linewidths[i], 
-            col=DUEenv$rt.outcome.colors[i])
+            col=rt.outcome.colors[i])
       text(DUEenv$doseValues[shortlist],
            convertEU(DUEenv$sevenprobs[i, shortlist], i==EUindex), 
-           col=DUEenv$rt.outcome.colors[i],
-           label=DUEenv$rt.outcome.strings[i],
+           col=rt.outcome.colors[i],
+           label=rt.outcome.strings[i],
            cex=1.2, xpd=NA, adj=c(0, -1))
     }
   }
-  segments(5, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=DUEenv$rt.outcome.colors["T"])
-  segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=DUEenv$rt.outcome.colors["T"])
+  segments(5, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors["T"])
+  segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors["T"])
   segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(DUEenv$highest.EU, TRUE), lty=2, lwd=2, 
            col=DUEenv$rt.outcome.colors["EU"])
   abline(v=DUEenv$favoriteDose, col="green")
