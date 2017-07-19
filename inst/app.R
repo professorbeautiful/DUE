@@ -27,111 +27,142 @@ print(linethicknessButtons)
 
 ui <- fluidPage(
   includeCSS('DUE.css'),
-  titlePanel(paste("DUE Shiny app: date = ",
-                   desc$Date, "  Version = ", desc$Version)),
+  titlePanel(div( style='text-align:center; color:blue;', 
+                  paste("DUE Shiny app: date = ",
+                        desc$Date, "  Version = ", desc$Version))),
   shinyDebuggingPanel::withDebuggingPanel() ,
-  fluidRow(
-    
-    column(6, plotOutput("ThresholdContour", click = 'plot_click')), 
-    column(6, plotOutput("linePlot")
-           , wellPanel(fluidRow(column(1,  HTML("Line thickness<br>controls")), column(1, ""),
-                                linethicknessButtons))
-    )
-  ),
-  
-  ####UI numericInputs####
-  fluidRow(
-    column(6, 
+  fluidRow(style='text-align:center',
+    column(5, 
+           h2("Joint prob density of thresholds", br(), 
+              style='color:blue'),
+           fluidRow(style='text-align:center; text-color:blue;color:blue; ', 
+               column(4, offset=2, "R = response", br(), "r = non-response"), 
+               column(4, "T = toxicity", br(), "t = non-toxicity")
+           ),
            fluidRow(
-             column(4, 
-                    numericInput(inputId = "nPops", "# of Populations", value = DUEenvironmentDefault$nPops, min = 1)),
-             column(4, 
-                    numericInput(inputId = "thisPop", "This Population", value = 1, min = 1, max = DUEenvironmentDefault$nPops)),
-             column(4,
-                    numericInput(inputId = "thisPopFraction", "This Population Fraction", value = 0.5, step = 0.1, min = 0, max = 1)
-             ),
-             
-             fluidRow(
-               column(2, 
-                      numericInput(inputId = "whichFollows", "Which Population Fraction Follows", value = 2)),
-               column(2,
-                      numericInput(inputId = "thetaRmedian", "Theta R Median", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [1])),
-               column(2,
-                      numericInput(inputId = "thetaR.CV", "Theta R CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [1])),
-               column(2,
-                      numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1],
-                                   min = -(1-0.01), max = 1-0.01, step = 0.1)),
-               column(2,
-                      numericInput(inputId = "thetaTmedian", "Theta T Median", value = DUEenvironmentDefault$the.medianThresholds.pop[[1]] [2])),
-               column(2,
-                      numericInput(inputId = "thetaT.CV", "Theta T CV", value = DUEenvironmentDefault$the.CVs.pop[[1]] [2]))
-             ),
-             
-             fluidRow(
-               column(6,
-                      numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = DUEenvironmentDefault$refractory, step = .1)),
-               column(6,
-                      numericInput(inputId = "responseLimitingTox", "K(response-limiting toxicity", value = DUEenvironmentDefault$Kdeath, step = .1))
-             )
-             
-           )
-    ), 
-    column(6, 
-           div(
-             br(),
-             h2("Controller for Utility Values", style="text-align:center; color:blue"),
-             fluidRow(           
-               column(6, h3("Enter Custom Values Below:", style="text-align:center; color:blue")),
-               column(6, h3("Or Choose a Preset Option:", style="text-align:center; color:blue"))
-             )),
+             plotOutput("ThresholdContour", click = 'click_threshold')), 
+           h3("Controller for thresholds", style="text-align:center; color:blue"),
            fluidRow(
-             fluidRow(
-               column(4, h2("t", style="text-align:center;")),
-               column(2, h2("T", style="text-align:center;")),
-               column(offset=6.5, width = 3, HTML("&nbsp;"),
-                      bsButton(inputId="Additive", 
-                               HTML("Additive<br>R=+1, T=-1"))
-               )),
-               column(1, h2("r")),
-               column(2, 
-                      tagAppendAttributes(
-                        numericInput(inputId="U.rt", "U.rt", value=0),
-                      class='rtobj')),
-             column(2, offset=1,
-                    tagAppendAttributes(
-                      numericInput(inputId="U.rT", "U.rT", value=-1),
-                      class='rTobj')),
-             column(4,
-                    br(), 
-                    span(class='rTobj', '⬅︎') ,   
-                    # LEFTWARDS ARROW
-                    # Unicode: U+2190, UTF-8: E2 86 90,
-                    tagAppendAttributes(
-                      bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                      class='rTobj')
+             column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
+                                     numericInput(inputId = "nPops",  "# of groups", value = 2, min=1))
              )
            ),
-           br(),
-           column(1, h2("R")),
-           column(2, 
-                  tagAppendAttributes(
-                    numericInput(inputId="U.Rt", "U.Rt", value=1),
-                    class='Rtobj')),
-           column(2, offset=1,
-                  tagAppendAttributes(
-                    numericInput(inputId="U.RT", "U.RT", value=0),
-                    class='RTobj'))
+           fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
+                    column(4, 
+                           numericInput(inputId = "thisPop", "This group", value = 1, min = 1, max = DUEenvironmentDefault$nPops)),
+                    column(4, 
+                           numericInput(inputId = "thisPopFraction", "This group's proportion", value = 0.6, min=0, max=1, step=0.1)),
+                    column(4, 
+                           numericInput(inputId = "whichFollows", 
+                                        HTML("Dependent group#"), value = 2))
+           ),
+           hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+           fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
+                    column(4, style='background-color:lightgray',
+                           numericInput(inputId = "thetaRmedian", "Theta R Mean", value= 282),
+                           numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
+                    column(4, 
+                           #                             style='background-color:lightgray; min-height: 100%; display: flex;
+                           #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
+                           br(style='background-color:white;'),
+                           div(style='background-color:lightgray;', 
+                               numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1],
+                                            min = -(1-0.01), max = 1-0.01, step = 0.1))
+                    ),
+                    column(4, style='background-color:lightgray',
+                           numericInput(inputId = "thetaTmedian", "Theta T Mean", value = 447),
+                           numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
+                    
+           ),
+           hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+           fluidRow(style='background-color:lightgray;',
+                    column(6,
+                           numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+                    column(6,
+                           numericInput(inputId = "responseLimitingTox", "log10 (response-limiting gap) (RT->rT)", value = .6))
+           )
+    )
+    , 
+    column(1, 
+           div(style=paste0(
+             "border-left:1px solid #000;height:1500px;",
+             "border-right:1px solid #000;height:1500px;"),
+             # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
+             # especially the display:flex solution.
+             br(), br(), br(), br(),
+             div(style='text-align:center; color:lightgreen;',
+                 numericInput('favoriteDose', 'selected dose', value=100, min=0))
+             # numericInput('favoriteDose', HTML("div('selected dose',
+             #   style='text-align:center; color:blue;'"), value=100, min=0)
+           )
+    ),
+    column(5
+           , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
+           , (fluidRow(column(2,  HTML("Line thickness controls")), 
+                       linethicknessButtons))
+           , plotOutput("linePlot")
            ,
-           column(4, 
-                  span(class='RTobj', '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                  tagAppendAttributes(
-                    bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                    class='RTobj'),
-                  br(),
-                  span(class='RTobj', '⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                  tagAppendAttributes(
-                    bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                    class='RTobj')
+           div(
+             br(),
+             h3("Controller for utility values", style="text-align:center; color:blue"),
+             div(
+               fluidRow(  style="text-align:center; color:blue; font-size:medium",
+                          column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
+                          column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
+               ),
+               fluidRow(style='background-color:lightgrey;',
+                        fluidRow(
+                          column(4, h2("t", style="text-align:center;")),
+                          column(2, h2("T", style="text-align:center;")),
+                          column(width = 4, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                 bsButton(inputId="Additive", 
+                                          HTML("Additive<br>R=+1, T=-1"))
+                          )),
+                        column(1, h2("r")),
+                        column(2, 
+                               tagAppendAttributes(
+                                 numericInput(inputId="U.rt", "U.rt", value=0),
+                                 class='rtobj')),
+                        column(2, offset=1,
+                               tagAppendAttributes(
+                                 numericInput(inputId="U.rT", "U.rT", value=-1),
+                                 class='rTobj')),
+                        # we could also try transform: rotate(7deg);
+                        column(4, 
+                               br(), 
+                               span(class='rTobj', '⬅︎') ,   
+                               # LEFTWARDS ARROW
+                               # Unicode: U+2190, UTF-8: E2 86 90,
+                               tagAppendAttributes(
+                                 bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                                 class='rTobj')
+                        )
+               ),
+               div(style='background-color:lightgrey;', ""),
+               fluidRow(style='background-color:lightgrey;',
+                        column(1, h2("R")),
+                        column(2, 
+                               tagAppendAttributes(
+                                 numericInput(inputId="U.Rt", "U.Rt", value=1),
+                                 class='Rtobj')),
+                        column(2, offset=1,
+                               tagAppendAttributes(
+                                 numericInput(inputId="U.RT", "U.RT", value=0),
+                                 class='RTobj'))
+                        ,
+                        column(4, 
+                               span(class='RTobj', '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                               tagAppendAttributes(
+                                 bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                 class='RTobj'),
+                               br(),
+                               span(class='RTobj', '⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
+                               tagAppendAttributes(
+                                 bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                 class='RTobj')
+                        )
+               )
+             )
            )
     )
   )
@@ -298,8 +329,10 @@ server <- function(input, output, session) {
     if(class(sanityCheck)=='try-error' 
        | sanityCheck==TRUE){
       isolate(
-        if(DUEenv$nPops >1)
-          DUEenv$whichFollows = max(1, DUEenv$thisPop - 1) 
+        if(DUEenv$nPops >1) {
+          newWhichFollows = ifelse(input$thisPop==1, DUEenv$nPops, input$thisPop - 1 )
+          updateNumericInput(session, 'whichFollows', value=newWhichFollows)
+        }
       )
     }
     #source('shiny.entrybox.popFraction.f.R', local = TRUE)
@@ -364,7 +397,7 @@ server <- function(input, output, session) {
       })
   })
   
-  ####Additional observes for numericInputs####
+  #### observing thisPop ####
   
   observe({
     # installExprFunction(name = 'thisFunc', expr = {
@@ -372,12 +405,12 @@ server <- function(input, output, session) {
 #      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
 #    )
     thisPop<-input$thisPop
-    sanityCheck = try(isolate(DUEenv$whichFollows == thisPop))
+    sanityCheck = try(isolate(input$whichFollows == thisPop))
     if(class(sanityCheck)=='try-error' 
        | sanityCheck==TRUE){
       isolate(
         if(DUEenv$nPops >1) {
-          newWhichFollows = max(1, DUEenv$thisPop - 1) 
+          newWhichFollows = ifelse(thisPop==1, DUEenv$nPops, thisPop - 1 )
           updateNumericInput(session, 'whichFollows', value=newWhichFollows)
         }
       )
@@ -392,7 +425,8 @@ server <- function(input, output, session) {
       updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
       updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
       updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
-#      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      updateNumericInput(session, "thisPopFraction", value = DUEenv$proportions[thisPop])
+      #      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
     })
     #invalidateLater(millis=5000)
     # })
@@ -444,6 +478,21 @@ server <- function(input, output, session) {
     DUEenv$Kdeath= input$responseLimitingTox
   })
   
+  observe({
+    print(input$click_threshold)
+    try({
+      newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
+      if (!is.na(newFavoriteDose)){
+        updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
+        DUEenv$favoriteDose = newFavoriteDose
+      }
+    })
+  })
+  
+  observe({
+    DUEenv$favoriteDose = input$favoriteDose
+  })
+  
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
@@ -453,7 +502,6 @@ server <- function(input, output, session) {
     DUEenv$the.correlations.pop
     print(DUEenv$the.correlations.pop)
     print('called plotThresholdContour')
-    plot.title = "Contour Plot for Thresholds"
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
@@ -483,7 +531,7 @@ server <- function(input, output, session) {
     axis(2, at = with(DUEenv, doseTicks),
          cex.axis=1.0) # cex.lab=3)
     #font.axis=4, font.lab=2, family="HersheySans")
-    title(main = plot.title, cex.main = 1.5, col.main = "blue")
+    #title(main = plot.title, cex.main = 1.5, col.main = "blue")
     #font.main=4, family="HersheySerif")
     ###  Works for title() not for axis().
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
