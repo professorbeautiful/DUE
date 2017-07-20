@@ -55,7 +55,7 @@ calculate.probabilities <-
     p.rt <- p.rt + DUEenv$refractory*p.Rt
     p.Rt <- p.Rt - DUEenv$refractory*p.Rt
     p.rT <- p.rT + DUEenv$refractory*p.RT
-    p.RT <- p.RT - DUEenv$refractory*p.RT
+    #p.RT <- p.RT - DUEenv$refractory*p.RT
     
     ## Adjustments for response-limiting events (RLE)
     ## Kdeath = 0 means that
@@ -65,11 +65,16 @@ calculate.probabilities <-
     ## Thus Kdeath = 0 means that RT cannot happen.
     ## But Kdeath = Inf means that RLE never happens.
     p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
-                             Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose - DUEenv$Kdeath))
+                             Rrange=c(-Inf, logdose), 
+                             Trange=c(-Inf, logdose - DUEenv$Kdeath/log(10)))
     #cat("p.RLE = ", p.RLE, "\n")
     p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
-    p.RT <- p.RT - p.RLE
+    #p.RT <- p.RT - p.RLE
+    p.RT <- (p.RT - p.RLE) * (1-DUEenv$refractory)
     
+    if(p.RT < 0)
+      browser(text = 'p.RLE problem')
+        
     
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
     #read.Uvalues()  ### copies from the sliders to the vector "utility"
