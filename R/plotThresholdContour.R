@@ -16,8 +16,9 @@ plotThresholdContour = function (theDUEenv=DUEenv)
     contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = DUEenv$nDoses)
     contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
         xlim = range(DUEenv$doseValues), ylim = range(DUEenv$doseValues),
-        log = "xy", axes = F, xlab = "Threshold of Response",
-        ylab = "Threshold of Toxicity")
+        log = "xy", axes = F, xlab="", ylab="")
+    mtext(side=2, line=1.5, "Threshold of Toxicity", cex=6, font=4)
+    mtext(side=1, line=1.5, "Threshold of Response", cex=3)
     DUEenv$parPlotSize.contour <- par("plt")
     DUEenv$usrCoords.contour <- par("usr")
 ### vfont works for text but not for axis or title. (ERROR)
@@ -26,10 +27,10 @@ plotThresholdContour = function (theDUEenv=DUEenv)
     ### for axis, cex.lab  and font.lab do NOT affect the labels 
     ###  This system stinks & is so poorly documented!
     axis(1, at = with(DUEenv, doseTicks),
-         cex.axis=1.0, cex.lab=3)
+          cex.lab=3)
     #font.axis=2, font.lab=2, family="Arial")
     axis(2, at = with(DUEenv, doseTicks),
-         cex.axis=1.0, cex.lab=3)
+          cex.lab=3)
     #font.axis=4, font.lab=2, family="HersheySans")
     #title(main = plot.title, cex.main = 1.5, col.main = "blue")
     #font.main=4, family="HersheySerif")
@@ -39,8 +40,7 @@ plotThresholdContour = function (theDUEenv=DUEenv)
     for (iPop in 1:DUEenv$nPops)
         text(DUEenv$the.medianThresholds.pop[[iPop]][1],
                 DUEenv$the.medianThresholds.pop[[iPop]][2],
-                as.character(iPop),
-                vfont=OKfont,
+                as.character(iPop), font=4,
                 cex = 5, col = "black")
     if (browseIf(message = "In callback plotThresholdContour"))
         browser()
