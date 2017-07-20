@@ -81,7 +81,7 @@ ui <- fluidPage(
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
                            column(6,
-                                  numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+                                  numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85, step = .1)),
                            column(6,
                                   numericInput(inputId = "responseLimitingTox", "RLE: log10 (response-limiting gap) (RT->rT)", value = .6))
                   )
@@ -96,7 +96,8 @@ ui <- fluidPage(
                     br(), br(), br(), br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0))
-                  )
+                  ),
+                  actionButton(inputId = "save", label = "Save")
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
@@ -429,7 +430,6 @@ server <- function(input, output, session) {
         }
       )
     }
-      #browser()
     isolate({
       cat("thisPop is now ", thisPop, '\n')
         DUEenv$thisPop = input$thisPop
@@ -560,8 +560,22 @@ server <- function(input, output, session) {
 }
 ####Saving interesting results####
 
-save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
+observe({
+  input$save
+  updateButton(session, "save", style = 'success')
+  save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
+  savehistory(file = 'DUE Noteworthy Findings')
+  timestamp(stamp = date())
+
+  #https://stackoverflow.com/questions/1743698/evaluate-expression-given-as-a-string
+  
+  for(objname in names(DUEenv))
+    eval(parse(text=print(paste0(
+      "DUEenv$", objname, " <- get('",
+      objname, "', DUEenv)"
+    ))) )
+})
+
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
