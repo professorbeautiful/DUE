@@ -1,8 +1,8 @@
 Package: DUE
 Type: Package
 Title: Dose Utility Explorer
-Version: 0.45
-Date: 2017-07-14
+Version: 0.47
+Date: 2017-07-19
 Author: Roger Day, Meihua Wang, Marie Gerges
 Maintainer: Roger Day <day01@pitt.edu>
 Description: Interactive environment for exploring relationships between priors, utilities, and choice of dose, when toxicity and response are determined by patient-specific thresholds.  Good for mixture models.
