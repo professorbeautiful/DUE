@@ -45,17 +45,17 @@ plotProbsAndEUsimplified <- function( DUEenv) {
   axis(2, at=c(0, 0.33, 0.6, 0.8, 1))
   mtext(side=2, line=2.5, "Probability", cex=2)
   axis(side = 1, at = DUEenv$doseTicks)
-  axis(side = 4, lwd=1, line=-6.5, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
+  axis(side = 4, lwd=1, line=-5, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
        col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1) )
-  text(2500, 0.50, "  E(Utility)", srt=90, cex=2) 
+  text(1600, 0.50, "  E(Utility)", srt=90, cex=2, col=rt.outcome.colors['EU']) 
   
-  linetypes = c(rep(1,6), 1)
+  linetypes = c(rep(1,6), 1, 1)
   if(!is.null(DUEenv$probLineWidths)) {
     linewidths = DUEenv$probLineWidths
   } else
-    linewidths = c(1, 3, 1, 1, 1, 1, 3)
+    linewidths = c(1, 3, 1, 1, 1, 1, 3, 1)
   EUindex = 7
-  for(i in 1:7) {
+  for(i in 1:8) {
     shortlist <- c(1, round(DUEenv$nDoses/2), DUEenv$nDoses)
     if(linewidths[i] > 0) {
       lines(DUEenv$doseValues, convertEU(DUEenv$sevenprobs[i,], i==EUindex),

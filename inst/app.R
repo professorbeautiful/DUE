@@ -189,10 +189,10 @@ server <- function(input, output, session) {
   
   #### In place of setupProbLines(DUEenv) ####
   probLineNames <<- 
-    c("R", "T", "rt","rT","Rt","RT","EU")
+    c("R", "T", "rt","rT","Rt","RT","EU", "RLE")
   probLabels  <<- list()
   probLineWidthChoices <<- c(0, 1, 5)
-  probLineWidths <- rep(probLineWidthChoices[2], 7) 
+  probLineWidths <- rep(probLineWidthChoices[2], 8) 
   names(probLineWidths) <- probLineNames
   #probLineWidths["EU"] <- probLineWidthChoices[3] #5
   DUEenv$probLineWidths <- probLineWidths 
@@ -266,6 +266,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('Rt'))
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
+  observe(linethicknessObserving('RLE'))
   
    observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
