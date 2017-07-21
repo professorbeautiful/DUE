@@ -97,7 +97,8 @@ ui <- fluidPage(
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0))
                   ),
-                  actionButton(inputId = "save", label = "Save")
+                  bsButton(inputId = "save", label = "Save", style = 'default'),
+                  bsButton(inputId = "load", label = "Load", style = 'default')
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
@@ -563,19 +564,21 @@ server <- function(input, output, session) {
 observe({
   input$save
   updateButton(session, "save", style = 'success')
-  save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
-  savehistory(file = 'DUE Noteworthy Findings')
-  timestamp(stamp = date())
-
-  #https://stackoverflow.com/questions/1743698/evaluate-expression-given-as-a-string
-  
-  for(objname in names(DUEenv))
-    eval(parse(text=print(paste0(
-      "DUEenv$", objname, " <- get('",
-      objname, "', DUEenv)"
-    ))) )
+  DUEsaving = new.env()
+  for (n in names(DUEenv))
+    DUEsaving[[n]] = DUEenv[[n]]
+  save('DUEenv', file = 'DUEsaved.rdata')
 })
 
+#timestamp(stamp = date())
+
+observe({
+  input$load
+  updateButton(session, "load", style = 'success')
+  load('inst/DUEsaved.rdata')
+  for (n in names(DUEenv))
+    DUEenv[[n]] = DUEsaving[[n]]
+})
 
 # Run the application 
 shinyApp(ui = ui, server = server)
