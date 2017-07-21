@@ -95,13 +95,20 @@ ui <- fluidPage(
                     # especially the display:flex solution.
                     br(), br(), br(), br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        numericInput('favoriteDose', 'selected dose', value=100, min=0))
-                  ),
-                  div(
+                        numericInput('favoriteDose', 'selected dose', value=100, min=0)),
                     ####Save/load inputs####
                     bsButton(inputId = "save", label = "Save", style = 'default'),
-                    fileInput("load", "Choose a file to load")
+                    bsButton(inputId = "load", label = "Load", style = 'default'),
+                    #select.list(c('Lincoln', 'Seward', 'Chase', 'Bates'), preselect = 'Lincoln', multiple = FALSE, title = '1860 Presidential Elections', graphics = TRUE)
+                    bsModal("selectFile", "Select a file to load", trigger = 'load', size = 'large', 
+                            selectInput(inputId = 'loadData', label = 'Choose a file', choices = dir('inst', pattern = 'DUE.*rdata')))
+                  ),
+                  bsModal("saveFileModal", "Save current state", trigger = 'save', size = 'large', 
+                          textInput(inputId = 'shortName', label = 'Short Description'),
+                          textAreaInput(inputId = 'README', label = 'Reason for saving:'),
+                          bsButton(inputId = 'saveFile', 'Save')
                   )
+                  
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
@@ -565,12 +572,14 @@ server <- function(input, output, session) {
 ####Saving interesting results####
 
 observe({
-  input$save
+  input$saveFile
   updateButton(session, "save", style = 'success')
   DUEsaving = new.env()
   for (n in names(DUEenv))
     DUEsaving[[n]] = DUEenv[[n]]
-  save('DUEenv', file = paste0('DUEsaved.rdata', timestamp(stamp = date()))
+  save(names(DUEsaving), file = paste0('DUEsaved.rdata', timestamp(stamp = Sys.time()), 
+                                       isolate(input$shortName)
+  )
   )
 })
 
