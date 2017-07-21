@@ -97,8 +97,11 @@ ui <- fluidPage(
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0))
                   ),
-                  bsButton(inputId = "save", label = "Save", style = 'default'),
-                  bsButton(inputId = "load", label = "Load", style = 'default')
+                  div(
+                    ####Save/load inputs####
+                    bsButton(inputId = "save", label = "Save", style = 'default'),
+                    fileInput("load", "Choose a file to load")
+                  )
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
@@ -567,14 +570,12 @@ observe({
   DUEsaving = new.env()
   for (n in names(DUEenv))
     DUEsaving[[n]] = DUEenv[[n]]
-  save('DUEenv', file = 'DUEsaved.rdata')
+  save('DUEenv', file = paste0('DUEsaved.rdata', timestamp(stamp = date()))
+  )
 })
-
-#timestamp(stamp = date())
 
 observe({
   input$load
-  updateButton(session, "load", style = 'success')
   load('inst/DUEsaved.rdata')
   for (n in names(DUEenv))
     DUEenv[[n]] = DUEsaving[[n]]
