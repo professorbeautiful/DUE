@@ -560,7 +560,7 @@ server <- function(input, output, session) {
 }
 ####Saving interesting results####
 
-save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
+#save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
 
 # Run the application 
 shinyApp(ui = ui, server = server)
