@@ -569,7 +569,7 @@ server <- function(input, output, session) {
            cex = 5, col = "black")
   })
 }
-####Saving interesting results####
+####Saving interesting parameters####
 
 observe({
   input$saveFile
