@@ -14,16 +14,16 @@ try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
 rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                      Rt='#009215', RT='#CB8C92', EU='#000000', RLE='#6C9291')
+                        Rt='#009215', RT='#CB8C92', EU='#000000', RLE='#6C9291')
 probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
 #"darkgreen" "red" "darkblue" "magenta" "dark goldenrod" "sea green" "black"
 
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
-         bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-                  style=paste0('color:', rt.outcome.colors[labelNum], ';',
-                               'border-color:', rt.outcome.colors[labelNum], ';') ) )
+           bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
+           style=paste0('color:', rt.outcome.colors[labelNum], ';',
+                        'border-color:', rt.outcome.colors[labelNum], ';') ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
@@ -100,7 +100,7 @@ ui <- fluidPage(
                     
                     ####Save/load inputs####
                     
-                    bsButton(inputId = "save", label = "Save", style = 'default'),
+                    bsButton(inputId = "openSave", label = "Open save pop-up", style = 'default'),
                     
                     bsButton(inputId = "load", label = "Load", style = 'default')
                   )
@@ -128,62 +128,62 @@ ui <- fluidPage(
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
                                  )),
-                        fluidRow(
-                          column(1, h2("r")),
-                          column(2,
-                                 tagAppendAttributes(
-                                   numericInput(inputId="U.rt", "U.rt", value=0),
-                                   style=paste0('color:', rt.outcome.colors['rt']))),
-                          column(2, offset=1,
-                                 tagAppendAttributes(
-                                   numericInput(inputId="U.rT", "U.rT", value=-1),
-                                   style=paste0('color:', rt.outcome.colors['rT']))),
-                          # we could also try transform: rotate(7deg);
-                          column(4, style=paste0('color:', rt.outcome.colors['rT']),
-                                 br(),
-                                 span(style=paste0('color:', rt.outcome.colors['rT']),
-                                      '⬅︎') ,
-                                 # LEFTWARDS ARROW
-                                 # Unicode: U+2190, UTF-8: E2 86 90,
-                                 tagAppendAttributes(
-                                   bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                                   style=paste0('background-color:', rt.outcome.colors['rT'],
-                                                '; color:white;')
+                               fluidRow(
+                                 column(1, h2("r")),
+                                 column(2,
+                                        tagAppendAttributes(
+                                          numericInput(inputId="U.rt", "U.rt", value=0),
+                                          style=paste0('color:', rt.outcome.colors['rt']))),
+                                 column(2, offset=1,
+                                        tagAppendAttributes(
+                                          numericInput(inputId="U.rT", "U.rT", value=-1),
+                                          style=paste0('color:', rt.outcome.colors['rT']))),
+                                 # we could also try transform: rotate(7deg);
+                                 column(4, style=paste0('color:', rt.outcome.colors['rT']),
+                                        br(),
+                                        span(style=paste0('color:', rt.outcome.colors['rT']),
+                                             '⬅︎') ,
+                                        # LEFTWARDS ARROW
+                                        # Unicode: U+2190, UTF-8: E2 86 90,
+                                        tagAppendAttributes(
+                                          bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                                          style=paste0('background-color:', rt.outcome.colors['rT'],
+                                                       '; color:white;')
+                                        )
                                  )
-                          )
-                        )
-               )
-             ),
-             div(style='background-color:lightgrey;', ""),
-             fluidRow(style='background-color:lightgrey;',
-                      column(1, h2("R")),
-                      column(2,
-                             tagAppendAttributes(
-                               numericInput(inputId="U.Rt", "U.Rt", value=1),
-                               style=paste0('color:', rt.outcome.colors['Rt']))),
-                      column(2, offset=1,
-                             tagAppendAttributes(
-                               numericInput(inputId="U.RT", "U.RT", value=0),
-                               style=paste0('color:', rt.outcome.colors['RT']))
+                               )
                       )
-                      ,
-                      column(4, style=paste0('color:', rt.outcome.colors['RT']),
-                             span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                             tagAppendAttributes(
-                               bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                               style=paste0('background-color:', rt.outcome.colors['RT'],
-                                            '; color:white;')),
-                             br(),
-                             span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                             tagAppendAttributes(
-                               bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                               style=paste0('background-color:', rt.outcome.colors['RT'],
-                                            '; color:white;'))
-                      )
-             )
+                    ),
+                    div(style='background-color:lightgrey;', ""),
+                    fluidRow(style='background-color:lightgrey;',
+                             column(1, h2("R")),
+                             column(2,
+                                    tagAppendAttributes(
+                                      numericInput(inputId="U.Rt", "U.Rt", value=1),
+                                      style=paste0('color:', rt.outcome.colors['Rt']))),
+                             column(2, offset=1,
+                                    tagAppendAttributes(
+                                      numericInput(inputId="U.RT", "U.RT", value=0),
+                                      style=paste0('color:', rt.outcome.colors['RT']))
+                             )
+                             ,
+                             column(4, style=paste0('color:', rt.outcome.colors['RT']),
+                                    span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                                    tagAppendAttributes(
+                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                      style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                   '; color:white;')),
+                                    br(),
+                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
+                                    tagAppendAttributes(
+                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                      style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                   '; color:white;'))
+                             )
+                    )
+                  )
            )
   )
-)
 )
 
 
@@ -207,24 +207,24 @@ server <- function(input, output, session) {
   # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
   # source("utilityControllers.R", local = TRUE)
   
-      logdose<<-1
-      require("mvtnorm")
-      data(DUEenvironmentDefault)
-      isolate({
-        for(objname in names(DUEenvironmentDefault$DUEinits.default))
-          eval(parse(text=print(paste0(
-            "DUEenv$", objname, " <- get('",
-            objname, "', DUEenvironmentDefault$DUEinits.default)"
-          ))) )
-        DUEenv$bgWindow <- "darkblue"
-        print(DUEenv$bgWindow)
-      })
-      DUEenv$label.utilitychoice <- "X"
-      # setupProbLines()
-      DUEenv$label.utilityTitle <- "Utility functions"
-      DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
-      #### End of DUEstartShiny ####    
-    
+  logdose<<-1
+  require("mvtnorm")
+  data(DUEenvironmentDefault)
+  isolate({
+    for(objname in names(DUEenvironmentDefault$DUEinits.default))
+      eval(parse(text=print(paste0(
+        "DUEenv$", objname, " <- get('",
+        objname, "', DUEenvironmentDefault$DUEinits.default)"
+      ))) )
+    DUEenv$bgWindow <- "darkblue"
+    print(DUEenv$bgWindow)
+  })
+  DUEenv$label.utilitychoice <- "X"
+  # setupProbLines()
+  DUEenv$label.utilityTitle <- "Utility functions"
+  DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
+  #### End of DUEstartShiny ####    
+  
   
   #### Overrides - DUEget, DUEput -- unnecessary! ####
   DUEget = function(objname) DUEenv[[objname]]
@@ -247,25 +247,25 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   
-
+  
   linethicknessObserving= function(label)  { 
-      inputId = paste0('linethickness_', label)
-      input[[inputId]]  ## for reactivity
-      cat("observed click on linethicknessButton ", label, "\n")
-      isolate({
-        whichWidth = which(
-          DUEenv$probLineWidths[label]==probLineWidthChoices)
-        whichWidth = whichWidth + 1
-        if(whichWidth > length(probLineWidthChoices))
-          whichWidth = 1
-        DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-        updateButton(session, inputId, 
-                     label=switch(whichWidth, `1`=paste0('(',label,')'),
-                                  `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
-                     size = switch(whichWidth, `1`='small',
-                                   `2`='', `3`='large'))
-      })
-    }
+    inputId = paste0('linethickness_', label)
+    input[[inputId]]  ## for reactivity
+    cat("observed click on linethicknessButton ", label, "\n")
+    isolate({
+      whichWidth = which(
+        DUEenv$probLineWidths[label]==probLineWidthChoices)
+      whichWidth = whichWidth + 1
+      if(whichWidth > length(probLineWidthChoices))
+        whichWidth = 1
+      DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+      updateButton(session, inputId, 
+                   label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                   size = switch(whichWidth, `1`='small',
+                                 `2`='', `3`='large'))
+    })
+  }
   observe(linethicknessObserving('R'))
   observe(linethicknessObserving('T'))
   observe(linethicknessObserving('rt'))
@@ -422,9 +422,9 @@ server <- function(input, output, session) {
   
   observe({
     # installExprFunction(name = 'thisFunc', expr = {
-#    isolate(
-#      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-#    )
+    #    isolate(
+    #      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+    #    )
     thisPop<-input$thisPop
     sanityCheck = try(isolate(input$whichFollows == thisPop))
     if(class(sanityCheck)=='try-error' 
@@ -438,8 +438,8 @@ server <- function(input, output, session) {
     }
     isolate({
       cat("thisPop is now ", thisPop, '\n')
-        DUEenv$thisPop = input$thisPop
-#      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      DUEenv$thisPop = input$thisPop
+      #      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
       updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
       updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
       updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
@@ -452,20 +452,17 @@ server <- function(input, output, session) {
     # })
     # thisFunc()
   })
-  observe({
-    input$thetaRmedian
-    isolate({
-      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
-      })
-    #DUEenv$the.medianThresholds.pop is NULL
-  })
+  observeEvent(
+    input$thetaRmedian,
+    {DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    }
+  )
   
   observe({
     input$thetaTmedian
     isolate({
-    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
     })
-    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
@@ -485,9 +482,8 @@ server <- function(input, output, session) {
   observe({
     input$correlation
     isolate({
-    DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+      DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
     })
-    #above value exists; unsure why input does not react
   })
   
   observe({
@@ -563,61 +559,71 @@ server <- function(input, output, session) {
            as.character(iPop), font=4,
            cex = 5, col = "black")
   })
-}
-####Saving interesting parameters####
-
-loadModal <- function(failed = FALSE) {
   
-  modalDialog(
-    selectInput(inputId = 'loadData', label = 'Choose a file', choices = dir('inst', pattern = 'DUE.*rdata')),
+  ####Saving interesting parameters####
   
-  if (failed)
-    div(tags$b("Invalid selection", style = "color: red;")),
-  
-  footer = tagList(
-    
-    modalButton(label = "Cancel"),
-    
-    actionButton(inputId = "ok", label = "OK")
-    
-  )
-  )
-}
-
-observeEvent(
-  input$load,
-  {showModal(loadModal())
+  loadModal <- function(failed = FALSE) {
+    modalDialog(
+      selectInput(inputId = 'chooseFile', 
+                  label = 'Choose a file', 
+                  choices = dir('.', pattern = 'DUE.*rdata')),
+      verbatimTextOutput('READMEoutput'),
+      footer = tagList(
+        modalButton(label = "Cancel"),
+        actionButton(inputId = "ok", label = "OK")
+      )
+    )
   }
-)
-
-observe({
- input$loadData
-  load('inst/DUEsaved.rdata')
-  for (n in names(DUEenv))
-    DUEenv[[n]] == DUEsaving[[n]]
-})
-
-observeEvent(input$save,
-             {showModal(modalDialog(
-               textInput(inputId = 'shortName', label = 'Short Description'),
-               textAreaInput(inputId = 'README', label = 'Reason for saving:'),
-               bsButton(inputId = 'saveFile', 'Save')
-             )
-             )
-             }
-)
-
-observe({
-  input$saveFile
-  updateButton(session, 'saveFile', style = 'success')
-  DUEsaving = new.env()
-  for (n in names(DUEenv))
-    DUEsaving[[n]] == DUEenv[[n]]
-  save(names(DUEenv), file = paste0('DUEsaved.rdata', timestamp(stamp = Sys.time())), 
-       isolate(input$shortName))
-})
-
-
+  
+  observeEvent(
+    input$load,
+    {print('Observed load')
+      showModal(ui = loadModal())
+    }
+  )
+  
+  observeEvent(input$ok, {
+    try({load(input$chooseFile)
+      for (n in names(DUEenv))
+        DUEenv[[n]] = DUEsaving[[n]]
+      removeModal()
+    })
+  })
+  
+  observeEvent(
+    input$openSave, {
+      showModal(modalDialog(
+        textInput(inputId = 'shortName', label = 'Short Description'),
+        textAreaInput(inputId = 'README', label = 'Reason for saving:'),
+        bsButton(inputId = 'saveFile', 'Save file'),
+        title = 'Save current parameter settings'
+      ) )
+    }
+  )
+  
+  observeEvent(
+    input$saveFile,
+    isolate({
+      print('Observed button click (Save file)')
+      updateButton(session, 'saveFile', style = 'success')
+      DUEsaving = new.env()
+      for (n in names(DUEenv))
+        DUEsaving[[n]] = DUEenv[[n]]
+      fileName <- paste0('DUEsaved', timestamp(stamp = Sys.time()), input$shortName, '.rdata')
+      print(fileName)
+      README = input$README
+      save(DUEsaving, README,
+           file = fileName)
+    })
+  )
+  observeEvent(
+    input$chooseFile, 
+    {load(input$chooseFile)
+      if (exists('README'))
+      output$READMEoutput<-renderPrint(README)
+    }
+  )
+}
 
 # Run the application
 shinyApp(ui = ui, server = server)
