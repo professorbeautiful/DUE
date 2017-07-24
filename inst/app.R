@@ -28,6 +28,7 @@ linethicknessButtons =
   lapply(1:length(probLineNames), make_linethicknessButton)   
 print(linethicknessButtons)
 
+####UI starts here####
 ui <- fluidPage(
   includeCSS('DUE.css'),
   titlePanel(div( style='text-align:center; color:blue;', 
@@ -96,33 +97,26 @@ ui <- fluidPage(
                     br(), br(), br(), br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                    
                     ####Save/load inputs####
+                    
                     bsButton(inputId = "save", label = "Save", style = 'default'),
-                    bsButton(inputId = "load", label = "Load", style = 'default'),
-                    #select.list(c('Lincoln', 'Seward', 'Chase', 'Bates'), preselect = 'Lincoln', multiple = FALSE, title = '1860 Presidential Elections', graphics = TRUE)
-                    bsModal("selectFile", "Select a file to load", trigger = 'load', size = 'large', 
-                            selectInput(inputId = 'loadData', label = 'Choose a file', choices = dir('inst', pattern = 'DUE.*rdata')))
-                  ),
-                  bsModal("saveFileModal", "Save current state", trigger = 'save', size = 'large', 
-                          textInput(inputId = 'shortName', label = 'Short Description'),
-                          textAreaInput(inputId = 'README', label = 'Reason for saving:'),
-                          bsButton(inputId = 'saveFile', 'Save')
+                    
+                    bsButton(inputId = "load", label = "Load", style = 'default')
                   )
-                  
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
-                  , plotOutput("linePlot")
-                  ,
+                  , plotOutput("linePlot"),
                   div(
                     br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
-                      fluidRow(  style="text-align:center; color:blue; font-size:medium",
-                                 column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
-                                 column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
+                      fluidRow(style="text-align:center; color:blue; font-size:medium",
+                               column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
+                               column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
                       ),
                       fluidRow(style='background-color:lightgrey;',
                                fluidRow(
@@ -133,64 +127,65 @@ ui <- fluidPage(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                               )),
-                               fluidRow(
-                                 column(1, h2("r")),
-                                 column(2,
-                                        tagAppendAttributes(
-                                          numericInput(inputId="U.rt", "U.rt", value=0),
-                                          style=paste0('color:', rt.outcome.colors['rt']))),
-                                 column(2, offset=1,
-                                        tagAppendAttributes(
-                                          numericInput(inputId="U.rT", "U.rT", value=-1),
-                                          style=paste0('color:', rt.outcome.colors['rT']))),
-                                 # we could also try transform: rotate(7deg);
-                                 column(4, style=paste0('color:', rt.outcome.colors['rT']),
-                                        br(),
-                                        span(style=paste0('color:', rt.outcome.colors['rT']),
-                                             '⬅︎') ,
-                                        # LEFTWARDS ARROW
-                                        # Unicode: U+2190, UTF-8: E2 86 90,
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                                          style=paste0('background-color:', rt.outcome.colors['rT'],
-                                                       '; color:white;')
-                                        )
+                                 )),
+                        fluidRow(
+                          column(1, h2("r")),
+                          column(2,
+                                 tagAppendAttributes(
+                                   numericInput(inputId="U.rt", "U.rt", value=0),
+                                   style=paste0('color:', rt.outcome.colors['rt']))),
+                          column(2, offset=1,
+                                 tagAppendAttributes(
+                                   numericInput(inputId="U.rT", "U.rT", value=-1),
+                                   style=paste0('color:', rt.outcome.colors['rT']))),
+                          # we could also try transform: rotate(7deg);
+                          column(4, style=paste0('color:', rt.outcome.colors['rT']),
+                                 br(),
+                                 span(style=paste0('color:', rt.outcome.colors['rT']),
+                                      '⬅︎') ,
+                                 # LEFTWARDS ARROW
+                                 # Unicode: U+2190, UTF-8: E2 86 90,
+                                 tagAppendAttributes(
+                                   bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                                   style=paste0('background-color:', rt.outcome.colors['rT'],
+                                                '; color:white;')
                                  )
-                               )
+                          )
+                        )
+               )
+             ),
+             div(style='background-color:lightgrey;', ""),
+             fluidRow(style='background-color:lightgrey;',
+                      column(1, h2("R")),
+                      column(2,
+                             tagAppendAttributes(
+                               numericInput(inputId="U.Rt", "U.Rt", value=1),
+                               style=paste0('color:', rt.outcome.colors['Rt']))),
+                      column(2, offset=1,
+                             tagAppendAttributes(
+                               numericInput(inputId="U.RT", "U.RT", value=0),
+                               style=paste0('color:', rt.outcome.colors['RT']))
                       )
-                    ),
-                    div(style='background-color:lightgrey;', ""),
-                    fluidRow(style='background-color:lightgrey;',
-                             column(1, h2("R")),
-                             column(2,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.Rt", "U.Rt", value=1),
-                                      style=paste0('color:', rt.outcome.colors['Rt']))),
-                             column(2, offset=1,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.RT", "U.RT", value=0),
-                                      style=paste0('color:', rt.outcome.colors['RT']))
-                             )
-                             ,
-                             column(4, style=paste0('color:', rt.outcome.colors['RT']),
-                                    span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;')),
-                                    br(),
-                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;'))
-                             )
-                    )
-                  )
+                      ,
+                      column(4, style=paste0('color:', rt.outcome.colors['RT']),
+                             span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                             tagAppendAttributes(
+                               bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                               style=paste0('background-color:', rt.outcome.colors['RT'],
+                                            '; color:white;')),
+                             br(),
+                             span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
+                             tagAppendAttributes(
+                               bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                               style=paste0('background-color:', rt.outcome.colors['RT'],
+                                            '; color:white;'))
+                      )
+             )
            )
   )
 )
+)
+
 
 
 ####Server starts here####
@@ -571,24 +566,58 @@ server <- function(input, output, session) {
 }
 ####Saving interesting parameters####
 
-observe({
-  input$saveFile
-  updateButton(session, "save", style = 'success')
-  DUEsaving = new.env()
-  for (n in names(DUEenv))
-    DUEsaving[[n]] = DUEenv[[n]]
-  save(names(DUEsaving), file = paste0('DUEsaved.rdata', timestamp(stamp = Sys.time()), 
-                                       isolate(input$shortName)
+loadModal <- function(failed = FALSE) {
+  
+  modalDialog(
+    selectInput(inputId = 'loadData', label = 'Choose a file', choices = dir('inst', pattern = 'DUE.*rdata')),
+  
+  if (failed)
+    div(tags$b("Invalid selection", style = "color: red;")),
+  
+  footer = tagList(
+    
+    modalButton(label = "Cancel"),
+    
+    actionButton(inputId = "ok", label = "OK")
+    
   )
   )
-})
+}
+
+observeEvent(
+  input$load,
+  {showModal(loadModal())
+  }
+)
 
 observe({
-  input$load
+ input$loadData
   load('inst/DUEsaved.rdata')
   for (n in names(DUEenv))
-    DUEenv[[n]] = DUEsaving[[n]]
+    DUEenv[[n]] == DUEsaving[[n]]
 })
 
-# Run the application 
+observeEvent(input$save,
+             {showModal(modalDialog(
+               textInput(inputId = 'shortName', label = 'Short Description'),
+               textAreaInput(inputId = 'README', label = 'Reason for saving:'),
+               bsButton(inputId = 'saveFile', 'Save')
+             )
+             )
+             }
+)
+
+observe({
+  input$saveFile
+  updateButton(session, 'saveFile', style = 'success')
+  DUEsaving = new.env()
+  for (n in names(DUEenv))
+    DUEsaving[[n]] == DUEenv[[n]]
+  save(names(DUEenv), file = paste0('DUEsaved.rdata', timestamp(stamp = Sys.time())), 
+       isolate(input$shortName))
+})
+
+
+
+# Run the application
 shinyApp(ui = ui, server = server)
