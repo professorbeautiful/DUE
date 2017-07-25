@@ -1,7 +1,7 @@
 Package: DUE
 Type: Package
 Title: Dose Utility Explorer
-Version: 0.48
+Version: 0.49
 Date: 2017-07-24
 Author: Roger Day, Meihua Wang, Marie Gerges
 Maintainer: Roger Day <day01@pitt.edu>

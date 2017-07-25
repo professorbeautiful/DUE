@@ -343,7 +343,7 @@ server <- function(input, output, session) {
   #### When changing proportions (fractions), one has to be dependent.
   ####  Callback needs to check ranges and modify the dependent fraction to add to 1.
   
-  observe({
+  observeEvent(eventExpr = input$thisPopFraction, handlerExpr = {
     tryval = input$thisPopFraction
     sanityCheck = try(isolate(DUEenv$whichFollows == DUEenv$thisPop))
     if(class(sanityCheck)=='try-error' 
