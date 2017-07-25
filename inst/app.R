@@ -14,20 +14,21 @@ try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
 rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                      Rt='#009215', RT='#CB8C92', EU='#000000', RLE='#6C9291')
+                        Rt='#009215', RT='#CB8C92', EU='#000000', RLE='#6C9291')
 probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
 #"darkgreen" "red" "darkblue" "magenta" "dark goldenrod" "sea green" "black"
 
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
-         bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-                  style=paste0('color:', rt.outcome.colors[labelNum], ';',
-                               'border-color:', rt.outcome.colors[labelNum], ';') ) )
+           bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
+           style=paste0('color:', rt.outcome.colors[labelNum], ';',
+                        'border-color:', rt.outcome.colors[labelNum], ';') ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
-print(linethicknessButtons)
+# print(linethicknessButtons)
 
+####UI starts here####
 ui <- fluidPage(
   includeCSS('DUE.css'),
   titlePanel(div( style='text-align:center; color:blue;', 
@@ -81,7 +82,7 @@ ui <- fluidPage(
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
                            column(6,
-                                  numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85)),
+                                  numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85, step = .1)),
                            column(6,
                                   numericInput(inputId = "responseLimitingTox", "RLE: log10 (response-limiting gap) (RT->rT)", value = .6))
                   )
@@ -95,22 +96,27 @@ ui <- fluidPage(
                     # especially the display:flex solution.
                     br(), br(), br(), br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        numericInput('favoriteDose', 'selected dose', value=100, min=0))
+                        numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                    
+                    ####Save/load inputs####
+                    
+                    bsButton(inputId = "openSave", label = "Open save pop-up", style = 'default'),
+                    
+                    bsButton(inputId = "load", label = "Load", style = 'default')
                   )
            ),
            column(5
                   , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
-                  , plotOutput("linePlot")
-                  ,
+                  , plotOutput("linePlot"),
                   div(
                     br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
-                      fluidRow(  style="text-align:center; color:blue; font-size:medium",
-                                 column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
-                                 column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
+                      fluidRow(style="text-align:center; color:blue; font-size:medium",
+                               column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
+                               column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
                       ),
                       fluidRow(style='background-color:lightgrey;',
                                fluidRow(
@@ -121,7 +127,7 @@ ui <- fluidPage(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                               )),
+                                 )),
                                fluidRow(
                                  column(1, h2("r")),
                                  column(2,
@@ -181,6 +187,7 @@ ui <- fluidPage(
 )
 
 
+
 ####Server starts here####
 
 server <- function(input, output, session) {
@@ -200,24 +207,23 @@ server <- function(input, output, session) {
   # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
   # source("utilityControllers.R", local = TRUE)
   
-      logdose<<-1
-      require("mvtnorm")
-      data(DUEenvironmentDefault)
-      isolate({
-        for(objname in names(DUEenvironmentDefault$DUEinits.default))
-          eval(parse(text=print(paste0(
-            "DUEenv$", objname, " <- get('",
-            objname, "', DUEenvironmentDefault$DUEinits.default)"
-          ))) )
-        DUEenv$bgWindow <- "darkblue"
-        print(DUEenv$bgWindow)
-      })
-      DUEenv$label.utilitychoice <- "X"
-      # setupProbLines()
-      DUEenv$label.utilityTitle <- "Utility functions"
-      DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
-      #### End of DUEstartShiny ####    
-    
+  logdose<<-1
+  require("mvtnorm")
+  data(DUEenvironmentDefault)
+  isolate({
+    for(objname in names(DUEenvironmentDefault$DUEinits.default))
+      eval(parse(text=(paste0(
+        "DUEenv$", objname, " <- get('",
+        objname, "', DUEenvironmentDefault$DUEinits.default)"
+      ))) )
+    DUEenv$bgWindow <- "darkblue"
+  })
+  DUEenv$label.utilitychoice <- "X"
+  # setupProbLines()
+  DUEenv$label.utilityTitle <- "Utility functions"
+  DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
+  #### End of DUEstartShiny ####    
+  
   
   #### Overrides - DUEget, DUEput -- unnecessary! ####
   DUEget = function(objname) DUEenv[[objname]]
@@ -240,25 +246,25 @@ server <- function(input, output, session) {
     DUEput('testing', 'testing')  ### OK
   })
   
-
+  
   linethicknessObserving= function(label)  { 
-      inputId = paste0('linethickness_', label)
-      input[[inputId]]  ## for reactivity
-      cat("observed click on linethicknessButton ", label, "\n")
-      isolate({
-        whichWidth = which(
-          DUEenv$probLineWidths[label]==probLineWidthChoices)
-        whichWidth = whichWidth + 1
-        if(whichWidth > length(probLineWidthChoices))
-          whichWidth = 1
-        DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-        updateButton(session, inputId, 
-                     label=switch(whichWidth, `1`=paste0('(',label,')'),
-                                  `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
-                     size = switch(whichWidth, `1`='small',
-                                   `2`='', `3`='large'))
-      })
-    }
+    inputId = paste0('linethickness_', label)
+    input[[inputId]]  ## for reactivity
+    cat("observed click on linethicknessButton ", label, "\n")
+    isolate({
+      whichWidth = which(
+        DUEenv$probLineWidths[label]==probLineWidthChoices)
+      whichWidth = whichWidth + 1
+      if(whichWidth > length(probLineWidthChoices))
+        whichWidth = 1
+      DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+      updateButton(session, inputId, 
+                   label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                   size = switch(whichWidth, `1`='small',
+                                 `2`='', `3`='large'))
+    })
+  }
   observe(linethicknessObserving('R'))
   observe(linethicknessObserving('T'))
   observe(linethicknessObserving('rt'))
@@ -361,10 +367,6 @@ server <- function(input, output, session) {
       isolate({
         proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
         DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
-        #	print(proportions[thisPop])
-        #	print(proportions)
-        #	print(proportions[1:nPops][-whichFollows])
-        #	print(sum(proportions[1:nPops][-whichFollows]))
         proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
         cat("proportionDifference = ", proportionDifference, "\n")
         cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
@@ -415,9 +417,9 @@ server <- function(input, output, session) {
   
   observe({
     # installExprFunction(name = 'thisFunc', expr = {
-#    isolate(
-#      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-#    )
+    #    isolate(
+    #      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+    #    )
     thisPop<-input$thisPop
     sanityCheck = try(isolate(input$whichFollows == thisPop))
     if(class(sanityCheck)=='try-error' 
@@ -429,11 +431,10 @@ server <- function(input, output, session) {
         }
       )
     }
-      #browser()
     isolate({
       cat("thisPop is now ", thisPop, '\n')
-        DUEenv$thisPop = input$thisPop
-#      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      DUEenv$thisPop = input$thisPop
+      #      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
       updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
       updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
       updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
@@ -446,20 +447,17 @@ server <- function(input, output, session) {
     # })
     # thisFunc()
   })
-  observe({
-    input$thetaRmedian
-    isolate({
-      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
-      })
-    #DUEenv$the.medianThresholds.pop is NULL
-  })
+  observeEvent(
+    input$thetaRmedian,
+    {DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    }
+  )
   
   observe({
     input$thetaTmedian
     isolate({
-    DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
     })
-    #DUEenv$the.medianThresholds.pop is NULL
   })
   
   observe({
@@ -479,9 +477,8 @@ server <- function(input, output, session) {
   observe({
     input$correlation
     isolate({
-    DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+      DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
     })
-    #above value exists; unsure why input does not react
   })
   
   observe({
@@ -493,13 +490,14 @@ server <- function(input, output, session) {
   })
   
   observe({
-    print(input$click_threshold)
+    save_options = options(warn = -1)  #ignore initial warning
     try({
       newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
       if (!is.na(newFavoriteDose)){
         updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
         DUEenv$favoriteDose = newFavoriteDose
       }
+      options(save_options)
     })
   })
   
@@ -514,8 +512,6 @@ server <- function(input, output, session) {
   output$ThresholdContour<- renderPlot({
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
-    print(DUEenv$the.correlations.pop)
-    print('called plotThresholdContour')
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
@@ -557,11 +553,68 @@ server <- function(input, output, session) {
            as.character(iPop), font=4,
            cex = 5, col = "black")
   })
+  
+  ####Saving interesting parameters####
+  
+  loadModal <- function(failed = FALSE) {
+    modalDialog(
+      selectInput(inputId = 'chooseFile', 
+                  label = 'Choose a file', 
+                  choices = dir('.', pattern = 'DUE.*rdata')),
+      verbatimTextOutput('READMEoutput'),
+      footer = tagList(
+        modalButton(label = "Cancel"),
+        actionButton(inputId = "ok", label = "OK")
+      )
+    )
+  }
+  
+  observeEvent(
+    input$load,
+    {
+      showModal(ui = loadModal())
+    }
+  )
+  
+  observeEvent(input$ok, {
+    try({load(input$chooseFile)
+      for (n in names(DUEenv))
+        DUEenv[[n]] = DUEsaving[[n]]
+      removeModal()
+    })
+  })
+  
+  observeEvent(
+    input$openSave, {
+      showModal(modalDialog(
+        textInput(inputId = 'shortName', label = 'Short Description'),
+        textAreaInput(inputId = 'README', label = 'Reason for saving:'),
+        bsButton(inputId = 'saveFile', 'Save file'),
+        title = 'Save current parameter settings'
+      ) )
+    }
+  )
+  
+  observeEvent(
+    input$saveFile,
+    isolate({
+      updateButton(session, 'saveFile', style = 'success')
+      DUEsaving = new.env()
+      for (n in names(DUEenv))
+        DUEsaving[[n]] = DUEenv[[n]]
+      fileName <- paste0('DUEsaved', timestamp(stamp = Sys.time()), input$shortName, '.rdata')
+      # print(fileName)
+      README = input$README
+      save(DUEsaving, README,
+           file = fileName)
+    })
+  )
+  observeEvent(
+    input$chooseFile, 
+    {load(input$chooseFile)
+      if (exists('README'))
+      output$READMEoutput<-renderPrint(README)
+    }
+  )
 }
-####Saving interesting results####
-
-#save(list = names(DUEenv), file = 'DUE Noteworthy Findings', envir = DUEenv)
-
-# Run the application 
 shinyApp(ui = ui, server = server)
-
