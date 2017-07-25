@@ -326,6 +326,7 @@ server <- function(input, output, session) {
       DUEenv$utilityChoices$Aggressive
     updateUtilities(TheseUvalues)
   })
+  
   observe({
     TheseUvalues = data.frame(U.rt = input$U.rt , U.rT = input$U.rT, U.Rt = input$U.Rt, U.RT = input$U.RT)
     DUEenv$utility = TheseUvalues
@@ -352,6 +353,7 @@ server <- function(input, output, session) {
         if(DUEenv$nPops >1) {
           newWhichFollows = ifelse(input$thisPop==1, DUEenv$nPops, input$thisPop - 1 )
           updateNumericInput(session, 'whichFollows', value=newWhichFollows)
+          DUEenv$whichFollows = newWhichFollows
         }
       )
     }
