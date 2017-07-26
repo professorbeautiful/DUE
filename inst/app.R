@@ -35,6 +35,7 @@ ui <- fluidPage(
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
   shinyDebuggingPanel::withDebuggingPanel() ,
+  HTML('<i class=" fa fa-check"></i>'),
   fluidRow(style='text-align:center',
            column(5, 
                   h2("Joint prob density of thresholds", br(), 
@@ -126,7 +127,7 @@ ui <- fluidPage(
                                  column(2, h2("T", style="text-align:center;")),
                                  column(width = 4, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
-                                          bsButton(inputId="Additive",
+                                          bsButton(inputId="Additive", icon=icon('calendar'),
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
                                  )),
@@ -148,7 +149,7 @@ ui <- fluidPage(
                                         # LEFTWARDS ARROW
                                         # Unicode: U+2190, UTF-8: E2 86 90,
                                         tagAppendAttributes(
-                                          bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                                          bsButton(inputId="Simple", HTML("<br>Simple<br>U.rT=0")),
                                           style=paste0('background-color:', rt.outcome.colors['rT'],
                                                        '; color:white;')
                                         )
@@ -172,14 +173,16 @@ ui <- fluidPage(
                              column(4, style=paste0('color:', rt.outcome.colors['RT']),
                                     span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
                                     tagAppendAttributes(
-                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                      bsButton(inputId="Cautious", HTML("<br>Cautious<br>U.RT=-1")),
                                       style=paste0('background-color:', rt.outcome.colors['RT'],
                                                    '; color:white;')),
                                     br(),
                                     span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                     tagAppendAttributes(
-                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                      bsButton(inputId="Aggressive", 
+                                               HTML("<br>Aggressive<br>U.RT=+1")),
                                       style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                   #  'width: 1000px ',
                                                    '; color:white;'))
                              )
                     )
@@ -291,11 +294,28 @@ server <- function(input, output, session) {
                  style='success')
   }
   
+  pimpMyChoice = function(choice){
+    updateButton(session, choice, icon=icon('check'))
+    cat('====> pimping ', choice, '\n')
+  }
+  unPimpMyChoice = function(choice){
+    updateButton(session, choice, icon=icon(''))
+    cat('====> UNpimping ', choice, '\n')
+  }
+  
   updateUtilities = function(TheseUvalues) {
     DUEenv$U.rt = TheseUvalues$U.rt
     DUEenv$U.Rt = TheseUvalues$U.Rt
     DUEenv$U.rT = TheseUvalues$U.rT
     DUEenv$U.RT = TheseUvalues$U.RT
+    choiceMatch = "NOthiNG"
+    for(choice in names(DUEenv$utilityChoices)) {
+      if(all(TheseUvalues == DUEenv$utilityChoices[[choice]]))
+        pimpMyChoice(choiceMatch<-choice)
+      else
+        unPimpMyChoice(choice)
+    }
+    cat("updateUtilities: match for ", choiceMatch, '\n')
   }
   
   observe({
