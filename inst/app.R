@@ -82,9 +82,11 @@ ui <- fluidPage(
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
                            column(6,
-                                  numericInput(inputId = "probRefractory", "Pr(refractorytumor)", value = .85, step = .1)),
+                                  numericInput(inputId = "probRefractory", 
+                                               HTML("<br>Pr(refractory tumor)"), value = .85, step = .1)),
                            column(6,
-                                  numericInput(inputId = "responseLimitingTox", "RLE: log10 (response-limiting gap) (RT->rT)", value = .6))
+                                  numericInput(inputId = "responseLimitingTox", 
+                                               HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6))
                   )
            )
            , 
