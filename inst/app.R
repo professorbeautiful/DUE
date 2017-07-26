@@ -138,7 +138,8 @@ ui <- fluidPage(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                                 )),
+                                 )
+                               ),
                                fluidRow(
                                  column(1, h2("r")),
                                  column(2,
