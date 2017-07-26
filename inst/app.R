@@ -88,7 +88,7 @@ ui <- fluidPage(
                   )
            )
            , 
-           column(1, 
+           column(2, 
                   div(style=paste0(
                     "border-left:1px solid #000;height:1500px;",
                     "border-right:1px solid #000;height:1500px;"),
