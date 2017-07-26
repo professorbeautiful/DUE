@@ -389,7 +389,7 @@ server <- function(input, output, session) {
     }
   })
   ####nPops input#####
-  observe({
+  observeEvent(input$nPops,  {
     nPopsTemp=as.integer(input$nPops)
     if (!is.null(input$nPops))
       isolate({
