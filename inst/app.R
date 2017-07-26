@@ -37,7 +37,7 @@ ui <- fluidPage(
   shinyDebuggingPanel::withDebuggingPanel() ,
   fluidRow(style='text-align:center',
            column(5, 
-                  h2("Joint prob density of thresholds", br(), 
+                  h2("Joint Prob Density of Thresholds", br(), 
                      style='color:blue'),
                   fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
                            column(4, offset=2, "R = response", br(), "r = non-response"), 
@@ -88,25 +88,33 @@ ui <- fluidPage(
                   )
            )
            , 
-           column(2, 
+           column(1, 
                   div(style=paste0(
                     "border-left:1px solid #000;height:1500px;",
                     "border-right:1px solid #000;height:1500px;"),
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
-                    br(), br(), br(), br(),
+                    br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                    br(), br(),
                     
                     ####Save/load inputs####
-                    
-                    bsButton(inputId = "openSave", label = "Open save pop-up", style = 'default'),
-                    
-                    bsButton(inputId = "load", label = "Load", style = 'default')
+                    div(
+                      fluidRow(style = "font-size:large",
+                               bsButton(inputId = "openSave", label = "Save parameters", size = 'extra-small')
+                      )
+                    ),
+                    br(),
+                    div(
+                      fluidRow(style =  "font-size:large",
+                               bsButton(inputId = "load", label = "Load saved parameters", size = 'extra-small')
+                      )
+                    )
                   )
            ),
-           column(5
-                  , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
+           column(5, 
+                  h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
                   , plotOutput("linePlot"),
@@ -615,7 +623,7 @@ server <- function(input, output, session) {
     input$chooseFile, 
     {load(input$chooseFile)
       if (exists('README'))
-      output$READMEoutput<-renderPrint(README)
+        output$READMEoutput<-renderPrint(README)
     }
   )
 }
