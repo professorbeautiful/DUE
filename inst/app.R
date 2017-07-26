@@ -35,6 +35,7 @@ ui <- fluidPage(
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
   shinyDebuggingPanel::withDebuggingPanel() ,
+  HTML('<i class="fa fa-check"></i>') , 
   fluidRow(style='text-align:center',
            column(5, 
                   h2("Joint Prob Density of Thresholds", br(), 
@@ -104,13 +105,13 @@ ui <- fluidPage(
                     ####Save/load inputs####
                     div(
                       fluidRow(style = "font-size:large",
-                               bsButton(inputId = "openSave", label = "Save parameters", size = 'extra-small')
+                               bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'extra-small')
                       )
                     ),
                     br(),
                     div(
                       fluidRow(style =  "font-size:large",
-                               bsButton(inputId = "load", label = "Load saved parameters", size = 'extra-small')
+                               bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'extra-small')
                       )
                     )
                   )
@@ -294,9 +295,9 @@ server <- function(input, output, session) {
     cat("resetButtonStyles: whichButton = ", whichButton, '\n')
     for(button in DUEenv$utilityChoiceNames) 
       updateButton(session, button,
-                   style='default')
+                   icon = "")
     updateButton(session, whichButton,
-                 style='success')
+                 icon = icon('check'))
   }
   
   updateUtilities = function(TheseUvalues) {
