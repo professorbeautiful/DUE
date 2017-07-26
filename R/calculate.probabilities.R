@@ -7,14 +7,14 @@ pmvnorm.mixture = function(DUEenv, Rrange, Trange) {
 }
 
 partialCumulative = 
-  function(DUEenv, i, RorT) {
+  function(DUEenv, i, RorT, logdose) {
     DUEenv$proportions[i] * pnorm(logdose, 
                                   mean=DUEenv$the.logmedians.pop[[i]] [RorT], 
                                   sd=sqrt(DUEenv$the.variances.pop[[i]] [RorT,RorT]))
   }
 
 calculate.probabilities <-
-  function(DUEenv, log10dose, logdose, utility, changes) {
+  function(DUEenv, log10dose, logdose, utility, ...) {
     
     ####  p.R.marginal :  marginal probability of response  ####
     ####  p.T.marginal :  marginal probability of toxicity  ####
@@ -33,13 +33,14 @@ calculate.probabilities <-
     if(!missing(log10dose))
       logdose = log(10) * log10dose
     
-    # syscall = sys.call(1)
-    # print(as.list(syscall))
-    if(! missing(changes))
-      eval(parse(text=changes), envir = DUEenv)
+    # if(! missing(changes))
+    #   eval(parse(text=changes), envir = DUEenv)
+    arglist = list(...)
+    for(arg in names(arglist))  DUEenv[[arg]] = arglist[[arg]]
     
-    p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=1) )
-    p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=2) )
+    
+    p.R.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=1, logdose=logdose) )
+    p.T.marginal <-  sum(apply(as.array(1:DUEenv$nPops), 1, partialCumulative, DUEenv=DUEenv, RorT=2, logdose=logdose) )
     
     p.rt <- pmvnorm.mixture(DUEenv=DUEenv, 
                             Rrange=c(logdose, Inf), Trange=c(logdose, Inf))
@@ -49,32 +50,46 @@ calculate.probabilities <-
                             Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
     p.RT <- pmvnorm.mixture(DUEenv=DUEenv, 
                             Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
-    
-    ##  Adjustments for refractoriness
-    p.R.marginal <- (1-DUEenv$refractory)*p.R.marginal
-    p.rt <- p.rt + DUEenv$refractory*p.Rt
-    p.Rt <- p.Rt - DUEenv$refractory*p.Rt
-    p.rT <- p.rT + DUEenv$refractory*p.RT
-    #p.RT <- p.RT - DUEenv$refractory*p.RT
-    
     ## Adjustments for response-limiting events (RLE)
+    p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
+                             Rrange=c(-Inf, logdose), 
+                             Trange=c(-Inf, logdose - DUEenv$Kdeath/log(10)))
+
     ## Kdeath = 0 means that
     ## People whose tox threshold is below logdose will have toxicity.
     ## People whose tox threshold is below logdose - Kdeath will have 
     ## toxicity so severe that R cannot happen;  RLE has occurred.
     ## Thus Kdeath = 0 means that RT cannot happen.
     ## But Kdeath = Inf means that RLE never happens.
-    p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
-                             Rrange=c(-Inf, logdose), 
-                             Trange=c(-Inf, logdose - DUEenv$Kdeath/log(10)))
-    #cat("p.RLE = ", p.RLE, "\n")
-    p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
-    #p.RT <- p.RT - p.RLE
-    p.RT <- (p.RT - p.RLE) * (1-DUEenv$refractory)
     
-    if(p.RT < 0)
-      browser(text = 'p.RLE problem')
-        
+    #### Adjustments for response-limiting events (RLE) ####
+    p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
+    p.RT <- p.RT - p.RLE
+    
+    #### Sanity tests ####
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < 0))
+      browser(text = 'negative probability problem')
+    if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
+      browser(text = 'p.R problem')
+    if( abs(p.RT + p.rT - p.T.marginal)  >  0.01)
+      browser(text = 'p.T problem')
+    
+    ####  Adjustments for refractoriness: ####  
+    # Every R category is converted proportionally to its corresponding "r". 
+    p.rT <- p.rT + DUEenv$refractory*p.RT
+    p.RT <- p.RT - DUEenv$refractory*p.RT
+    p.rt <- p.rt + DUEenv$refractory*p.Rt
+    p.Rt <- p.Rt - DUEenv$refractory*p.Rt
+    p.RLE <- p.RLE - DUEenv$refractory*p.RLE
+    p.R.marginal <- p.R.marginal - DUEenv$refractory*p.R.marginal
+
+        #### Sanity tests ####
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < 0))
+      browser(text = 'negative probability problem')
+    if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
+      browser(text = 'p.R problem')
+    if( abs(p.RT + p.rT - p.T.marginal)  >  0.01)
+      browser(text = 'p.T problem')
     
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
     #read.Uvalues()  ### copies from the sliders to the vector "utility"
