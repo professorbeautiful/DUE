@@ -66,8 +66,10 @@ calculate.probabilities <-
     p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
     p.RT <- p.RT - p.RLE
     
+    negativeSanity = -1e-4
+    
     #### Sanity tests ####
-    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < 0))
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < negativeSanity))
       browser(text = 'negative probability problem')
     if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
       browser(text = 'p.R problem')
@@ -84,7 +86,7 @@ calculate.probabilities <-
     p.R.marginal <- p.R.marginal - DUEenv$refractory*p.R.marginal
 
         #### Sanity tests ####
-    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < 0))
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < negativeSanity))
       browser(text = 'negative probability problem')
     if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
       browser(text = 'p.R problem')
