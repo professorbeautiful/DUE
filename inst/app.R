@@ -246,7 +246,6 @@ ui <- fluidPage(
         ))) )
       DUEenv$bgWindow <- "darkblue"
     })
-<<<<<<< HEAD
     DUEenv$label.utilitychoice <- "X"
     # setupProbLines()
     DUEenv$label.utilityTitle <- "Utility functions"
@@ -293,7 +292,6 @@ ui <- fluidPage(
                      size = switch(whichWidth, `1`='small',
                                    `2`='', `3`='large'))
       })
-=======
   }
   observe(linethicknessObserving('R'))
   observe(linethicknessObserving('T'))
@@ -351,7 +349,6 @@ ui <- fluidPage(
         primpMyChoice(choiceMatch<-choice)
       else
         unprimpMyChoice(choice)
->>>>>>> f5fd6b892eaa4577716ce52743066e2bc298af47
     }
     observe(linethicknessObserving('R'))
     observe(linethicknessObserving('T'))
