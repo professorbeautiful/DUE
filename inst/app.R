@@ -105,13 +105,19 @@ ui <- fluidPage(
                     ####Save/load inputs####
                     div(
                       fluidRow(style = "font-size:large",
-                               bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'extra-small')
+                               bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
                       )
                     ),
                     br(),
                     div(
                       fluidRow(style =  "font-size:large",
-                               bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'extra-small')
+                               bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
+                      )
+                    ),
+                    br(),
+                    div(
+                      fluidRow(style = "font-size:large", 
+                               bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
                       )
                     )
                   )
@@ -630,5 +636,31 @@ server <- function(input, output, session) {
         output$READMEoutput<-renderPrint(README)
     }
   )
+  observeEvent(
+    input$doseComparison,
+    {showModal(
+      modalDialog(
+        fluidRow(
+          column(3, 
+                 h5('Optimal Dose')
+          ),
+          column(3, 
+                 h5('Dose at 33% Toxicity Prob')
+          )
+        ),
+        fluidRow(
+          column(3,
+                 verbatimTextOutput('optimalDoseValue')
+                 #output$optimalDoseValue<-renderPrint(the point of intersection between the dotted black line and EU line)
+          ),
+          column(3,
+                 verbatimTextOutput('oneThirdDoseValue'))
+                #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
+        )
+      )
+    )
+    }
+  )
 }
+
 shinyApp(ui = ui, server = server)
