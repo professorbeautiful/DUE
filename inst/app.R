@@ -131,7 +131,7 @@ ui <- fluidPage(
                                  column(2, h2("T", style="text-align:center;")),
                                  column(width = 4, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
-                                          bsButton(inputId="Additive", icon=icon('calendar'),
+                                          bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
                                  )),
@@ -311,11 +311,11 @@ server <- function(input, output, session) {
     div(list(tags$script(evalString)))
   })
   primpMyChoice = function(choice){
-    updateButton(session, choice, icon=icon('check'))
+    updateButton(session, choice)
     cat('====> primping ', choice, '\n')
   }
   unprimpMyChoice = function(choice){
-    updateButton(session, choice, icon=icon(''))
+    updateButton(session, choice)
     cat('====> UNprimping ', choice, '\n')
   }
   
