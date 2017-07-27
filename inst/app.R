@@ -26,7 +26,7 @@ make_linethicknessButton = function(labelNum)
                         'border-color:', rt.outcome.colors[labelNum], ';') ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
-# print(linethicknessButtons)
+
 
 ####UI starts here####
 ui <- fluidPage(
