@@ -14,7 +14,7 @@ try(rm(DUEenvironmentDefault))
 
 data(DUEenvironmentDefault)
 rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                        Rt='#009215', RT='#CB8C92', EU='#000000', RLE='#6C9291')
+                        Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
 probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
 #"darkgreen" "red" "darkblue" "magenta" "dark goldenrod" "sea green" "black"
 
@@ -31,6 +31,8 @@ linethicknessButtons =
 ####UI starts here####
 ui <- fluidPage(
   includeCSS('DUE.css'),
+  includeCSS('tooltip.css'),
+  uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
@@ -97,8 +99,15 @@ ui <- fluidPage(
                     "border-right:1px solid #000;height:1500px;"),
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
+
                     br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
+
+                    br(), br(), br(), br(),
+                    ## borders don't work here.
+                    div(style='text-align:center; color:white; border-color:lightgreen; border-width:5px;
+                        background-color:green;',
+
                         numericInput('favoriteDose', 'selected dose', value=100, min=0)),
                     br(), br(),
                     
@@ -304,7 +313,32 @@ server <- function(input, output, session) {
       updateButton(session, button,
                    icon = "")
     updateButton(session, whichButton,
+
                  icon = icon('check'))
+
+                 style='success')
+  }
+  
+  #### primp the utility buttons ####
+#              $("#Aggressive").addClass("primped") ## works!
+  output$JSprimping = renderUI({
+    whichMatched = (DUEenv$utilityChoiceMatch==DUEenv$utilityChoiceNames)
+    evalString = paste0( collapse='\n',
+                         '$("#', DUEenv$utilityChoiceNames, '").',
+                         ifelse(whichMatched, 'addClass', 'removeClass') ,
+                         '("primped"); ')
+    evalString = gsub('"', "'", evalString) # replace all DQ with SQ.
+    print(evalString)
+    div(list(tags$script(evalString)))
+  })
+  primpMyChoice = function(choice){
+    updateButton(session, choice, icon=icon('check'))
+    cat('====> primping ', choice, '\n')
+  }
+  unprimpMyChoice = function(choice){
+    updateButton(session, choice, icon=icon(''))
+    cat('====> UNprimping ', choice, '\n')
+
   }
   
   updateUtilities = function(TheseUvalues) {
@@ -312,6 +346,19 @@ server <- function(input, output, session) {
     DUEenv$U.Rt = TheseUvalues$U.Rt
     DUEenv$U.rT = TheseUvalues$U.rT
     DUEenv$U.RT = TheseUvalues$U.RT
+
+
+    choiceMatch = ""
+    for(choice in names(DUEenv$utilityChoices)) {
+      if(all(TheseUvalues == DUEenv$utilityChoices[[choice]]))
+        primpMyChoice(choiceMatch<-choice)
+      else
+        unprimpMyChoice(choice)
+    }
+    DUEenv$utilityChoiceMatch = choiceMatch
+    
+    cat("updateUtilities: match for ", choiceMatch, '\n')
+>>>>>>> 3214e737ebaabe75f7a6dc751ba1813a5586f01e
   }
   
   observe({
