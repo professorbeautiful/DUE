@@ -350,68 +350,7 @@ server <- function(input, output, session) {
       else
         unprimpMyChoice(choice)
     }
-  }
-  observe(linethicknessObserving('R'))
-  observe(linethicknessObserving('T'))
-  observe(linethicknessObserving('rt'))
-  observe(linethicknessObserving('rT'))
-  observe(linethicknessObserving('Rt'))
-  observe(linethicknessObserving('RT'))
-  observe(linethicknessObserving('EU'))
-  observe(linethicknessObserving('RLE'))
-  
-  observe({
-    updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
-    updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
-    updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
-    updateNumericInput(session=session, 'U.RT', value=DUEenv$U.RT)
-  })
-  resetButtonStyles = function(whichButton) {
-    cat("resetButtonStyles: whichButton = ", whichButton, '\n')
-    for(button in DUEenv$utilityChoiceNames) 
-      updateButton(session, button,
-                   icon = "")
-    updateButton(session, whichButton,
-                 icon = icon('check'), style='success') 
-  }
-  
-  #### primp the utility buttons ####
-  #              $("#Aggressive").addClass("primped") ## works!
-  output$JSprimping = renderUI({
-    whichMatched = (DUEenv$utilityChoiceMatch==DUEenv$utilityChoiceNames)
-    evalString = paste0( collapse='\n',
-                         '$("#', DUEenv$utilityChoiceNames, '").',
-                         ifelse(whichMatched, 'addClass', 'removeClass') ,
-                         '("primped"); ')
-    evalString = gsub('"', "'", evalString) # replace all DQ with SQ.
-    print(evalString)
-    div(list(tags$script(evalString)))
-  })
-  primpMyChoice = function(choice){
-    updateButton(session, choice, icon=icon('check'))
-    cat('====> primping ', choice, '\n')
-  }
-  unprimpMyChoice = function(choice){
-    updateButton(session, choice, icon=icon(''))
-    cat('====> UNprimping ', choice, '\n')
-    
-  }
-  
-  updateUtilities = function(TheseUvalues) {
-    DUEenv$U.rt = TheseUvalues$U.rt
-    DUEenv$U.Rt = TheseUvalues$U.Rt
-    DUEenv$U.rT = TheseUvalues$U.rT
-    DUEenv$U.RT = TheseUvalues$U.RT
-    
-    
-    choiceMatch = ""
-    for(choice in names(DUEenv$utilityChoices)) {
-      if(all(TheseUvalues == DUEenv$utilityChoices[[choice]]))
-        primpMyChoice(choiceMatch<-choice)
-      else
-        unprimpMyChoice(choice)
-    }
-    DUEenv$utilityChoiceMatch = choiceMatch
+    # DUEenv$utilityChoiceMatch = choiceMatch
     
     cat("updateUtilities: match for ", choiceMatch, '\n')
   }
