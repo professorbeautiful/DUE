@@ -62,11 +62,14 @@ phase_one_simulated = function(PrTox = c(.1,.2,.3,.4), N1=3,N2=3, MaxGo1 = 0, Mi
   }
   return(list(results=result, trialresult=trialresult))
 }
-  
-sum(print(phase_one_exact()) [, 'pr_stop_at'] )
-    
-NREPS = 50000
-reps = lapply(1:NREPS, function(ignoreMe) phase_one_simulated())
-table(sapply(reps, '[[', 'trialresult'))/NREPS
-c(phase_one_exact() [, 'pr_stop_at'], 1 - sum((phase_one_exact()) [, 'pr_stop_at'] ) )
+
+
+# TESTING
+
+# sum(print(phase_one_exact()) [, 'pr_stop_at'] )
+#     
+# NREPS = 50000
+# reps = lapply(1:NREPS, function(ignoreMe) phase_one_simulated())
+# table(sapply(reps, '[[', 'trialresult'))/NREPS
+# c(phase_one_exact() [, 'pr_stop_at'], 1 - sum((phase_one_exact()) [, 'pr_stop_at'] ) )
 ###  Very close.
