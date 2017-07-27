@@ -99,36 +99,28 @@ ui <- fluidPage(
                     "border-right:1px solid #000;height:1500px;"),
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
-                    
                     br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        
-                        br(), br(), br(), br(),
-                        ## borders don't work here.
-                        div(style='text-align:center; color:white; border-color:lightgreen; border-width:5px;
-                        background-color:green;',
-                            
-                            numericInput('favoriteDose', 'selected dose', value=100, min=0)),
-                        br(), br(),
-                        
-                        ####Save/load inputs####
-                        div(
-                          fluidRow(style = "font-size:large",
-                                   bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
-                          )
-                        ),
-                        br(),
-                        div(
-                          fluidRow(style =  "font-size:large",
-                                   bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
-                          )
-                        ),
-                        br(),
-                        div(
-                          fluidRow(style = "font-size:large", 
-                                   bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
-                          )
-                        )
+                        numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                    br(), br(),
+                    
+                    ####Save/load inputs####
+                    div(
+                      fluidRow(style = "font-size:large",
+                               bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
+                      )
+                    ),
+                    br(),
+                    div(
+                      fluidRow(style =  "font-size:large",
+                               bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
+                      )
+                    ),
+                    br(),
+                    div(
+                      fluidRow(style = "font-size:large", 
+                               bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
+                      )
                     )
                   )
            ),
