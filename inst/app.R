@@ -696,7 +696,7 @@ server <- function(input, output, session) {
           ),
           column(3,
                  verbatimTextOutput('oneThirdDoseValue'))
-          #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
+                #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
         )
       )
     )
