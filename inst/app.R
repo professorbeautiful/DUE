@@ -668,6 +668,7 @@ server <- function(input, output, session) {
       README = input$README
       save(DUEsaving, README,
            file = fileName)
+      removeModal()
     })
   )
   observeEvent(
