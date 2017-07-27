@@ -26,7 +26,7 @@ make_linethicknessButton = function(labelNum)
                         'border-color:', rt.outcome.colors[labelNum], ';') ) )
 linethicknessButtons = 
   lapply(1:length(probLineNames), make_linethicknessButton)   
-# print(linethicknessButtons)
+
 
 ####UI starts here####
 ui <- fluidPage(
@@ -37,10 +37,10 @@ ui <- fluidPage(
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
   shinyDebuggingPanel::withDebuggingPanel() ,
-  HTML('<i class=" fa fa-check"></i>'),
+  HTML('<i class="fa fa-check"></i>') , 
   fluidRow(style='text-align:center',
            column(5, 
-                  h2("Joint prob density of thresholds", br(), 
+                  h2("Joint Prob Density of Thresholds", br(), 
                      style='color:blue'),
                   fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
                            column(4, offset=2, "R = response", br(), "r = non-response"), 
@@ -99,21 +99,41 @@ ui <- fluidPage(
                     "border-right:1px solid #000;height:1500px;"),
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
-                    br(), br(), br(), br(),
-                    ## borders don't work here.
-                    div(style='text-align:center; color:white; border-color:lightgreen; border-width:5px;
+                    
+                    br(),
+                    div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
+                        
+                        br(), br(), br(), br(),
+                        ## borders don't work here.
+                        div(style='text-align:center; color:white; border-color:lightgreen; border-width:5px;
                         background-color:green;',
-                        numericInput('favoriteDose', 'selected dose', value=100, min=0)),
-                    
-                    ####Save/load inputs####
-                    
-                    bsButton(inputId = "openSave", label = "Open save pop-up", style = 'default'),
-                    
-                    bsButton(inputId = "load", label = "Load", style = 'default')
+                            
+                            numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                        br(), br(),
+                        
+                        ####Save/load inputs####
+                        div(
+                          fluidRow(style = "font-size:large",
+                                   bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
+                          )
+                        ),
+                        br(),
+                        div(
+                          fluidRow(style =  "font-size:large",
+                                   bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
+                          )
+                        ),
+                        br(),
+                        div(
+                          fluidRow(style = "font-size:large", 
+                                   bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
+                          )
+                        )
+                    )
                   )
            ),
-           column(5
-                  , h2("Probabilities and Expected Utility, E(U)", style="color:blue")
+           column(5, 
+                  h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
                   , plotOutput("linePlot"),
@@ -134,7 +154,8 @@ ui <- fluidPage(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                                 )),
+                                 )
+                               ),
                                fluidRow(
                                  column(1, h2("r")),
                                  column(2,
@@ -177,16 +198,14 @@ ui <- fluidPage(
                              column(4, style=paste0('color:', rt.outcome.colors['RT']),
                                     span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
                                     tagAppendAttributes(
-                                      bsButton(inputId="Cautious", HTML("<br>Cautious<br>U.RT=-1")),
+                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
                                       style=paste0('background-color:', rt.outcome.colors['RT'],
                                                    '; color:white;')),
                                     br(),
                                     span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                     tagAppendAttributes(
-                                      bsButton(inputId="Aggressive", 
-                                               HTML("<br>Aggressive<br>U.RT=+1")),
+                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
                                       style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   #  'width: 1000px ',
                                                    '; color:white;'))
                              )
                     )
@@ -195,84 +214,84 @@ ui <- fluidPage(
   )
 )
 
-
-
-####Server starts here####
-
-server <- function(input, output, session) {
-  try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
-  DUEenv = reactiveValues()
-  
-  #### In place of setupProbLines(DUEenv) ####
-  probLineNames <<- 
-    c("R", "T", "rt","rT","Rt","RT","EU", "RLE")
-  probLabels  <<- list()
-  probLineWidthChoices <<- c(0, 1, 5)
-  probLineWidths <- rep(probLineWidthChoices[2], 8) 
-  names(probLineWidths) <- probLineNames
-  #probLineWidths["EU"] <- probLineWidthChoices[3] #5
-  DUEenv$probLineWidths <- probLineWidths 
-  
-  # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
-  # source("utilityControllers.R", local = TRUE)
-  
-  logdose<<-1
-  require("mvtnorm")
-  data(DUEenvironmentDefault)
-  isolate({
-    for(objname in names(DUEenvironmentDefault$DUEinits.default))
-      eval(parse(text=(paste0(
-        "DUEenv$", objname, " <- get('",
-        objname, "', DUEenvironmentDefault$DUEinits.default)"
-      ))) )
-    DUEenv$bgWindow <- "darkblue"
-  })
-  DUEenv$label.utilitychoice <- "X"
-  # setupProbLines()
-  DUEenv$label.utilityTitle <- "Utility functions"
-  DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
-  #### End of DUEstartShiny ####    
   
   
-  #### Overrides - DUEget, DUEput -- unnecessary! ####
-  DUEget = function(objname) DUEenv[[objname]]
-  DUEput = function(objname, value) 
-    DUEenv[[objname]] = value
-  ## isolate({doseParameters(resetToDefaults = TRUE)})
-  ## Unknown why this call to doseParameters does not change DUEenv.
-  ## But this source'ing approach works.
-  source('doseParametersForApp.R', local=TRUE)
+  ####Server starts here####
   
-  ##### Create Utility Choice Buttons ####
-  isolate({
-    DUEenv$utilityChoices <- list(
-      "Additive"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT= 0),
-      "Simple"     = data.frame(U.rt=0, U.rT= 0,  U.Rt=1, U.RT= 0),
-      "Cautious"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT=-1),
-      "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
-    )
-    DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
-    DUEput('testing', 'testing')  ### OK
-  })
-  
-  
-  linethicknessObserving= function(label)  { 
-    inputId = paste0('linethickness_', label)
-    input[[inputId]]  ## for reactivity
-    cat("observed click on linethicknessButton ", label, "\n")
+  server <- function(input, output, session) {
+    try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
+    DUEenv = reactiveValues()
+    
+    #### In place of setupProbLines(DUEenv) ####
+    probLineNames <<- 
+      c("R", "T", "rt","rT","Rt","RT","EU", "RLE")
+    probLabels  <<- list()
+    probLineWidthChoices <<- c(0, 1, 5)
+    probLineWidths <- rep(probLineWidthChoices[2], 8) 
+    names(probLineWidths) <- probLineNames
+    #probLineWidths["EU"] <- probLineWidthChoices[3] #5
+    DUEenv$probLineWidths <- probLineWidths 
+    
+    # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
+    # source("utilityControllers.R", local = TRUE)
+    
+    logdose<<-1
+    require("mvtnorm")
+    data(DUEenvironmentDefault)
     isolate({
-      whichWidth = which(
-        DUEenv$probLineWidths[label]==probLineWidthChoices)
-      whichWidth = whichWidth + 1
-      if(whichWidth > length(probLineWidthChoices))
-        whichWidth = 1
-      DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
-      updateButton(session, inputId, 
-                   label=switch(whichWidth, `1`=paste0('(',label,')'),
-                                `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
-                   size = switch(whichWidth, `1`='small',
-                                 `2`='', `3`='large'))
+      for(objname in names(DUEenvironmentDefault$DUEinits.default))
+        eval(parse(text=(paste0(
+          "DUEenv$", objname, " <- get('",
+          objname, "', DUEenvironmentDefault$DUEinits.default)"
+        ))) )
+      DUEenv$bgWindow <- "darkblue"
     })
+    DUEenv$label.utilitychoice <- "X"
+    # setupProbLines()
+    DUEenv$label.utilityTitle <- "Utility functions"
+    DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
+    #### End of DUEstartShiny ####    
+    
+    
+    #### Overrides - DUEget, DUEput -- unnecessary! ####
+    DUEget = function(objname) DUEenv[[objname]]
+    DUEput = function(objname, value) 
+      DUEenv[[objname]] = value
+    ## isolate({doseParameters(resetToDefaults = TRUE)})
+    ## Unknown why this call to doseParameters does not change DUEenv.
+    ## But this source'ing approach works.
+    source('doseParametersForApp.R', local=TRUE)
+    
+    ##### Create Utility Choice Buttons ####
+    isolate({
+      DUEenv$utilityChoices <- list(
+        "Additive"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT= 0),
+        "Simple"     = data.frame(U.rt=0, U.rT= 0,  U.Rt=1, U.RT= 0),
+        "Cautious"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT=-1),
+        "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
+      )
+      DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
+      DUEput('testing', 'testing')  ### OK
+    })
+    
+    
+    linethicknessObserving= function(label)  { 
+      inputId = paste0('linethickness_', label)
+      input[[inputId]]  ## for reactivity
+      cat("observed click on linethicknessButton ", label, "\n")
+      isolate({
+        whichWidth = which(
+          DUEenv$probLineWidths[label]==probLineWidthChoices)
+        whichWidth = whichWidth + 1
+        if(whichWidth > length(probLineWidthChoices))
+          whichWidth = 1
+        DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
+        updateButton(session, inputId, 
+                     label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                  `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                     size = switch(whichWidth, `1`='small',
+                                   `2`='', `3`='large'))
+      })
   }
   observe(linethicknessObserving('R'))
   observe(linethicknessObserving('T'))
@@ -331,332 +350,419 @@ server <- function(input, output, session) {
       else
         unprimpMyChoice(choice)
     }
-    DUEenv$utilityChoiceMatch = choiceMatch
+    observe(linethicknessObserving('R'))
+    observe(linethicknessObserving('T'))
+    observe(linethicknessObserving('rt'))
+    observe(linethicknessObserving('rT'))
+    observe(linethicknessObserving('Rt'))
+    observe(linethicknessObserving('RT'))
+    observe(linethicknessObserving('EU'))
+    observe(linethicknessObserving('RLE'))
     
-    cat("updateUtilities: match for ", choiceMatch, '\n')
-  }
-  
-  observe({
-    input$Additive
-    resetButtonStyles('Additive')
-    isolate ({
+    observe({
+      updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
+      updateNumericInput(session=session, 'U.Rt', value=DUEenv$U.Rt)
+      updateNumericInput(session=session, 'U.rT', value=DUEenv$U.rT)
+      updateNumericInput(session=session, 'U.RT', value=DUEenv$U.RT)
+    })
+    resetButtonStyles = function(whichButton) {
+      cat("resetButtonStyles: whichButton = ", whichButton, '\n')
+      for(button in DUEenv$utilityChoiceNames) 
+        updateButton(session, button,
+                     icon = "")
+      updateButton(session, whichButton,
+                   icon = icon('check'), style='success') 
+    }
+    
+    #### primp the utility buttons ####
+    #              $("#Aggressive").addClass("primped") ## works!
+    output$JSprimping = renderUI({
+      whichMatched = (DUEenv$utilityChoiceMatch==DUEenv$utilityChoiceNames)
+      evalString = paste0( collapse='\n',
+                           '$("#', DUEenv$utilityChoiceNames, '").',
+                           ifelse(whichMatched, 'addClass', 'removeClass') ,
+                           '("primped"); ')
+      evalString = gsub('"', "'", evalString) # replace all DQ with SQ.
+      print(evalString)
+      div(list(tags$script(evalString)))
+    })
+    primpMyChoice = function(choice){
+      updateButton(session, choice, icon=icon('check'))
+      cat('====> primping ', choice, '\n')
+    }
+    unprimpMyChoice = function(choice){
+      updateButton(session, choice, icon=icon(''))
+      cat('====> UNprimping ', choice, '\n')
+      
+    }
+    
+    updateUtilities = function(TheseUvalues) {
+      DUEenv$U.rt = TheseUvalues$U.rt
+      DUEenv$U.Rt = TheseUvalues$U.Rt
+      DUEenv$U.rT = TheseUvalues$U.rT
+      DUEenv$U.RT = TheseUvalues$U.RT
+      
+      
+      choiceMatch = ""
+      for(choice in names(DUEenv$utilityChoices)) {
+        if(all(TheseUvalues == DUEenv$utilityChoices[[choice]]))
+          primpMyChoice(choiceMatch<-choice)
+        else
+          unprimpMyChoice(choice)
+      }
+      DUEenv$utilityChoiceMatch = choiceMatch
+      
+      cat("updateUtilities: match for ", choiceMatch, '\n')
+    }
+    
+    observe({
+      input$Additive
+      resetButtonStyles('Additive')
+      isolate ({
+        DUEenv$utility = TheseUvalues = 
+          DUEenv$utilityChoices$Additive
+        updateUtilities(TheseUvalues)
+      })
+    })
+    observe({
+      input$Simple
+      resetButtonStyles('Simple')
       DUEenv$utility = TheseUvalues = 
-        DUEenv$utilityChoices$Additive
+        DUEenv$utilityChoices$Simple
       updateUtilities(TheseUvalues)
     })
-  })
-  observe({
-    input$Simple
-    resetButtonStyles('Simple')
-    DUEenv$utility = TheseUvalues = 
-      DUEenv$utilityChoices$Simple
-    updateUtilities(TheseUvalues)
-  })
-  observe({
-    input$Cautious
-    resetButtonStyles('Cautious')
-    DUEenv$utility = TheseUvalues = 
-      DUEenv$utilityChoices$Cautious
-    updateUtilities(TheseUvalues)
-  }) 
-  observe({
-    input$Aggressive
-    resetButtonStyles('Aggressive')
-    DUEenv$utility = TheseUvalues = 
-      DUEenv$utilityChoices$Aggressive
-    updateUtilities(TheseUvalues)
-  })
-  
-  observe({
-    TheseUvalues = data.frame(U.rt = input$U.rt , U.rT = input$U.rT, U.Rt = input$U.Rt, U.RT = input$U.RT)
-    DUEenv$utility = TheseUvalues
-    updateUtilities(TheseUvalues)
+    observe({
+      input$Cautious
+      resetButtonStyles('Cautious')
+      DUEenv$utility = TheseUvalues = 
+        DUEenv$utilityChoices$Cautious
+      updateUtilities(TheseUvalues)
+    }) 
+    observe({
+      input$Aggressive
+      resetButtonStyles('Aggressive')
+      DUEenv$utility = TheseUvalues = 
+        DUEenv$utilityChoices$Aggressive
+      updateUtilities(TheseUvalues)
+    })
     
-    for(button in DUEenv$utilityChoiceNames) {
-      if (all(TheseUvalues == DUEenv$utilityChoices[[button]]))
-        updateButton(session, button, style='success')
-      else
-        updateButton(session, button, style='default')
-    }
-    
-  })
-  ####thisPopFraction input#####
-  #### When changing proportions (fractions), one has to be dependent.
-  ####  Callback needs to check ranges and modify the dependent fraction to add to 1.
-  
-  observeEvent(eventExpr = input$thisPopFraction, handlerExpr = {
-    tryval = input$thisPopFraction
-    sanityCheck = try(isolate(DUEenv$whichFollows == DUEenv$thisPop))
-    if(class(sanityCheck)=='try-error' 
-       | sanityCheck==TRUE){
-      isolate(
-        if(DUEenv$nPops >1) {
-          newWhichFollows = ifelse(input$thisPop==1, DUEenv$nPops, input$thisPop - 1 )
-          updateNumericInput(session, 'whichFollows', value=newWhichFollows)
-          DUEenv$whichFollows = newWhichFollows
-        }
-      )
-    }
-    #source('shiny.entrybox.popFraction.f.R', local = TRUE)
-    #	cat("entrybox.popFraction.f: Callback call: ", sys.call(), "\n")
-    popFractionTemp = as.numeric(tryval) 
-    badtryval<-(
-      is.na(popFractionTemp ) | (popFractionTemp < 0) 
-      | ((DUEenv$nPops > 1) 
-         & popFractionTemp > 1 + DUEenv$proportions[DUEenv$whichFollows])
-    ) 
-    if ( ! badtryval){
-      isolate({
-        proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
-        DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
-        proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
-        cat("proportionDifference = ", proportionDifference, "\n")
-        cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
-        if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
-          DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
-        } else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)){
-          DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] <-
-            DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] * (1 - DUEenv$proportions[DUEenv$thisPop])/sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop])
-        } else {  #### all others are zero
-          if(DUEenv$nPops == 1)
-            DUEenv$proportions[1] <- 1.0
-          else if (DUEenv$thisPop == 1)
-            DUEenv$proportions[2] <- 1 - DUEenv$proportions[1]
-          else
-            DUEenv$proportions[1] <- 1 - DUEenv$proportions[DUEenv$thisPop]
-        }
-      })
-    }
-  })
-  ####nPops input#####
-  observeEvent(input$nPops,  {
-    nPopsTemp=as.integer(input$nPops)
-    if (!is.null(input$nPops))
-      isolate({
-        if(nPopsTemp < DUEenv$nPops) {
-          DUEenv$proportions = DUEenv$proportions[1:nPopsTemp]/sum(DUEenv$proportions[1:nPopsTemp])
-          if(DUEenv$thisPop > nPopsTemp) 
-            DUEenv$thisPop <- nPopsTemp      
-        }      
-        
-        if(nPopsTemp > DUEenv$nPops) {
-          newPopIndices <- (DUEenv$nPops+1):nPopsTemp
-          DUEenv$proportions[newPopIndices] <- 0 
-          for(i in newPopIndices) {
-            DUEenv$the.logmedians.pop[[i]] <- DUEenv$the.logmedians.pop[[DUEenv$nPops]]
-            DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
-            DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
-          }
-        }
-        DUEenv$nPops <- nPopsTemp
-        #source('shiny.entrybox.nPops.f.R', local = TRUE)
-        updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
-        updateNumericInput(session = session, 'thisPop', value = 1, min = 1, max=DUEenv$nPops)
-      })
-  })
-  
-  #### observing thisPop ####
-  
-  observe({
-    # installExprFunction(name = 'thisFunc', expr = {
-    #    isolate(
-    #      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-    #    )
-    thisPop<-input$thisPop
-    sanityCheck = try(isolate(input$whichFollows == thisPop))
-    if(class(sanityCheck)=='try-error' 
-       | sanityCheck==TRUE){
-      isolate(
-        if(DUEenv$nPops >1) {
-          newWhichFollows = ifelse(thisPop==1, DUEenv$nPops, thisPop - 1 )
-          updateNumericInput(session, 'whichFollows', value=newWhichFollows)
-        }
-      )
-    }
-    isolate({
-      cat("thisPop is now ", thisPop, '\n')
-      DUEenv$thisPop = input$thisPop
-      #      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-      updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
-      updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
-      updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
-      updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
-      updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
-      updateNumericInput(session, "thisPopFraction", value = DUEenv$proportions[thisPop])
-      #      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
-    })
-    #invalidateLater(millis=5000)
-    # })
-    # thisFunc()
-  })
-  observeEvent(
-    input$thetaRmedian,
-    {DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
-    }
-  )
-  
-  observe({
-    input$thetaTmedian
-    isolate({
-      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
-    })
-  })
-  
-  observe({
-    input$thetaR.CV
-    isolate({
-      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
-    })
-  })
-  
-  observe({
-    input$thetaT.CV
-    isolate({
-      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
-    })
-  })
-  
-  observe({
-    input$correlation
-    isolate({
-      DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
-    })
-  })
-  
-  observe({
-    DUEenv$refractory= input$probRefractory
-  })
-  
-  observe({
-    DUEenv$Kdeath= input$responseLimitingTox
-  })
-  
-  observe({
-    save_options = options(warn = -1)  #ignore initial warning
-    try({
-      newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
-      if (!is.na(newFavoriteDose)){
-        updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
-        DUEenv$favoriteDose = newFavoriteDose
+    observe({
+      TheseUvalues = data.frame(U.rt = input$U.rt , U.rT = input$U.rT, U.Rt = input$U.Rt, U.RT = input$U.RT)
+      DUEenv$utility = TheseUvalues
+      updateUtilities(TheseUvalues)
+      
+      for(button in DUEenv$utilityChoiceNames) {
+        if (all(TheseUvalues == DUEenv$utilityChoices[[button]]))
+          updateButton(session, button, style='success')
+        else
+          updateButton(session, button, style='default')
       }
-      options(save_options)
+      
     })
-  })
-  
-  observe({
-    DUEenv$favoriteDose = input$favoriteDose
-  })
-  
-  output$linePlot <- renderPlot({
-    plotProbsAndEUsimplified(DUEenv)
-  })
-  
-  output$ThresholdContour<- renderPlot({
-    DUEenv$the.CVs.pop
-    DUEenv$the.correlations.pop
-    cexQ = 4; OKfont = c("sans serif", "bold")
-    isolate(recalculate.means.and.variances(DUEenv))
-    the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
-                                     log10(DUEenv$doseValues)))
-    the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
-      #cat("plotThresholdContour: the.medianThresholds.pop[[i]] = ", DUEenv$the.medianThresholds.pop[[i]], "\n")
-      return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
-                                             sigma = DUEenv$the.variances.pop[[i]]))
+    ####thisPopFraction input#####
+    #### When changing proportions (fractions), one has to be dependent.
+    ####  Callback needs to check ranges and modify the dependent fraction to add to 1.
+    
+    observeEvent(eventExpr = input$thisPopFraction, handlerExpr = {
+      tryval = input$thisPopFraction
+      sanityCheck = try(isolate(DUEenv$whichFollows == DUEenv$thisPop))
+      if(class(sanityCheck)=='try-error' 
+         | sanityCheck==TRUE){
+        isolate(
+          if(DUEenv$nPops >1) {
+            newWhichFollows = ifelse(input$thisPop==1, DUEenv$nPops, input$thisPop - 1 )
+            updateNumericInput(session, 'whichFollows', value=newWhichFollows)
+            DUEenv$whichFollows = newWhichFollows
+          }
+        )
+      }
+      #source('shiny.entrybox.popFraction.f.R', local = TRUE)
+      #	cat("entrybox.popFraction.f: Callback call: ", sys.call(), "\n")
+      popFractionTemp = as.numeric(tryval) 
+      badtryval<-(
+        is.na(popFractionTemp ) | (popFractionTemp < 0) 
+        | ((DUEenv$nPops > 1) 
+           & popFractionTemp > 1 + DUEenv$proportions[DUEenv$whichFollows])
+      ) 
+      if ( ! badtryval){
+        isolate({
+          proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
+          DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
+          proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
+          cat("proportionDifference = ", proportionDifference, "\n")
+          cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
+          if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
+            DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
+          } else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)){
+            DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] <-
+              DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] * (1 - DUEenv$proportions[DUEenv$thisPop])/sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop])
+          } else {  #### all others are zero
+            if(DUEenv$nPops == 1)
+              DUEenv$proportions[1] <- 1.0
+            else if (DUEenv$thisPop == 1)
+              DUEenv$proportions[2] <- 1 - DUEenv$proportions[1]
+            else
+              DUEenv$proportions[1] <- 1 - DUEenv$proportions[DUEenv$thisPop]
+          }
+        })
+      }
     })
-    the.dmvnorms = array(the.dmvnorms, dim = c(nrow(the.grid),
-                                               DUEenv$nPops))
-    contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = DUEenv$nDoses)
-    contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
-            xlim = range(DUEenv$doseValues), ylim = range(DUEenv$doseValues),
-            log = "xy", axes = F, xlab="", ylab="")
-    mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2)
-    mtext(side=1, line=2.5, "Threshold of Response", cex=2)
-    DUEenv$parPlotSize.contour <- par("plt")
-    DUEenv$usrCoords.contour <- par("usr")
-    ### vfont works for text but not for axis or title. (ERROR)
-    ### font.main and family work for title, but not for axis.(not an error, just no effect).  HersheySans etc but not Sans or Serif. Or Arial.
-    ### for axis, cex.axis  and font.axis affect the tick values
-    ### for axis, cex.lab  and font.lab do NOT affect the labels 
-    ###  This system stinks & is so poorly documented!
-    axis(1, at = with(DUEenv, doseTicks),
-         cex.axis=1.0) #, cex.lab=3)
-    #font.axis=2, font.lab=2, family="Arial")
-    axis(2, at = with(DUEenv, doseTicks),
-         cex.axis=1.0) # cex.lab=3)
-    #font.axis=4, font.lab=2, family="HersheySans")
-    #title(main = plot.title, cex.main = 1.5, col.main = "blue")
-    #font.main=4, family="HersheySerif")
-    ###  Works for title() not for axis().
-    abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
-    drawQuadrants()
-    for (iPop in 1:DUEenv$nPops)
-      text(DUEenv$the.medianThresholds.pop[[iPop]][1],
-           DUEenv$the.medianThresholds.pop[[iPop]][2],
-           as.character(iPop), font=4,
-           cex = 5, col = "black")
-  })
-  
-  ####Saving interesting parameters####
-  
-  loadModal <- function(failed = FALSE) {
-    modalDialog(
-      selectInput(inputId = 'chooseFile', 
-                  label = 'Choose a file', 
-                  choices = dir('.', pattern = 'DUE.*rdata')),
-      verbatimTextOutput('READMEoutput'),
-      footer = tagList(
-        modalButton(label = "Cancel"),
-        actionButton(inputId = "ok", label = "OK")
+    ####nPops input#####
+    observeEvent(input$nPops,  {
+      nPopsTemp=as.integer(input$nPops)
+      if (!is.null(input$nPops))
+        isolate({
+          if(nPopsTemp < DUEenv$nPops) {
+            DUEenv$proportions = DUEenv$proportions[1:nPopsTemp]/sum(DUEenv$proportions[1:nPopsTemp])
+            if(DUEenv$thisPop > nPopsTemp) 
+              DUEenv$thisPop <- nPopsTemp      
+          }      
+          
+          if(nPopsTemp > DUEenv$nPops) {
+            newPopIndices <- (DUEenv$nPops+1):nPopsTemp
+            DUEenv$proportions[newPopIndices] <- 0 
+            for(i in newPopIndices) {
+              DUEenv$the.logmedians.pop[[i]] <- DUEenv$the.logmedians.pop[[DUEenv$nPops]]
+              DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
+              DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
+            }
+          }
+          DUEenv$nPops <- nPopsTemp
+          #source('shiny.entrybox.nPops.f.R', local = TRUE)
+          updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
+          updateNumericInput(session = session, 'thisPop', value = 1, min = 1, max=DUEenv$nPops)
+        })
+    })
+    
+    #### observing thisPop ####
+    
+    observe({
+      # installExprFunction(name = 'thisFunc', expr = {
+      #    isolate(
+      #      cat("ENTERING: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      #    )
+      thisPop<-input$thisPop
+      sanityCheck = try(isolate(input$whichFollows == thisPop))
+      if(class(sanityCheck)=='try-error' 
+         | sanityCheck==TRUE){
+        isolate(
+          if(DUEenv$nPops >1) {
+            newWhichFollows = ifelse(thisPop==1, DUEenv$nPops, thisPop - 1 )
+            updateNumericInput(session, 'whichFollows', value=newWhichFollows)
+          }
+        )
+      }
+      isolate({
+        cat("thisPop is now ", thisPop, '\n')
+        DUEenv$thisPop = input$thisPop
+        #      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+        updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])
+        updateNumericInput(session, "thetaTmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [2])
+        updateNumericInput(session, "thetaR.CV", value = DUEenv$the.CVs.pop[[thisPop]] [1])
+        updateNumericInput(session, "thetaT.CV", value = DUEenv$the.CVs.pop[[thisPop]] [2])
+        updateNumericInput(session, "correlation", value = DUEenv$the.correlations.pop[thisPop])
+        updateNumericInput(session, "thisPopFraction", value = DUEenv$proportions[thisPop])
+        #      cat("AFTER: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
+      })
+      #invalidateLater(millis=5000)
+      # })
+      # thisFunc()
+    })
+    observeEvent(
+      input$thetaRmedian,
+      {DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+      }
+    )
+    
+    observe({
+      input$thetaTmedian
+      isolate({
+        DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+      })
+    })
+    
+    observe({
+      input$thetaR.CV
+      isolate({
+        DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
+      })
+    })
+    
+    observe({
+      input$thetaT.CV
+      isolate({
+        DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
+      })
+    })
+    
+    observe({
+      input$correlation
+      isolate({
+        DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+      })
+    })
+    
+    observe({
+      DUEenv$refractory= input$probRefractory
+    })
+    
+    observe({
+      DUEenv$Kdeath= input$responseLimitingTox
+    })
+    
+    observe({
+      save_options = options(warn = -1)  #ignore initial warning
+      try({
+        newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
+        if (!is.na(newFavoriteDose)){
+          updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
+          DUEenv$favoriteDose = newFavoriteDose
+        }
+        options(save_options)
+      })
+    })
+    
+    observe({
+      DUEenv$favoriteDose = input$favoriteDose
+    })
+    
+    output$linePlot <- renderPlot({
+      plotProbsAndEUsimplified(DUEenv)
+    })
+    
+    output$ThresholdContour<- renderPlot({
+      DUEenv$the.CVs.pop
+      DUEenv$the.correlations.pop
+      cexQ = 4; OKfont = c("sans serif", "bold")
+      isolate(recalculate.means.and.variances(DUEenv))
+      the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
+                                       log10(DUEenv$doseValues)))
+      the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
+        #cat("plotThresholdContour: the.medianThresholds.pop[[i]] = ", DUEenv$the.medianThresholds.pop[[i]], "\n")
+        return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
+                                               sigma = DUEenv$the.variances.pop[[i]]))
+      })
+      the.dmvnorms = array(the.dmvnorms, dim = c(nrow(the.grid),
+                                                 DUEenv$nPops))
+      contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = DUEenv$nDoses)
+      contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
+              xlim = range(DUEenv$doseValues), ylim = range(DUEenv$doseValues),
+              log = "xy", axes = F, xlab="", ylab="")
+      mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2)
+      mtext(side=1, line=2.5, "Threshold of Response", cex=2)
+      DUEenv$parPlotSize.contour <- par("plt")
+      DUEenv$usrCoords.contour <- par("usr")
+      ### vfont works for text but not for axis or title. (ERROR)
+      ### font.main and family work for title, but not for axis.(not an error, just no effect).  HersheySans etc but not Sans or Serif. Or Arial.
+      ### for axis, cex.axis  and font.axis affect the tick values
+      ### for axis, cex.lab  and font.lab do NOT affect the labels 
+      ###  This system stinks & is so poorly documented!
+      axis(1, at = with(DUEenv, doseTicks),
+           cex.axis=1.0) #, cex.lab=3)
+      #font.axis=2, font.lab=2, family="Arial")
+      axis(2, at = with(DUEenv, doseTicks),
+           cex.axis=1.0) # cex.lab=3)
+      #font.axis=4, font.lab=2, family="HersheySans")
+      #title(main = plot.title, cex.main = 1.5, col.main = "blue")
+      #font.main=4, family="HersheySerif")
+      ###  Works for title() not for axis().
+      abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
+      drawQuadrants()
+      for (iPop in 1:DUEenv$nPops)
+        text(DUEenv$the.medianThresholds.pop[[iPop]][1],
+             DUEenv$the.medianThresholds.pop[[iPop]][2],
+             as.character(iPop), font=4,
+             cex = 5, col = "black")
+    })
+    
+    ####Saving interesting parameters####
+    
+    loadModal <- function(failed = FALSE) {
+      modalDialog(
+        selectInput(inputId = 'chooseFile', 
+                    label = 'Choose a file', 
+                    choices = dir('.', pattern = 'DUE.*rdata')),
+        verbatimTextOutput('READMEoutput'),
+        footer = tagList(
+          modalButton(label = "Cancel"),
+          actionButton(inputId = "ok", label = "OK")
+        )
       )
+    }
+    
+    observeEvent(
+      input$load,
+      {
+        showModal(ui = loadModal())
+      }
+    )
+    
+    observeEvent(input$ok, {
+      try({load(input$chooseFile)
+        for (n in names(DUEenv))
+          DUEenv[[n]] = DUEsaving[[n]]
+        removeModal()
+      })
+    })
+    
+    observeEvent(
+      input$openSave, {
+        showModal(modalDialog(
+          textInput(inputId = 'shortName', label = 'Short Description'),
+          textAreaInput(inputId = 'README', label = 'Reason for saving:'),
+          bsButton(inputId = 'saveFile', 'Save file'),
+          title = 'Save current parameter settings'
+        ) )
+      }
+    )
+    
+    observeEvent(
+      input$saveFile,
+      isolate({
+        updateButton(session, 'saveFile', style = 'success')
+        DUEsaving = new.env()
+        for (n in names(DUEenv))
+          DUEsaving[[n]] = DUEenv[[n]]
+        fileName <- paste0('DUEsaved', timestamp(stamp = Sys.time()), input$shortName, '.rdata')
+        # print(fileName)
+        README = input$README
+        save(DUEsaving, README,
+             file = fileName)
+      })
+    )
+    observeEvent(
+      input$chooseFile, 
+      {load(input$chooseFile)
+        if (exists('README'))
+          output$READMEoutput<-renderPrint(README)
+      }
+    )
+    observeEvent(
+      input$doseComparison,
+      {showModal(
+        modalDialog(
+          fluidRow(
+            column(3, 
+                   h5('Optimal Dose')
+            ),
+            column(3, 
+                   h5('Dose at 33% Toxicity Prob')
+            )
+          ),
+          fluidRow(
+            column(3,
+                   verbatimTextOutput('optimalDoseValue')
+                   #output$optimalDoseValue<-renderPrint(the point of intersection between the dotted black line and EU line)
+            ),
+            column(3,
+                   verbatimTextOutput('oneThirdDoseValue'))
+            #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
+          )
+        )
+      )
+      }
     )
   }
   
-  observeEvent(
-    input$load,
-    {
-      showModal(ui = loadModal())
-    }
-  )
+  shinyApp(ui = ui, server = server)
   
-  observeEvent(input$ok, {
-    try({load(input$chooseFile)
-      for (n in names(DUEenv))
-        DUEenv[[n]] = DUEsaving[[n]]
-      removeModal()
-    })
-  })
-  
-  observeEvent(
-    input$openSave, {
-      showModal(modalDialog(
-        textInput(inputId = 'shortName', label = 'Short Description'),
-        textAreaInput(inputId = 'README', label = 'Reason for saving:'),
-        bsButton(inputId = 'saveFile', 'Save file'),
-        title = 'Save current parameter settings'
-      ) )
-    }
-  )
-  
-  observeEvent(
-    input$saveFile,
-    isolate({
-      updateButton(session, 'saveFile', style = 'success')
-      DUEsaving = new.env()
-      for (n in names(DUEenv))
-        DUEsaving[[n]] = DUEenv[[n]]
-      fileName <- paste0('DUEsaved', timestamp(stamp = Sys.time()), input$shortName, '.rdata')
-      # print(fileName)
-      README = input$README
-      save(DUEsaving, README,
-           file = fileName)
-    })
-  )
-  observeEvent(
-    input$chooseFile, 
-    {load(input$chooseFile)
-      if (exists('README'))
-      output$READMEoutput<-renderPrint(README)
-    }
-  )
-}
-shinyApp(ui = ui, server = server)
