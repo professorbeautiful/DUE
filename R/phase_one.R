@@ -28,3 +28,45 @@ phase_one_exact = function(PrTox = c(.1,.2,.3,.4), N1=3,N2=3, MaxGo1 = 0, MinSto
   result = cbind(pr_enter_tier, pr_Go_1, pr_Term_1, pr_Go_2, pr_stop_at)
   return(result)
 }
+
+
+phase_one_simulated = function(PrTox = c(.1,.2,.3,.4), N1=3,N2=3, MaxGo1 = 0, MinStop1 = 2, MaxToxGo = 1) {
+  notDone = TRUE
+  level = 1
+  result = rep('NA', length(PrTox))
+  while(notDone) {
+    tox1 = rbinom(n = 1, size = N1, prob = PrTox[level])
+    if(tox1 <= MaxGo1) 
+      result[level] = 'escalate'
+    else if(tox1 >= MinStop1)
+      result[level] = 'MTDreached_1'
+    else {
+      tox2 = rbinom(n = 1, size = N2, prob = PrTox[level])
+      if(tox1 + tox2 <= MaxToxGo) 
+        result[level] = 'escalate'
+      else 
+        result[level] = 'MTDreached_2'
+    }
+    if(result[level]=='escalate') {
+      if(level==length(PrTox)) {
+        trialresult = 'no MTD'
+        break
+      }
+      else
+        level = level + 1
+    }
+    else { # MTD reached
+      trialresult = paste('MTD at ', level)
+      break
+    }
+  }
+  return(list(results=result, trialresult=trialresult))
+}
+  
+sum(print(phase_one_exact()) [, 'pr_stop_at'] )
+    
+NREPS = 50000
+reps = lapply(1:NREPS, function(ignoreMe) phase_one_simulated())
+table(sapply(reps, '[[', 'trialresult'))/NREPS
+c(phase_one_exact() [, 'pr_stop_at'], 1 - sum((phase_one_exact()) [, 'pr_stop_at'] ) )
+###  Very close.
