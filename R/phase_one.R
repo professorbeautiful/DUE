@@ -1,8 +1,10 @@
+# See  EurosarcBayes::freq_binom_two_bryantday_twostage
+
 phase_one_exact = function(PrTox = c(.1,.2,.3,.4), N1=3,N2=3, MaxGo1 = 0, MinStop1 = 2, MaxToxGo = 1) {
   pr_stop_at = pr_enter_tier = pr_Go_1 = pr_Go_2 = pr_Term_1 = rep(NA, length(PrTox));
   level=1 ;
   pr_enter_tier[level]=1; 
-  for ( level in 2:length(PrTox)){
+  for ( level in 1:length(PrTox)){
     pr_Go_1[level] = pbinom(q = MaxGo1, size = N1, prob = PrTox[level]);
       # Pr(continue to the next cohort after the first half of the cohort | enter tier)
     pr_Term_1[level] = 1 - pbinom(MinStop1-1, N1, PrTox[level]);
