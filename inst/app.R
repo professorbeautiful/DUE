@@ -654,7 +654,8 @@ server <- function(input, output, session) {
            ,thetaTmedian='the.medianThresholds.pop',
            inputName)
   }
-  observeEvent(input$ok, {
+  observeEvent(input$ok, 
+               priority = 1, {
     try({
       load(input$chooseFile)   ### Will pull in DUEsaving and README
       for (n in names(DUEenv))
