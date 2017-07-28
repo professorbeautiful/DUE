@@ -657,8 +657,8 @@ server <- function(input, output, session) {
   observeEvent(input$ok, {
     try({
       load(input$chooseFile)   ### Will pull in DUEsaving and README
-      for (n in names(DUEenv))
-        DUEenv[[n]] = DUEsaving[[n]]
+      # for (n in names(DUEenv))
+      #   DUEenv[[n]] = DUEsaving[[n]]
       for(inputName in strsplit(
         "favoriteDose nPops thisPop thisPopFraction probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT whichFollows"
         , split=" ")[[1]] ) {
