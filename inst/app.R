@@ -644,7 +644,7 @@ server <- function(input, output, session) {
   load('nameMap.rdata')
   parName = function(inputName) {
     switch(EXPR = inputName,
-           thisPopFraction='proportion'
+           thisPopFraction='proportions'
            ,probRefractory='refractory'
            ,responseLimitingTox='Kdeath'
            ,correlation='the.correlations.pop'
