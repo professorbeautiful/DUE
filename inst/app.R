@@ -667,30 +667,30 @@ server <- function(input, output, session) {
     )
     }
   )
-  # observeEvent(
-  #   input$changeAxes, 
-  #   {showModal(
-  #     modalDialog(
-  #       div(style = 'text-align:center', 
-  #           h4('Customize your dose strategy:')),
-  #       fluidRow(
-  #         style = 'text-align:center', column(4, offset = 4,
-  #                                             numericInput('doseMin', "Dose minimum", value = 0)
-  #         )
-  #       ),
-  #       fluidRow(style = "text-align:center", 
-  #                column(4, offset = 4,
-  #                       numericInput('doseMax', 'Dose maximum', value = 1000)
-  #                )
-  #       ),
-  #       fluidRow(style = "text-align:center",
-  #                column(4, offset = 4,
-  #                       numericInput('doseIncrements', 'Dose increments', value = 50)
-  #                )
-  #       )
-  #     )
-  #   )
-  #   }
+  observeEvent(
+    input$changeAxes,
+    {showModal(
+      modalDialog(
+        div(style = 'text-align:center',
+            h4('Customize your dose strategy:')),
+        fluidRow(
+          style = 'text-align:center', column(4, offset = 4,
+                                              numericInput('doseMin', "Dose minimum", value = min(DUEenv$doseTicks))
+          )
+        ),
+        fluidRow(style = "text-align:center",
+                 column(4, offset = 4,
+                        numericInput('doseMax', 'Dose maximum', value = max(DUEenv$doseTicks))
+                 )
+        ),
+        fluidRow(style = "text-align:center",
+                 column(4, offset = 4,
+                        numericInput('nIncrements', 'Number of increments', value = 7)
+                 )
+        )
+      )
+    )
+    }
   )
 }
 
