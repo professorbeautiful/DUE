@@ -636,14 +636,44 @@ server <- function(input, output, session) {
     }
   )
   
+  #### Loading parameter data ####
+  load('nameMap.rdata')
+  parName = function(inputName) {
+    switch(EXPR = inputName,
+           thisPopFraction='proportion'
+           ,probRefractory='refractory'
+           ,responseLimitingTox='Kdeath'
+           ,correlation='the.correlations.pop'
+           ,thetaR.CV='the.CVs.pop'
+           ,thetaRmedian='the.medianThresholds.pop'
+           ,thetaT.CV='the.CVs.pop'
+           ,thetaTmedian='the.medianThresholds.pop',
+           inputName)
+  }
   observeEvent(input$ok, {
-    try({load(input$chooseFile)
+    try({
+      load(input$chooseFile)
       for (n in names(DUEenv))
         DUEenv[[n]] = DUEsaving[[n]]
+      for(inputName in strsplit(
+        "favoriteDose nPops thisPop thisPopFraction probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT whichFollows"
+        , split=" ")[[1]] ) {
+        tryResult = try( {
+          parValue = DUEsaving[[parName(inputName)]]
+          if(length(parValue) == 1)
+            updateNumericInput(session, inputName, value=parValue)
+          else
+            updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+        })
+        cat(inputName, " ", ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
+      }
+      # DUEenv[['thisPop']] = 1
+      # updateNumericInput(session, 'thisPop', value=1)
       removeModal()
     })
   })
   
+  #### saving parameter data ####
   observeEvent(
     input$openSave, {
       showModal(modalDialog(
