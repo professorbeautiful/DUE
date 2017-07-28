@@ -658,6 +658,8 @@ server <- function(input, output, session) {
                priority = 1, {
     try({
       load(input$chooseFile)   ### Will pull in DUEsaving and README
+      DUEsaving[['thisPop']] = 1   # input$thisPop
+      DUEsaving[['whichFollows']] = 2
       for (n in names(DUEenv))
         DUEenv[[n]] = DUEsaving[[n]]
       for(inputName in strsplit(
