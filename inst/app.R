@@ -789,7 +789,7 @@ server <- function(input, output, session) {
                             tagAppendAttributes(style="text-size:larger",
                                                 tableOutput('phase1Results')),
                             hr(),
-                            h2('Probability of stopping'),
+                            h2('Probability of stopping ("pr_stop_at")'),
                             plotOutput('phase1plot'),
                             footer = tagList(
                               modalButton(label = "Cancel")
