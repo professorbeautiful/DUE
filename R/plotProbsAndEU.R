@@ -23,7 +23,9 @@ calculate.probabilities.allDoses <- function( DUEenv) {
   DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$sevenprobs["T",]-DUEenv$MTDtoxicity)<=0])
 }
 
-plotProbsAndEUsimplified <- function( DUEenv) {
+####Code for app.R starts here####
+
+plotProbsAndEUsimplified <- function(DUEenv) {
   calculate.probabilities.allDoses(DUEenv)
   cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convertEU <- function(x, isEU=TRUE) {
