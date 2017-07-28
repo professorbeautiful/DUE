@@ -342,8 +342,12 @@ server <- function(input, output, session) {
       else
         unprimpMyChoice(choice)
     }
-    # DUEenv$utilityChoiceMatch = choiceMatch
-    
+    ##### DUEenv$utilityChoiceMatch = choiceMatch  ####
+    DUEenv$utilityChoiceMatch = choiceMatch
+    # This line makes the box-primping work, 
+    #  AND causes the initial plots to load,
+    #  but partially breaks the Load button loading?
+    # Not clear now.
     cat("updateUtilities: match for ", choiceMatch, '\n')
   }
   
@@ -652,7 +656,7 @@ server <- function(input, output, session) {
   }
   observeEvent(input$ok, {
     try({
-      load(input$chooseFile)
+      load(input$chooseFile)   ### Will pull in DUEsaving and README
       for (n in names(DUEenv))
         DUEenv[[n]] = DUEsaving[[n]]
       for(inputName in strsplit(
