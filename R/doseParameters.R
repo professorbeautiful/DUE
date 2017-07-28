@@ -30,7 +30,7 @@ function (minDose, maxDose, nDoses, nDoseTicks, favoriteDose,
 	print(doseTicks)
 	returnvalue = c(minDose, maxDose, nDoses, nDoseTicks, favoriteDose)
 	names(returnvalue) = c("minDose", "maxDose", "nDoses", "nDoseTicks", "favoriteDose")
-	load.and.replot.images()
+	# load.and.replot.images()
 	return(returnvalue)
 }
 

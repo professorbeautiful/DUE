@@ -33,7 +33,7 @@ plotProbsAndEUsimplified <- function( DUEenv) {
     else x
   }
   plot(DUEenv$doseValues, DUEenv$sevenprobs[1,],type="l",col=0,lwd=1, 
-       xlim=c(10,3500), ylim=c(0,1),
+       xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
   )
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")

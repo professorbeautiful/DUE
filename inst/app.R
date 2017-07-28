@@ -121,7 +121,10 @@ ui <- fluidPage(
                       fluidRow(style = "font-size:large", 
                                bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
                       )
-                    )
+                    ),
+                    hr(),
+                    div(style="background-color:blue",
+                        bsButton(inputId = "phase1ResultButton", "phase1 results"))
                   )
            ),
            column(5, 
@@ -593,10 +596,10 @@ server <- function(input, output, session) {
     ### for axis, cex.axis  and font.axis affect the tick values
     ### for axis, cex.lab  and font.lab do NOT affect the labels 
     ###  This system stinks & is so poorly documented!
-    axis(1, at = with(DUEenv, doseTicks),
+    axis(1, at = DUEenv$doseTicks,
          cex.axis=1.0) #, cex.lab=3)
     #font.axis=2, font.lab=2, family="Arial")
-    axis(2, at = with(DUEenv, doseTicks),
+    axis(2, at = DUEenv$doseTicks,
          cex.axis=1.0) # cex.lab=3)
     #font.axis=4, font.lab=2, family="HersheySans")
     #title(main = plot.title, cex.main = 1.5, col.main = "blue")
@@ -752,6 +755,34 @@ server <- function(input, output, session) {
     )
     }
   )
+  
+  observeEvent(input$phase1ResultButton, {
+    DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
+    doses = DUEenv$phase1Doses
+    toxProbabilities = sapply(log10(doses), 
+                              calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility)
+    DUEenv$phase_one_result = phase_one_exact(PrTox = toxProbabilities)
+    print(DUEenv$phase_one_result )
+    ## standard 3+3 design
+
+  })
+  
+  output$phase1Results = renderTable({
+    DUEenv$phase_one_result
+  })
+  observeEvent(input$phase1Results,
+               showModal(ui = 
+                           modalDialog(easyClose = TRUE, #style="width:4000px",
+                             size="l", #fade=TRUE,
+                             strong("Results of Phase 1 trials using the doses"),
+                             textOutput('phase1Doses'),
+                             hr(),
+                             tableOutput('phase1Results'),
+                             footer = tagList(
+                               actionButton(inputId = "closePhase1Modal", label = "OK")
+                             )
+                           )
+               ) )
 }
 
 shinyApp(ui = ui, server = server)
