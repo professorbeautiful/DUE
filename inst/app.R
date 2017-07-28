@@ -819,23 +819,33 @@ server <- function(input, output, session) {
                  column(4, offset = 4,
                         numericInput('nIncrements', 'Number of increments', value = 7)
                  )
+        ),
+        fluidRow(style = 'text-align:center',
+          bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
         )
       )
     )
     }
   )
   observeEvent(
-    input$minDoseNumeric,
-    {DUEenv$minDose = input$minDoseNumeric}
+    input$closeAxesModal,
+    {
+      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, by = input$nIncrements)
+      removeModal()
+    }
   )
-  observeEvent(
-    input$maxDoseNumeric,
-    {DUEenv$maxDose = input$maxDoseNumeric}
-  )
-  observeEvent(
-    input$nIncrements,
-    {DUEenv$nDoseTicks = input$nIncrements}
-  )
+  # observeEvent(
+  #   input$minDoseNumeric,
+  #   {DUEenv$minDose = input$minDoseNumeric}
+  # )
+  # observeEvent(
+  #   input$maxDoseNumeric,
+  #   {DUEenv$maxDose = input$maxDoseNumeric}
+  # )
+  # observeEvent(
+  #   input$nIncrements,
+  #   {DUEenv$nDoseTicks = input$nIncrements}
+  # )
   output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at)
   })
