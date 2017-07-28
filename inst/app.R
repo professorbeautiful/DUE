@@ -607,19 +607,26 @@ server <- function(input, output, session) {
            cex = 5, col = "black")
   })
   
-  ####Saving interesting parameters####
-  
+  #### loadModal for Select a parameter file.   ####
   loadModal <- function(failed = FALSE) {
-    modalDialog(
-      selectInput(inputId = 'chooseFile', 
-                  label = 'Choose a file', 
-                  choices = dir('.', pattern = 'DUE.*rdata')),
-      verbatimTextOutput('READMEoutput'),
-      footer = tagList(
-        modalButton(label = "Cancel"),
-        actionButton(inputId = "ok", label = "OK")
+    #tagAppendAttributes(#id='myloadModal',
+      modalDialog(#style="width:4000px",
+                  size="l", #fade=TRUE,
+                  strong("README for this selection"),
+                  textOutput('READMEoutput'),
+                  hr(),
+                  selectInput(inputId = 'chooseFile', 
+                              label = 'Select a parameter file', 
+                              choices = dir('.', pattern = 'DUE.*rdata'),
+                              size=40,
+                              width='800px',
+                              selectize=FALSE)
+                  ,
+                  footer = tagList(
+                    modalButton(label = "Cancel"),
+                    actionButton(inputId = "ok", label = "OK")
+                  )
       )
-    )
   }
   
   observeEvent(
@@ -665,11 +672,17 @@ server <- function(input, output, session) {
   )
   observeEvent(
     input$chooseFile, 
-    {load(input$chooseFile)
-      if (exists('README'))
-        output$READMEoutput<-renderPrint(README)
+    {
+      load(input$chooseFile)
+      DUEenv$READMEtext = ifelse(exists('README'), README, "")
+      cat("README is ", DUEenv$READMEtext, '\n')
     }
   )
+  
+  output$READMEoutput<-renderText({
+    DUEenv$READMEtext
+  })
+  
   observeEvent(
     input$doseComparison,
     {showModal(
