@@ -669,7 +669,9 @@ server <- function(input, output, session) {
           else
             updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
         })
-        cat(inputName, " ", ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
+        cat(inputName, " ", parName(inputName), 
+            ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
+        print(parValue)
       }
       removeModal()
     })
