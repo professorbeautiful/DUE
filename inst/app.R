@@ -593,10 +593,10 @@ server <- function(input, output, session) {
     ### for axis, cex.axis  and font.axis affect the tick values
     ### for axis, cex.lab  and font.lab do NOT affect the labels 
     ###  This system stinks & is so poorly documented!
-    axis(1, at = with(DUEenv, doseTicks),
+    axis(1, at = DUEenv$doseTicks,
          cex.axis=1.0) #, cex.lab=3)
     #font.axis=2, font.lab=2, family="Arial")
-    axis(2, at = with(DUEenv, doseTicks),
+    axis(2, at = DUEenv$doseTicks,
          cex.axis=1.0) # cex.lab=3)
     #font.axis=4, font.lab=2, family="HersheySans")
     #title(main = plot.title, cex.main = 1.5, col.main = "blue")
