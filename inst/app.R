@@ -128,8 +128,10 @@ ui <- fluidPage(
                       )
                     ),
                     hr(),
-                    div(style="background-color:blue",
+                    #### phase1ResultButton ####
+                    div(style=paste0("background-color:", "red"),
                         bsButton(inputId = "phase1ResultButton", "phase1 results"))
+                  
                   )
            ),
            column(5, 
@@ -573,7 +575,7 @@ server <- function(input, output, session) {
   output$linePlot <- renderPlot({
     plotProbsAndEUsimplified(DUEenv)
   })
-  
+  ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot({
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
@@ -764,31 +766,39 @@ server <- function(input, output, session) {
   observeEvent(input$phase1ResultButton, {
     DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
     doses = DUEenv$phase1Doses
+    print(doses)
     toxProbabilities = sapply(log10(doses), 
-                              calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility)
-    DUEenv$phase_one_result = phase_one_exact(PrTox = toxProbabilities)
+                              calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
+                              ) ['T', ]
+    DUEenv$phase_one_result = 
+      data.frame(doses=doses,
+                 round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
+      )
     print(DUEenv$phase_one_result )
     ## standard 3+3 design
-
+    
   })
   
+  #### phase1Results ####
   output$phase1Results = renderTable({
     DUEenv$phase_one_result
   })
-  observeEvent(input$phase1Results,
+  observeEvent(list(input$phase1ResultButton),
                showModal(ui = 
-                           modalDialog(easyClose = TRUE, #style="width:4000px",
-                             size="l", #fade=TRUE,
-                             strong("Results of Phase 1 trials using the doses"),
-                             textOutput('phase1Doses'),
-                             hr(),
-                             tableOutput('phase1Results'),
-                             footer = tagList(
-                               actionButton(inputId = "closePhase1Modal", label = "OK")
-                             )
+                           modalDialog(easyClose = TRUE, 
+                                       size="l", 
+                                       strong("Results of Phase 1 trials using the doses"),
+                                       textOutput('phase1Doses'),
+                                       hr(),
+                                       tableOutput('phase1Results'),
+                                       plotOutput('phase1plot'),
+                                       footer = tagList(
+                                         actionButton(inputId = "closePhase1Modal", label = "OK")
+                                       )
                            )
-               ) )
-
+               ) 
+  )
+  ####Changing axes#####
   observeEvent(
     input$changeAxes,
     {showModal(
@@ -815,7 +825,7 @@ server <- function(input, output, session) {
     }
   )
   observeEvent(
-    input$minDoseNumeric, 
+    input$minDoseNumeric,
     {DUEenv$minDose = input$minDoseNumeric}
   )
   observeEvent(
@@ -823,10 +833,12 @@ server <- function(input, output, session) {
     {DUEenv$maxDose = input$maxDoseNumeric}
   )
   observeEvent(
-    input$nIncrements, 
+    input$nIncrements,
     {DUEenv$nDoseTicks = input$nIncrements}
   )
-  
+  output$phase1plot = renderPlot({
+    plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at)
+  })
 }
 
 shinyApp(ui = ui, server = server)
