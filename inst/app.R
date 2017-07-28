@@ -46,6 +46,11 @@ ui <- fluidPage(
                   ),
                   fluidRow(
                     plotOutput("ThresholdContour", click = 'click_threshold')), 
+                  fluidRow(style = "font-size:medium", 
+                           column(2, 
+                                  bsButton("changeAxes", "Change axes", size = 'medium')
+                           )
+                  ),
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
@@ -661,6 +666,31 @@ server <- function(input, output, session) {
       )
     )
     }
+  )
+  # observeEvent(
+  #   input$changeAxes, 
+  #   {showModal(
+  #     modalDialog(
+  #       div(style = 'text-align:center', 
+  #           h4('Customize your dose strategy:')),
+  #       fluidRow(
+  #         style = 'text-align:center', column(4, offset = 4,
+  #                                             numericInput('doseMin', "Dose minimum", value = 0)
+  #         )
+  #       ),
+  #       fluidRow(style = "text-align:center", 
+  #                column(4, offset = 4,
+  #                       numericInput('doseMax', 'Dose maximum', value = 1000)
+  #                )
+  #       ),
+  #       fluidRow(style = "text-align:center",
+  #                column(4, offset = 4,
+  #                       numericInput('doseIncrements', 'Dose increments', value = 50)
+  #                )
+  #       )
+  #     )
+  #   )
+  #   }
   )
 }
 
