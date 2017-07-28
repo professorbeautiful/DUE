@@ -657,17 +657,24 @@ server <- function(input, output, session) {
   observeEvent(input$ok, {
     try({
       load(input$chooseFile)   ### Will pull in DUEsaving and README
-      # for (n in names(DUEenv))
-      #   DUEenv[[n]] = DUEsaving[[n]]
+      for (n in names(DUEenv))
+        DUEenv[[n]] = DUEsaving[[n]]
       for(inputName in strsplit(
-        "favoriteDose nPops thisPop thisPopFraction probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT whichFollows"
+        "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
         , split=" ")[[1]] ) {
         tryResult = try( {
           parValue = DUEsaving[[parName(inputName)]]
           if(length(parValue) == 1)
             updateNumericInput(session, inputName, value=parValue)
-          else
-            updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+          else {
+            if(is.list(parValue)) { ### 
+              RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
+              updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
+                                 [ RorT ])
+            }
+            else 
+              updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+          }
         })
         cat(inputName, " ", parName(inputName), 
             ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
