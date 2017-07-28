@@ -667,8 +667,6 @@ server <- function(input, output, session) {
         })
         cat(inputName, " ", ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
       }
-      # DUEenv[['thisPop']] = 1
-      # updateNumericInput(session, 'thisPop', value=1)
       removeModal()
     })
   })
