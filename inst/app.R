@@ -48,6 +48,11 @@ ui <- fluidPage(
                   ),
                   fluidRow(
                     plotOutput("ThresholdContour", click = 'click_threshold')), 
+                  fluidRow(style = "font-size:medium", 
+                           column(2, 
+                                  bsButton("changeAxes", "Change axes", size = 'medium')
+                           )
+                  ),
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
@@ -755,7 +760,7 @@ server <- function(input, output, session) {
     )
     }
   )
-  
+
   observeEvent(input$phase1ResultButton, {
     DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
     doses = DUEenv$phase1Doses
@@ -783,6 +788,45 @@ server <- function(input, output, session) {
                              )
                            )
                ) )
+
+  observeEvent(
+    input$changeAxes,
+    {showModal(
+      modalDialog(
+        div(style = 'text-align:center',
+            h4('Customize your dose strategy:')),
+        fluidRow(
+          style = 'text-align:center', column(4, offset = 4,
+                                              numericInput('minDoseNumeric', "Dose minimum", value = min(DUEenv$doseTicks))
+          )
+        ),
+        fluidRow(style = "text-align:center",
+                 column(4, offset = 4,
+                        numericInput('maxDoseNumeric', 'Dose maximum', value = max(DUEenv$doseTicks))
+                 )
+        ),
+        fluidRow(style = "text-align:center",
+                 column(4, offset = 4,
+                        numericInput('nIncrements', 'Number of increments', value = 7)
+                 )
+        )
+      )
+    )
+    }
+  )
+  observeEvent(
+    input$minDoseNumeric, 
+    {DUEenv$minDose = input$minDoseNumeric}
+  )
+  observeEvent(
+    input$maxDoseNumeric,
+    {DUEenv$maxDose = input$maxDoseNumeric}
+  )
+  observeEvent(
+    input$nIncrements, 
+    {DUEenv$nDoseTicks = input$nIncrements}
+  )
+  
 }
 
 shinyApp(ui = ui, server = server)
