@@ -48,11 +48,6 @@ ui <- fluidPage(
                   ),
                   fluidRow(
                     plotOutput("ThresholdContour", click = 'click_threshold')), 
-                  fluidRow(style = "font-size:medium", 
-                           column(2, 
-                                  bsButton("changeAxes", "Change axes", size = 'medium')
-                           )
-                  ),
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
@@ -108,7 +103,26 @@ ui <- fluidPage(
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'selected dose', value=100, min=0)),
                     br(), br(),
-                    
+                    fluidRow(style = "font-size:medium", 
+                             column(2, 
+                                    bsButton("changeAxes", "Change axes", size = 'medium')
+                             )
+                    ),
+                    br(),
+                    div(
+                      fluidRow(style = "font-size:large", 
+                               bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
+                      )
+                    ),
+                    br(),
+                    ####phase1resultbutton####
+                    div(style=paste0("background-color:", "red"),
+                        bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
+                        )
+                    ),
+                    br(), 
+                    hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
+                    br(),
                     ####Save/load inputs####
                     div(
                       fluidRow(style = "font-size:large",
@@ -120,18 +134,7 @@ ui <- fluidPage(
                       fluidRow(style =  "font-size:large",
                                bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
                       )
-                    ),
-                    br(),
-                    div(
-                      fluidRow(style = "font-size:large", 
-                               bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
-                      )
-                    ),
-                    hr(),
-                    #### phase1ResultButton ####
-                    div(style=paste0("background-color:", "red"),
-                        bsButton(inputId = "phase1ResultButton", "phase1 results"))
-                  
+                    )
                   )
            ),
            column(5, 
