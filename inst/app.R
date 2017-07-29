@@ -777,37 +777,40 @@ server <- function(input, output, session) {
   output$phase1Results = renderTable({
     DUEenv$phase_one_result
   })
-  observeEvent(input$phase1ResultButton > 0, {
-    DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
-    doses = DUEenv$phase1Doses
-    print(doses)
-    toxProbabilities = sapply(log10(doses), 
-                              calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
-                              ) ['T', ]
-    DUEenv$phase_one_result = 
-      data.frame(doses=doses,
-                 round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
-      )
-    print(DUEenv$phase_one_result )
-    ## standard 3+3 design
-    showModal(ui = 
-                modalDialog(easyClose = TRUE, 
-                            size="l", 
-                            h2("Results of Phase 1 trials using the doses"),
-                            textOutput('phase1Doses'),
-                            hr(),
-                            tagAppendAttributes(style="text-size:larger",
-                                                tableOutput('phase1Results')),
-                            hr(),
-                            h2('Probability of stopping ("pr_stop_at"'),
-                            plotOutput('phase1plot'),
-                            footer = tagList(
-                              modalButton(label = "Cancel")
-                            )
-                )
-    ) 
+  
+  observeEvent(input$phase1ResultButton, {
+    if(input$phase1ResultButton > 0){
+      DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
+      doses = DUEenv$phase1Doses
+      print(doses)
+      toxProbabilities = sapply(log10(doses), 
+                                calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
+      ) ['T', ]
+      DUEenv$phase_one_result = 
+        data.frame(doses=doses,
+                   round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
+        )
+      print(DUEenv$phase_one_result )
+      ## standard 3+3 design
+      showModal(ui = 
+                  modalDialog(easyClose = TRUE, 
+                              size="l", 
+                              h2("Results of Phase 1 trials using the doses"),
+                              textOutput('phase1Doses'),
+                              hr(),
+                              tagAppendAttributes(style="text-size:larger",
+                                                  tableOutput('phase1Results')),
+                              hr(),
+                              h2('Probability of stopping ("pr_stop_at"'),
+                              plotOutput('phase1plot'),
+                              footer = tagList(
+                                modalButton(label = "Cancel")
+                              )
+                  )
+      ) 
+    }
   })
-  output$phase1plot = renderPlot({
+output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
          log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
     axis(side = 1, at = DUEenv$phase_one_result$doses, lwd = 2)
