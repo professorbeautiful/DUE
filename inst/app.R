@@ -140,40 +140,86 @@ ui <- fluidPage(
                              linethicknessButtons)
                   , plotOutput("linePlot"),
                   div(
-                    br(),
+                    br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
-                      fluidRow(style="text-align:center; color:blue; font-size:medium",
-                               column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
-                               column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
-                      ),
                       fluidRow(style='background-color:lightgrey;',
                                fluidRow(
-                                 column(4, h2("t", style="text-align:center;")),
-                                 column(2, h2("T", style="text-align:center;")),
-                                 column(width = 4, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                 column(4, 
+                                        #        style="text-align:center; vertical-align:center;",                                        ,
+                                        br(),br(),br(),br(),
+                                        h3("Enter custom values here:", style="vertical-align:center;
+                                            color:blue")),
+                                 column(2, HTML("&nbsp;")),
+                                 column(6,
+                                        fluidRow(
+                                          column(offset=1, 5, h2("R", style="text-align:center;")),
+                                          column(6, h2("r", style="text-align:center;"))
+                                        ),
+                                        fluidRow(
+                                          #style='background-color:lightgrey;',
+                                          column(2, br(), h2("t")),
+                                          column(4,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.Rt", "U.Rt", value=1),
+                                                   style=paste0('color:', rt.outcome.colors['Rt'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   ))),
+                                          column(4, offset=1,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.rt", "U.rt", value=0),
+                                                   style=paste0('color:', rt.outcome.colors['rt'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   )))
+                                        ),
+                                        fluidRow(
+                                          #style='background-color:lightgrey;',
+                                          column(2, br(), h2("T")),
+                                          column(4,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.RT", "U.RT", value=0),
+                                                   style=paste0('color:', rt.outcome.colors['RT'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   ))),
+                                          column(4, offset=1,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.rT", "U.rT", value=-1),
+                                                   style=paste0('color:', rt.outcome.colors['rT'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   )))
+                                        )
+                                 )
+                               
+                               )
+                               ,
+                               hr(), br(), 
+                               fluidRow(
+                                 column(4, h3("or choose a preset option here", style="color:blue")
+                                 ), 
+                                 column(2, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                                 )
-                               ),
-                               fluidRow(
-                                 column(1, h2("r")),
-                                 column(2,
+                                 ),
+                                 column(4, style=paste0('color:', rt.outcome.colors['RT']),
+                                        #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
-                                          numericInput(inputId="U.rt", "U.rt", value=0),
-                                          style=paste0('color:', rt.outcome.colors['rt']))),
-                                 column(2, offset=1,
+                                          bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                       '; color:white;')),
+                                        #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                         tagAppendAttributes(
-                                          numericInput(inputId="U.rT", "U.rT", value=-1),
-                                          style=paste0('color:', rt.outcome.colors['rT']))),
+                                          bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                       '; color:white;'))
+                                 ),
                                  # we could also try transform: rotate(7deg);
-                                 column(4, style=paste0('color:', rt.outcome.colors['rT']),
-                                        br(),
-                                        span(style=paste0('color:', rt.outcome.colors['rT']),
-                                             '⬅︎') ,
-                                        # LEFTWARDS ARROW
+                                 column(2, style=paste0('color:', rt.outcome.colors['rT']),
+                                        # span(style=paste0('color:', rt.outcome.colors['rT']),
+                                        #      '⬅︎') ,
+                                        # # LEFTWARDS ARROW
                                         # Unicode: U+2190, UTF-8: E2 86 90,
                                         tagAppendAttributes(
                                           bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
@@ -181,43 +227,15 @@ ui <- fluidPage(
                                                        '; color:white;')
                                         )
                                  )
-                               )
+                               ),
+                               br()
                       )
-                    ),
-                    div(style='background-color:lightgrey;', ""),
-                    fluidRow(style='background-color:lightgrey;',
-                             column(1, h2("R")),
-                             column(2,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.Rt", "U.Rt", value=1),
-                                      style=paste0('color:', rt.outcome.colors['Rt']))),
-                             column(2, offset=1,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.RT", "U.RT", value=0),
-                                      style=paste0('color:', rt.outcome.colors['RT']))
-                             )
-                             ,
-                             column(4, style=paste0('color:', rt.outcome.colors['RT']),
-                                    span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;')),
-                                    br(),
-                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;'))
-                             )
                     )
                   )
            )
   )
 )
-
-
-
+                  
 ####Server starts here####
 
 server <- function(input, output, session) {
@@ -762,22 +780,6 @@ server <- function(input, output, session) {
     )
     }
   )
-
-  observeEvent(input$phase1ResultButton, {
-    DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
-    doses = DUEenv$phase1Doses
-    print(doses)
-    toxProbabilities = sapply(log10(doses), 
-                              calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
-                              ) ['T', ]
-    DUEenv$phase_one_result = 
-      data.frame(doses=doses,
-                 round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
-      )
-    print(DUEenv$phase_one_result )
-    ## standard 3+3 design
-    
-  })
   
   #### phase1Results ####
   output$phase1Results = renderTable({
@@ -799,6 +801,49 @@ server <- function(input, output, session) {
                ) 
   )
   ####Customizing axes#####
+  observeEvent(input$phase1ResultButton, {
+    if(input$phase1ResultButton > 0){
+      DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
+      doses = DUEenv$phase1Doses
+      print(doses)
+      toxProbabilities = sapply(log10(doses), 
+                                calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
+      ) ['T', ]
+      DUEenv$phase_one_result = 
+        data.frame(doses=doses,
+                   round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
+        )
+      print(DUEenv$phase_one_result )
+      ## standard 3+3 design
+      showModal(ui = 
+                  modalDialog(easyClose = TRUE, 
+                              size="l", 
+                              h2("Results of Phase 1 trials using the doses"),
+                              textOutput('phase1Doses'),
+                              hr(),
+                              tagAppendAttributes(style="text-size:larger",
+                                                  tableOutput('phase1Results')),
+                              hr(),
+                              h2('Probability of stopping ("pr_stop_at"'),
+                              plotOutput('phase1plot'),
+                              footer = tagList(
+                                modalButton(label = "Cancel")
+                              )
+                  )
+      ) 
+    }
+  })
+  output$phase1plot = renderPlot({
+    plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
+         log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
+    axis(side = 1, at = DUEenv$phase_one_result$doses, lwd = 2)
+    mtext('Dose at which trial stops', side = 1, line = 3, cex = 2)
+    axis(side = 2, lwd = 2)
+    mtext('Probability', side = 2, cex = 2, line=3)
+  })
+  
+  
+  ####Changing axes#####
   observeEvent(
     input$changeAxes,
     {showModal(
@@ -821,7 +866,7 @@ server <- function(input, output, session) {
                  )
         ),
         fluidRow(style = 'text-align:center',
-          bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
+                 bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
         )
       )
     )
@@ -830,32 +875,19 @@ server <- function(input, output, session) {
   observeEvent(
     input$closeAxesModal,
     {
-      DUEenv$doseValues = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = DUEenv$nDoses)
-      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
-      # DUEenv$minDose = input$minDoseNumeric
-      # DUEenv$maxDose = input$maxDoseNumeric
-      # DUEenv$nDoseTicks = input$nIncrements
-      # DUEenv$doseValues [1] = input$minDoseNumeric
-      # DUEenv$doseValues [50] = input$maxDoseNumeric
+      DUEenv$minDose = input$minDoseNumeric
+      DUEenv$maxDose = input$maxDoseNumeric
+      DUEenv$nDoseTicks = input$nIncrements
+      # DUEenv$doseValues [[1]] = input$minDoseNumeric
+      # DUEenv$doseValues [[50]] = input$maxDoseNumeric
+      DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
+      #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
+      DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
+      #DUEenv$nDoseTicks = input$nIncrements
       updateButton(session, 'closeAxesModal', style = 'success')
       removeModal()
     }
   )
-  # observeEvent(
-  #   input$minDoseNumeric,
-  #   {DUEenv$minDose = input$minDoseNumeric}
-  # )
-  # observeEvent(
-  #   input$maxDoseNumeric,
-  #   {DUEenv$maxDose = input$maxDoseNumeric}
-  # )
-  # observeEvent(
-  #   input$nIncrements,
-  #   {DUEenv$nDoseTicks = input$nIncrements}
-  # )
-  output$phase1plot = renderPlot({
-    plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at)
-  })
 }
 
 shinyApp(ui = ui, server = server)
