@@ -153,35 +153,43 @@ ui <- fluidPage(
                                  column(2, HTML("&nbsp;")),
                                  column(6,
                                         fluidRow(
-                                          column(6, h2("R", style="text-align:center;")),
+                                          column(offset=1, 5, h2("R", style="text-align:center;")),
                                           column(6, h2("r", style="text-align:center;"))
                                         ),
                                         fluidRow(
                                           #style='background-color:lightgrey;',
-                                          column(2, h2("t")),
+                                          column(2, br(), h2("t")),
                                           column(4,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.Rt", "U.Rt", value=1),
-                                                   style=paste0('color:', rt.outcome.colors['Rt']))),
+                                                   style=paste0('color:', rt.outcome.colors['Rt'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   ))),
                                           column(4, offset=1,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.rt", "U.rt", value=0),
-                                                   style=paste0('color:', rt.outcome.colors['rt'])))
+                                                   style=paste0('color:', rt.outcome.colors['rt'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   )))
                                         ),
                                         fluidRow(
                                           #style='background-color:lightgrey;',
-                                          column(2, h2("T")),
+                                          column(2, br(), h2("T")),
                                           column(4,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.RT", "U.RT", value=0),
-                                                   style=paste0('color:', rt.outcome.colors['RT']))),
+                                                   style=paste0('color:', rt.outcome.colors['RT'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   ))),
                                           column(4, offset=1,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.rT", "U.rT", value=-1),
-                                                   style=paste0('color:', rt.outcome.colors['rT']))
-                                          )
+                                                   style=paste0('color:', rt.outcome.colors['rT'],
+                                                                "; font-style:italic; font-size:200%;"
+                                                   )))
                                         )
                                  )
+                               
                                )
                                ,
                                hr(), br(), 
