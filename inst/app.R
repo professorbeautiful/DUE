@@ -29,7 +29,7 @@ linethicknessButtons =
 
 
 ####UI starts here####
-ui <- fluidPage(
+ui <- fluidPage(title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
   includeCSS('tooltip.css'),
   uiOutput('JSprimping'),
