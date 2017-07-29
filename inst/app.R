@@ -603,6 +603,7 @@ server <- function(input, output, session) {
   })
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot({
+    input$ok  ### Attempt to force the plot.
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
     cexQ = 4; OKfont = c("sans serif", "bold")
