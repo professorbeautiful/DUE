@@ -101,12 +101,12 @@ ui <- fluidPage(
                     # especially the display:flex solution.
                     br(),
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        numericInput('favoriteDose', 'selected dose', value=100, min=0)),
+                        numericInput('favoriteDose', 'Selected dose', value=100, min=0)),
                     br(), br(),
                     fluidRow(style = "font-size:medium", 
-                             column(2, 
+                             #column(2, 
                                     bsButton("changeAxes", "Change axes", size = 'medium')
-                             )
+                             #)
                     ),
                     br(),
                     div(
