@@ -798,7 +798,7 @@ server <- function(input, output, session) {
                            )
                ) 
   )
-  ####Changing axes#####
+  ####Customizing axes#####
   observeEvent(
     input$changeAxes,
     {showModal(
@@ -830,7 +830,14 @@ server <- function(input, output, session) {
   observeEvent(
     input$closeAxesModal,
     {
-      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, by = input$nIncrements)
+      DUEenv$doseValues = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = DUEenv$nDoses)
+      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
+      # DUEenv$minDose = input$minDoseNumeric
+      # DUEenv$maxDose = input$maxDoseNumeric
+      # DUEenv$nDoseTicks = input$nIncrements
+      # DUEenv$doseValues [1] = input$minDoseNumeric
+      # DUEenv$doseValues [50] = input$maxDoseNumeric
+      updateButton(session, 'closeAxesModal', style = 'success')
       removeModal()
     }
   )
