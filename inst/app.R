@@ -153,7 +153,7 @@ ui <- fluidPage(
                                         br(),br(),br(),br(),
                                         h3("Enter custom values here:", style="vertical-align:center;
                                             color:blue")),
-                                 column(2, HTML("&nbsp;")),
+                                 #column(2, HTML("&nbsp;")),
                                  column(6,
                                         fluidRow(
                                           column(offset=1, 5, h2("R", style="text-align:center;")),
@@ -197,17 +197,11 @@ ui <- fluidPage(
                                ,
                                hr(), br(), 
                                fluidRow(
-                                 column(4, h3("or choose a preset option here", style="color:blue")
-                                 ), 
-                                 column(2, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Additive",
-                                                   HTML("Additive<br>R=+1, T=-1")),
-                                          style=paste0('background-color:black; color:white;'))
+                                 column(4, h3("or choose a preset option here:", style="color:blue")
                                  ),
                                  column(4, style=paste0('color:', rt.outcome.colors['RT']),
                                         #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
                                           style=paste0('background-color:', rt.outcome.colors['RT'],
@@ -219,7 +213,7 @@ ui <- fluidPage(
                                                        '; color:white;'))
                                  ),
                                  # we could also try transform: rotate(7deg);
-                                 column(2, style=paste0('color:', rt.outcome.colors['rT']),
+                                 column(1, style=paste0('color:', rt.outcome.colors['rT']),
                                         # span(style=paste0('color:', rt.outcome.colors['rT']),
                                         #      '⬅︎') ,
                                         # # LEFTWARDS ARROW
@@ -229,9 +223,15 @@ ui <- fluidPage(
                                           style=paste0('background-color:', rt.outcome.colors['rT'],
                                                        '; color:white;')
                                         )
-                                 )
-                               ),
-                               br()
+                                 ),
+                                 column(3, #HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                        tagAppendAttributes(
+                                          bsButton(inputId="Additive",
+                                                   HTML("Additive<br>R=+1, T=-1")),
+                                          style=paste0('background-color:black; color:white;'))
+                                 ),
+                                 br(), br()
+                               )
                       )
                     )
                   )
@@ -788,22 +788,7 @@ server <- function(input, output, session) {
   output$phase1Results = renderTable({
     DUEenv$phase_one_result
   })
-  observeEvent(list(input$phase1ResultButton),
-               showModal(ui = 
-                           modalDialog(easyClose = TRUE, 
-                                       size="l", 
-                                       strong("Results of Phase 1 trials using the doses"),
-                                       textOutput('phase1Doses'),
-                                       hr(),
-                                       tableOutput('phase1Results'),
-                                       plotOutput('phase1plot'),
-                                       footer = tagList(
-                                         actionButton(inputId = "closePhase1Modal", label = "OK")
-                                       )
-                           )
-               ) 
-  )
-  ####Customizing axes#####
+  
   observeEvent(input$phase1ResultButton, {
     if(input$phase1ResultButton > 0){
       DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
@@ -836,7 +821,7 @@ server <- function(input, output, session) {
       ) 
     }
   })
-  output$phase1plot = renderPlot({
+output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
          log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
     axis(side = 1, at = DUEenv$phase_one_result$doses, lwd = 2)
@@ -869,7 +854,7 @@ server <- function(input, output, session) {
                  )
         ),
         fluidRow(style = 'text-align:center',
-                 bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
+          bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
         )
       )
     )
@@ -878,19 +863,22 @@ server <- function(input, output, session) {
   observeEvent(
     input$closeAxesModal,
     {
-      DUEenv$minDose = input$minDoseNumeric
-      DUEenv$maxDose = input$maxDoseNumeric
-      DUEenv$nDoseTicks = input$nIncrements
-      # DUEenv$doseValues [[1]] = input$minDoseNumeric
-      # DUEenv$doseValues [[50]] = input$maxDoseNumeric
-      DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
-      #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
-      DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
-      #DUEenv$nDoseTicks = input$nIncrements
-      updateButton(session, 'closeAxesModal', style = 'success')
+      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, by = input$nIncrements)
       removeModal()
     }
   )
+  # observeEvent(
+  #   input$minDoseNumeric,
+  #   {DUEenv$minDose = input$minDoseNumeric}
+  # )
+  # observeEvent(
+  #   input$maxDoseNumeric,
+  #   {DUEenv$maxDose = input$maxDoseNumeric}
+  # )
+  # observeEvent(
+  #   input$nIncrements,
+  #   {DUEenv$nDoseTicks = input$nIncrements}
+  # )
 }
 
 shinyApp(ui = ui, server = server)
