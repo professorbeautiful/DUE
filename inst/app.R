@@ -140,40 +140,78 @@ ui <- fluidPage(
                              linethicknessButtons)
                   , plotOutput("linePlot"),
                   div(
-                    br(),
+                    br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
-                      fluidRow(style="text-align:center; color:blue; font-size:medium",
-                               column(6, strong("Enter custom values below:", style="text-align:center; color:blue")),
-                               column(6, strong("Or choose a preset option", style="text-align:center; color:blue"))
-                      ),
                       fluidRow(style='background-color:lightgrey;',
                                fluidRow(
-                                 column(4, h2("t", style="text-align:center;")),
-                                 column(2, h2("T", style="text-align:center;")),
-                                 column(width = 4, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                 column(4, 
+                                        #        style="text-align:center; vertical-align:center;",                                        ,
+                                        br(),br(),br(),br(),
+                                        h3("Enter custom values here:", style="vertical-align:center;
+                                            color:blue")),
+                                 column(2, HTML("&nbsp;")),
+                                 column(6,
+                                        fluidRow(
+                                          column(6, h2("R", style="text-align:center;")),
+                                          column(6, h2("r", style="text-align:center;"))
+                                        ),
+                                        fluidRow(
+                                          #style='background-color:lightgrey;',
+                                          column(2, h2("t")),
+                                          column(4,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.Rt", "U.Rt", value=1),
+                                                   style=paste0('color:', rt.outcome.colors['Rt']))),
+                                          column(4, offset=1,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.rt", "U.rt", value=0),
+                                                   style=paste0('color:', rt.outcome.colors['rt'])))
+                                        ),
+                                        fluidRow(
+                                          #style='background-color:lightgrey;',
+                                          column(2, h2("T")),
+                                          column(4,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.RT", "U.RT", value=0),
+                                                   style=paste0('color:', rt.outcome.colors['RT']))),
+                                          column(4, offset=1,
+                                                 tagAppendAttributes(
+                                                   numericInput(inputId="U.rT", "U.rT", value=-1),
+                                                   style=paste0('color:', rt.outcome.colors['rT']))
+                                          )
+                                        )
+                                 )
+                               )
+                               ,
+                               hr(), br(), 
+                               fluidRow(
+                                 column(4, h3("or choose a preset option here", style="color:blue")
+                                 ), 
+                                 column(2, HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
-                                 )
-                               ),
-                               fluidRow(
-                                 column(1, h2("r")),
-                                 column(2,
+                                 ),
+                                 column(4, style=paste0('color:', rt.outcome.colors['RT']),
+                                        #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
-                                          numericInput(inputId="U.rt", "U.rt", value=0),
-                                          style=paste0('color:', rt.outcome.colors['rt']))),
-                                 column(2, offset=1,
+                                          bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                       '; color:white;')),
+                                        #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                         tagAppendAttributes(
-                                          numericInput(inputId="U.rT", "U.rT", value=-1),
-                                          style=paste0('color:', rt.outcome.colors['rT']))),
+                                          bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                                       '; color:white;'))
+                                 ),
                                  # we could also try transform: rotate(7deg);
-                                 column(4, style=paste0('color:', rt.outcome.colors['rT']),
-                                        br(),
-                                        span(style=paste0('color:', rt.outcome.colors['rT']),
-                                             '⬅︎') ,
-                                        # LEFTWARDS ARROW
+                                 column(2, style=paste0('color:', rt.outcome.colors['rT']),
+                                        # span(style=paste0('color:', rt.outcome.colors['rT']),
+                                        #      '⬅︎') ,
+                                        # # LEFTWARDS ARROW
                                         # Unicode: U+2190, UTF-8: E2 86 90,
                                         tagAppendAttributes(
                                           bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
@@ -181,43 +219,15 @@ ui <- fluidPage(
                                                        '; color:white;')
                                         )
                                  )
-                               )
+                               ),
+                               br()
                       )
-                    ),
-                    div(style='background-color:lightgrey;', ""),
-                    fluidRow(style='background-color:lightgrey;',
-                             column(1, h2("R")),
-                             column(2,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.Rt", "U.Rt", value=1),
-                                      style=paste0('color:', rt.outcome.colors['Rt']))),
-                             column(2, offset=1,
-                                    tagAppendAttributes(
-                                      numericInput(inputId="U.RT", "U.RT", value=0),
-                                      style=paste0('color:', rt.outcome.colors['RT']))
-                             )
-                             ,
-                             column(4, style=paste0('color:', rt.outcome.colors['RT']),
-                                    span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;')),
-                                    br(),
-                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                                    tagAppendAttributes(
-                                      bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                                      style=paste0('background-color:', rt.outcome.colors['RT'],
-                                                   '; color:white;'))
-                             )
                     )
                   )
            )
   )
 )
-
-
-
+                  
 ####Server starts here####
 
 server <- function(input, output, session) {
@@ -789,7 +799,7 @@ server <- function(input, output, session) {
                             tagAppendAttributes(style="text-size:larger",
                                                 tableOutput('phase1Results')),
                             hr(),
-                            h2('Probability of stopping ("pr_stop_at")'),
+                            h2('Probability of stopping ("pr_stop_at"'),
                             plotOutput('phase1plot'),
                             footer = tagList(
                               modalButton(label = "Cancel")
