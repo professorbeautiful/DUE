@@ -247,7 +247,7 @@ ui <- fluidPage(title = "Dose Utility Explorer",
 ####Server starts here####
 
 server <- function(input, output, session) {
-  try(shinyDebuggingPanel::makeDebuggingPanelOutput(session) )
+  try(shinyDebuggingPanel::makeDebuggingPanelOutput() )
   DUEenv = reactiveValues()
   
   #### In place of setupProbLines(DUEenv) ####
