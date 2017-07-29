@@ -38,6 +38,7 @@ ui <- fluidPage(
                         desc$Date, "  Version = ", desc$Version))),
   shinyDebuggingPanel::withDebuggingPanel() ,
   HTML('<i class="fa fa-check"></i>') , 
+  ####  LEFT SIDE: Contour plots ####
   fluidRow(style='text-align:center',
            column(5, 
                   h2("Joint Prob Density of Thresholds", br(), 
@@ -93,6 +94,7 @@ ui <- fluidPage(
                   )
            )
            , 
+           ####  MIDDLE: Doses and Files ####
            column(1, 
                   div(style=paste0(
                     "border-left:1px solid #000;height:1500px;",
@@ -133,10 +135,13 @@ ui <- fluidPage(
                     div(
                       fluidRow(style =  "font-size:large",
                                bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
-                      )
+                      ),
+                      br(),
+                      uiOutput(outputId = 'lastFileLoaded')
                     )
                   )
            ),
+           ####  RIGHT SIDE: Probabilities and Expected Utility ####
            column(5, 
                   h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
@@ -238,7 +243,7 @@ ui <- fluidPage(
            )
   )
 )
-                  
+
 ####Server starts here####
 
 server <- function(input, output, session) {
@@ -718,6 +723,14 @@ server <- function(input, output, session) {
     })
   })
   
+  output$lastFileLoaded = renderUI({
+    if(!is.null(input$chooseFile)) {
+      div("Last file loaded:",
+          HTML(paste(gsub('##------ | ------##', "<br>", input$chooseFile)))
+      )
+    }
+  })
+    
   #### saving parameter data ####
   observeEvent(
     input$openSave, {
