@@ -604,11 +604,12 @@ server <- function(input, output, session) {
   })
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot({
-    input$ok  ### Attempt to force the plot.
+    input$okLoadedFile  ### Attempt to force the plot.
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
+    ### must isolate the recalculate, or else infinite loop
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
                                      log10(DUEenv$doseValues)))
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
@@ -649,8 +650,8 @@ server <- function(input, output, session) {
            cex = 5, col = "black")
   })
   
-  #### loadModal for Select a parameter file.   ####
-  loadModal <- function(failed = FALSE) {
+  #### loadModalUI for Select a parameter file.   ####
+  loadModalUI <- function(failed = FALSE) {
     #tagAppendAttributes(#id='myloadModal',
     modalDialog(#style="width:4000px",
       size="l", #fade=TRUE,
@@ -666,7 +667,7 @@ server <- function(input, output, session) {
       ,
       footer = tagList(
         modalButton(label = "Cancel"),
-        actionButton(inputId = "ok", label = "OK")
+        actionButton(inputId = "okLoadedFile", label = "OK, load it")
       )
     )
   }
@@ -674,7 +675,7 @@ server <- function(input, output, session) {
   observeEvent(
     input$load,
     {
-      showModal(ui = loadModal())
+      showModal(ui = loadModalUI())
     }
   )
   
@@ -692,7 +693,7 @@ server <- function(input, output, session) {
            ,thetaTmedian='the.medianThresholds.pop',
            inputName)
   }
-  observeEvent(input$ok, 
+  observeEvent(input$okLoadedFile, 
                priority = 1, {
                  try({
                    load(input$chooseFile)   ### Will pull in DUEsaving and README
@@ -703,9 +704,9 @@ server <- function(input, output, session) {
                    for(inputName in strsplit(
                      "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                      , split=" ")[[1]] ) {
+                     parValue = DUEsaving[[parName(inputName)]]
                      tryResult = try( {
-                       parValue = DUEsaving[[parName(inputName)]]
-                       if(length(parValue) == 1)
+                       if(length(parValue) == 1)  ### a single number; but careful, what if nPops=1?
                          updateNumericInput(session, inputName, value=parValue)
                        else {
                          if(is.list(parValue)) { ### 
@@ -719,7 +720,9 @@ server <- function(input, output, session) {
                      })
                      cat(inputName, " ", parName(inputName), 
                          ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
-                     print(parValue)
+                     cat("in DUEsaving\n"); print(parValue)
+                     cat("in DUEenv\n"); print(DUEenv[[parName(inputName)]])
+                     cat("in numeric input\n"); print(input[[inputName]])
                    }
                    removeModal()
                  })
