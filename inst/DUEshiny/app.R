@@ -29,7 +29,8 @@ linethicknessButtons =
 
 
 ####UI starts here####
-ui <- fluidPage(title = "Dose Utility Explorer",
+ui <- fluidPage(
+  title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
   includeCSS('tooltip.css'),
   uiOutput('JSprimping'),
@@ -107,7 +108,7 @@ ui <- fluidPage(title = "Dose Utility Explorer",
                     br(), br(),
                     fluidRow(style = "font-size:medium", 
                              #column(2, 
-                                    bsButton("changeAxes", "Change axes", size = 'medium')
+                             bsButton("changeAxes", "Change axes", size = 'medium')
                              #)
                     ),
                     br(),
@@ -197,7 +198,7 @@ ui <- fluidPage(title = "Dose Utility Explorer",
                                                    )))
                                         )
                                  )
-                               
+                                 
                                )
                                ,
                                hr(), br(), 
@@ -651,23 +652,23 @@ server <- function(input, output, session) {
   #### loadModal for Select a parameter file.   ####
   loadModal <- function(failed = FALSE) {
     #tagAppendAttributes(#id='myloadModal',
-      modalDialog(#style="width:4000px",
-                  size="l", #fade=TRUE,
-                  strong("README for this selection"),
-                  textOutput('READMEoutput'),
-                  hr(),
-                  selectInput(inputId = 'chooseFile', 
-                              label = 'Select a parameter file', 
-                              choices = dir('.', pattern = 'DUE.*rdata'),
-                              size=40,
-                              width='800px',
-                              selectize=FALSE)
-                  ,
-                  footer = tagList(
-                    modalButton(label = "Cancel"),
-                    actionButton(inputId = "ok", label = "OK")
-                  )
+    modalDialog(#style="width:4000px",
+      size="l", #fade=TRUE,
+      strong("README for this selection"),
+      textOutput('READMEoutput'),
+      hr(),
+      selectInput(inputId = 'chooseFile', 
+                  label = 'Select a parameter file', 
+                  choices = dir('.', pattern = 'DUE.*rdata'),
+                  size=40,
+                  width='800px',
+                  selectize=FALSE)
+      ,
+      footer = tagList(
+        modalButton(label = "Cancel"),
+        actionButton(inputId = "ok", label = "OK")
       )
+    )
   }
   
   observeEvent(
@@ -693,36 +694,36 @@ server <- function(input, output, session) {
   }
   observeEvent(input$ok, 
                priority = 1, {
-    try({
-      load(input$chooseFile)   ### Will pull in DUEsaving and README
-      DUEsaving[['thisPop']] = 1   # input$thisPop
-      DUEsaving[['whichFollows']] = 2
-      for (n in names(DUEenv))
-        DUEenv[[n]] = DUEsaving[[n]]
-      for(inputName in strsplit(
-        "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
-        , split=" ")[[1]] ) {
-        tryResult = try( {
-          parValue = DUEsaving[[parName(inputName)]]
-          if(length(parValue) == 1)
-            updateNumericInput(session, inputName, value=parValue)
-          else {
-            if(is.list(parValue)) { ### 
-              RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
-              updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
-                                 [ RorT ])
-            }
-            else 
-              updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
-          }
-        })
-        cat(inputName, " ", parName(inputName), 
-            ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
-        print(parValue)
-      }
-      removeModal()
-    })
-  })
+                 try({
+                   load(input$chooseFile)   ### Will pull in DUEsaving and README
+                   DUEsaving[['thisPop']] = 1   # input$thisPop
+                   DUEsaving[['whichFollows']] = 2
+                   for (n in names(DUEenv))
+                     DUEenv[[n]] = DUEsaving[[n]]
+                   for(inputName in strsplit(
+                     "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
+                     , split=" ")[[1]] ) {
+                     tryResult = try( {
+                       parValue = DUEsaving[[parName(inputName)]]
+                       if(length(parValue) == 1)
+                         updateNumericInput(session, inputName, value=parValue)
+                       else {
+                         if(is.list(parValue)) { ### 
+                           RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
+                           updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
+                                              [ RorT ])
+                         }
+                         else 
+                           updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+                       }
+                     })
+                     cat(inputName, " ", parName(inputName), 
+                         ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
+                     print(parValue)
+                   }
+                   removeModal()
+                 })
+               })
   
   output$lastFileLoaded = renderUI({
     if(!is.null(input$chooseFile)) {
@@ -731,7 +732,7 @@ server <- function(input, output, session) {
       )
     }
   })
-    
+  
   #### saving parameter data ####
   observeEvent(
     input$openSave, {
@@ -791,7 +792,7 @@ server <- function(input, output, session) {
           ),
           column(3,
                  verbatimTextOutput('oneThirdDoseValue'))
-                #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
+          #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
         )
       )
     )
@@ -835,7 +836,7 @@ server <- function(input, output, session) {
       ) 
     }
   })
-output$phase1plot = renderPlot({
+  output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
          log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
     axis(side = 1, at = DUEenv$phase_one_result$doses, lwd = 2)
@@ -868,29 +869,29 @@ output$phase1plot = renderPlot({
                  )
         ),
         fluidRow(style = 'text-align:center',
-          bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
+                 bsButton(inputId = 'closeAxesModal', label = 'Update axes', size = 'medium')
         )
       )
     )
     }
   )
-observeEvent(
-  input$closeAxesModal,
-  {
-    DUEenv$minDose = input$minDoseNumeric
-    DUEenv$maxDose = input$maxDoseNumeric
-    DUEenv$nDoseTicks = input$nIncrements
-    # DUEenv$doseValues [[1]] = input$minDoseNumeric
-    # DUEenv$doseValues [[50]] = input$maxDoseNumeric
-    DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
-    #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
-    DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
-    #DUEenv$nDoseTicks = input$nIncrements
-    updateButton(session, 'closeAxesModal', style = 'success')
-    removeModal()
-  }
-)
-# observeEvent(
+  observeEvent(
+    input$closeAxesModal,
+    {
+      DUEenv$minDose = input$minDoseNumeric
+      DUEenv$maxDose = input$maxDoseNumeric
+      DUEenv$nDoseTicks = input$nIncrements
+      # DUEenv$doseValues [[1]] = input$minDoseNumeric
+      # DUEenv$doseValues [[50]] = input$maxDoseNumeric
+      DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
+      #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
+      DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
+      #DUEenv$nDoseTicks = input$nIncrements
+      updateButton(session, 'closeAxesModal', style = 'success')
+      removeModal()
+    }
+  )
+  # observeEvent(
   #   input$minDoseNumeric,
   #   {DUEenv$minDose = input$minDoseNumeric}
   # )
