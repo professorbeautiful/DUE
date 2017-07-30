@@ -44,13 +44,20 @@ plotProbsAndEUsimplified <- function(DUEenv) {
   if(browseIf(message="Just finished plot-- not yet done title-- check sevenprobs[1,]")) browser()
   # plot.title="Probabilities and Expected Utility, E(U)"
   # title(main=plot.title, cex.main=2, col.main="blue")
+  axis(side = 1, at = DUEenv$doseTicks)
   mtext(side=1, line=2.5, "Dose", cex=2)
   axis(2, at=c(0, 0.33, 0.6, 0.8, 1))
   mtext(side=2, line=2.5, "Probability", cex=2)
-  axis(side = 1, at = DUEenv$doseTicks)
-  axis(side = 4, lwd=1, line=-5, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
+
+  axis(side = 4, lwd=1, line=0, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
        col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1) )
-  text(1600, 0.50, "  E(Utility)", srt=90, cex=2, col=rt.outcome.colors['EU']) 
+  # Note: the "at" values are relative to axis 1, the labels are correct for EU.
+  #xrange = par("usr")[1:2],
+  # pushout = 1.02
+  # EUlabelPosition = exp(log(xrange[1]) + (log(xrange[2])-log(xrange[1])*1.02) )
+  mtext(side = 4, line = -1, text = "  E(Utility)", #outer=TRUE,
+        xpd = TRUE, srt=90, cex=2, col=rt.outcome.colors['EU'],
+        ylbias = -0.5)  ### default ylbias = 0.2. Has no effect.
   
   linetypes = c(rep(1,6), 1, 1)
   if(!is.null(DUEenv$probLineWidths)) {
