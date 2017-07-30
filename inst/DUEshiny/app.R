@@ -891,18 +891,6 @@ server <- function(input, output, session) {
       removeModal()
     }
   )
-  # observeEvent(
-  #   input$minDoseNumeric,
-  #   {DUEenv$minDose = input$minDoseNumeric}
-  # )
-  # observeEvent(
-  #   input$maxDoseNumeric,
-  #   {DUEenv$maxDose = input$maxDoseNumeric}
-  # )
-  # observeEvent(
-  #   input$nIncrements,
-  #   {DUEenv$nDoseTicks = input$nIncrements}
-  # )
 }
 
 shinyApp(ui = ui, server = server)
