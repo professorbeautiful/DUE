@@ -306,7 +306,7 @@ server <- function(input, output, session) {
   linethicknessObserving= function(label)  { 
     inputId = paste0('linethickness_', label)
     input[[inputId]]  ## for reactivity
-    cat("observed click on linethicknessButton ", label, "\n")
+    #cat("observed click on linethicknessButton ", label, "\n")
     isolate({
       whichWidth = which(
         DUEenv$probLineWidths[label]==probLineWidthChoices)
@@ -359,11 +359,11 @@ server <- function(input, output, session) {
   })
   primpMyChoice = function(choice){
     updateButton(session, choice)
-    cat('====> primping ', choice, '\n')
+    #cat('====> primping ', choice, '\n')
   }
   unprimpMyChoice = function(choice){
     updateButton(session, choice)
-    cat('====> UNprimping ', choice, '\n')
+    #cat('====> UNprimping ', choice, '\n')
   }
   
   updateUtilities = function(TheseUvalues) {
@@ -384,7 +384,7 @@ server <- function(input, output, session) {
     #  AND causes the initial plots to load,
     #  but partially breaks the Load button loading?
     # Not clear now.
-    cat("updateUtilities: match for ", choiceMatch, '\n')
+    #cat("updateUtilities: match for ", choiceMatch, '\n')
   }
   
   observe({
