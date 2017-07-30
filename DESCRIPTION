@@ -9,4 +9,5 @@ Description: Interactive environment for exploring relationships between priors,
 Depends: utils, mvtnorm, tcltk, tkrplot, shinyDebuggingPanel
 Suggests: shiny, shinyBS
 License: GPL-2
+Copyright: Roger Day, Marie Gerges, Meihua Wang
 LazyLoad: yes
