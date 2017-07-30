@@ -604,7 +604,7 @@ server <- function(input, output, session) {
   })
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot({
-    input$okLoadedFile  ### Attempt to force the plot.
+    input$okWillLoadSelectedFile  ### Attempt to force the plot.
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
     cexQ = 4; OKfont = c("sans serif", "bold")
@@ -653,6 +653,8 @@ server <- function(input, output, session) {
   #### loadModalUI for Select a parameter file.   ####
   loadModalUI <- function(failed = FALSE) {
     #tagAppendAttributes(#id='myloadModal',
+    fileChoices = dir('.', pattern = 'DUE.*rdata')
+    previouslySelected = isolate(DUEenv$lastFileLoaded)  # not the number but the actual string.
     modalDialog(#style="width:4000px",
       size="l", #fade=TRUE,
       strong("README for this selection"),
@@ -660,14 +662,15 @@ server <- function(input, output, session) {
       hr(),
       selectInput(inputId = 'chooseFile', 
                   label = 'Select a parameter file', 
-                  choices = dir('.', pattern = 'DUE.*rdata'),
+                  choices = fileChoices,
+                  selected = previouslySelected,
                   size=40,
                   width='800px',
                   selectize=FALSE)
       ,
       footer = tagList(
         modalButton(label = "Cancel"),
-        actionButton(inputId = "okLoadedFile", label = "OK, load it")
+        actionButton(inputId = "okWillLoadSelectedFile", label = "OK, load it")
       )
     )
   }
@@ -693,9 +696,9 @@ server <- function(input, output, session) {
            ,thetaTmedian='the.medianThresholds.pop',
            inputName)
   }
-  observeEvent(input$okLoadedFile, 
-               priority = 1, {
-                 try({
+  observeEvent(input$okWillLoadSelectedFile, 
+               priority = 0, { 
+                 #try({
                    load(input$chooseFile)   ### Will pull in DUEsaving and README
                    DUEsaving[['thisPop']] = 1   # input$thisPop
                    DUEsaving[['whichFollows']] = 2
@@ -724,16 +727,21 @@ server <- function(input, output, session) {
                      cat("in DUEenv\n"); print(DUEenv[[parName(inputName)]])
                      cat("in numeric input\n"); print(input[[inputName]])
                    }
+                   shiny:::.getReactiveEnvironment()$flush()
                    removeModal()
-                 })
+                 #})
                })
   
   output$lastFileLoaded = renderUI({
-    if(!is.null(input$chooseFile)) {
-      div("Last file loaded:",
-          HTML(paste(gsub('##------ | ------##', "<br>", input$chooseFile)))
-      )
-    }
+    input$okWillLoadSelectedFile   ### the trigger.
+    DUEenv$lastFileLoaded = isolate(input$chooseFile)
+    isolate({
+      if(!is.null(input$chooseFile)) {
+        div("Last file loaded:",
+            HTML(paste(gsub('##------ | ------##', "<br>", DUEenv$lastFileLoaded)))
+        )
+      }
+    })
   })
   
   #### saving parameter data ####
