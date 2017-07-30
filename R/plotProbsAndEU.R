@@ -38,6 +38,7 @@ plotProbsAndEUsimplified <- function(DUEenv) {
        xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
   )
+  
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")
   DUEenv$usrCoords.ProbsAndEU <- par("usr")
   if(browseIf(message="Just finished plot-- not yet done title-- check sevenprobs[1,]")) browser()

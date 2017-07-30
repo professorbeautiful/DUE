@@ -874,14 +874,23 @@ output$phase1plot = renderPlot({
     )
     }
   )
-  observeEvent(
-    input$closeAxesModal,
-    {
-      DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, by = input$nIncrements)
-      removeModal()
-    }
-  )
-  # observeEvent(
+observeEvent(
+  input$closeAxesModal,
+  {
+    DUEenv$minDose = input$minDoseNumeric
+    DUEenv$maxDose = input$maxDoseNumeric
+    DUEenv$nDoseTicks = input$nIncrements
+    # DUEenv$doseValues [[1]] = input$minDoseNumeric
+    # DUEenv$doseValues [[50]] = input$maxDoseNumeric
+    DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
+    #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
+    DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
+    #DUEenv$nDoseTicks = input$nIncrements
+    updateButton(session, 'closeAxesModal', style = 'success')
+    removeModal()
+  }
+)
+# observeEvent(
   #   input$minDoseNumeric,
   #   {DUEenv$minDose = input$minDoseNumeric}
   # )
