@@ -682,7 +682,7 @@ server <- function(input, output, session) {
     }
   )
   
-  #### Loading parameter data ####
+  #### Loading parameter <---> input name map ####
   load('nameMap.rdata')
   parName = function(inputName) {
     switch(EXPR = inputName,
@@ -696,45 +696,58 @@ server <- function(input, output, session) {
            ,thetaTmedian='the.medianThresholds.pop',
            inputName)
   }
+  
+  #### okWillLoadSelectedFile ####
   observeEvent(input$okWillLoadSelectedFile, 
                priority = 0, { 
                  #try({
-                   load(input$chooseFile)   ### Will pull in DUEsaving and README
-                   DUEsaving[['thisPop']] = 1   # input$thisPop
-                   DUEsaving[['whichFollows']] = 2
-                   for (n in names(DUEenv))
-                     DUEenv[[n]] = DUEsaving[[n]]
-                   for(inputName in strsplit(
-                     "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
-                     , split=" ")[[1]] ) {
-                     parValue = DUEsaving[[parName(inputName)]]
-                     tryResult = try( {
-                       if(length(parValue) == 1)  ### a single number; but careful, what if nPops=1?
-                         updateNumericInput(session, inputName, value=parValue)
-                       else {
-                         if(is.list(parValue)) { ### 
-                           RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
-                           updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
-                                              [ RorT ])
-                         }
-                         else 
-                           updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+                 load(input$chooseFile)   ### Will pull in DUEsaving and README
+                 DUEsaving[['thisPop']] = 1   # input$thisPop
+                 DUEsaving[['whichFollows']] = 2
+                 for (n in names(DUEenv))
+                   DUEenv[[n]] = DUEsaving[[n]]
+                 for(inputName in strsplit(
+                   "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
+                   , split=" ")[[1]] ) {
+                   parValue = DUEsaving[[parName(inputName)]]
+                   misMatch = FALSE
+                   tryResult = try( {
+                     if(length(parValue) == 1)  { ### a single number; but careful, what if nPops=1?
+                       updateNumericInput(session, inputName, value=parValue)
+                       if(input[[inputName]] != parValue) misMatch = TRUE
+                     }
+                     else {
+                       if(is.list(parValue)) { ### 
+                         RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
+                         updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
+                                            [ RorT ])
+                         if(input[[inputName]] != parValue[[DUEsaving$thisPop]] 
+                            [ RorT ])
+                           misMatch = TRUE
                        }
-                     })
-                     cat(inputName, " ", parName(inputName), 
+                       else {
+                         updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
+                         if(input[[inputName]] != parValue[DUEsaving$thisPop]) misMatch = TRUE
+                       }
+                     }
+                   })
+                   if (misMatch) {
+                     cat("====== misMatch ", inputName, " ", parName(inputName), 
                          ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
                      cat("in DUEsaving\n"); print(parValue)
                      cat("in DUEenv\n"); print(DUEenv[[parName(inputName)]])
                      cat("in numeric input\n"); print(input[[inputName]])
                    }
-                   shiny:::.getReactiveEnvironment()$flush()
-                   removeModal()
-                 #})
+                 }
+                 removeModal()
+                 shiny:::.getReactiveEnvironment()$flush()
+                 showModal(ui = loadModalUI())
+                 removeModal()
+                 DUEenv$lastFileLoaded = isolate(input$chooseFile)
                })
-  
+
   output$lastFileLoaded = renderUI({
     input$okWillLoadSelectedFile   ### the trigger.
-    DUEenv$lastFileLoaded = isolate(input$chooseFile)
     isolate({
       if(!is.null(input$chooseFile)) {
         div("Last file loaded:",
