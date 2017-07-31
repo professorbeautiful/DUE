@@ -653,7 +653,7 @@ server <- function(input, output, session) {
   #### loadModalUI for Select a parameter file.   ####
   loadModalUI <- function(failed = FALSE) {
     #tagAppendAttributes(#id='myloadModal',
-    fileChoices = dir('.', pattern = 'DUE.*rdata')
+    fileChoices = rev(dir('.', pattern = 'DUE.*rdata'))
     previouslySelected = isolate(DUEenv$lastFileLoaded)  # not the number but the actual string.
     modalDialog(#style="width:4000px",
       size="l", #fade=TRUE,
