@@ -1,11 +1,11 @@
-.installFromGithub = 
-function(user='professorbeautiful', project=basename(getwd()), ...) 
+.installFromGithub =
+function(user='professorbeautiful', project=basename(getwd()), ...)
   devtools::install_github(paste0(user, "/", project), ...)
 
 
-.deploy = 
-function(app=c("DUEshiny"), user='professorbeautiful', project=basename(getwd()),
-         reInstall=TRUE){
+.deploy =
+function(app=dir('inst')[1], user='professorbeautiful', project=basename(getwd()),
+         reInstall=TRUE, ...){
   ## TODO: first check that the html files are created committed and pushed.
   packageWD = getwd()
   if(reInstall)
@@ -19,18 +19,19 @@ function(app=c("DUEshiny"), user='professorbeautiful', project=basename(getwd())
     cat("wd changing to ", getwd(), "\n")
     tryCatch({
       require("shinyapps")
-      deployApp()
+      deployApp(...)
     },
     finally={
-      cat("shinyapps::showLogs(appDir = 'inst/", app, "')\n")
-      setwd(packageWD)}
+      cat(paste0("shinyapps::showLogs(appPath = 'inst/", app,"')"), '\n')
+      setwd(packageWD)
+    }
     )
   }
 }
 
 
-.runDeployed = 
+.runDeployed =
 function(app="shinyElicit"){
   system("open https://trials.shinyapps.io/" %&% app)
-  cat("shinyapps::showLogs(appDir = 'inst/" %&% app %&% "')\n")
+  cat(paste0("shinyapps::showLogs(appPath = 'inst/", app,"')"), '\n')
 }
