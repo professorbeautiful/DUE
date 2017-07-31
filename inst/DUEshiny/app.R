@@ -696,51 +696,59 @@ server <- function(input, output, session) {
            ,thetaTmedian='the.medianThresholds.pop',
            inputName)
   }
-  
+
   #### okWillLoadSelectedFile ####
   observeEvent(input$okWillLoadSelectedFile, 
-               priority = 0, { 
+               priority = 1, { 
                  #try({
                  load(input$chooseFile)   ### Will pull in DUEsaving and README
                  DUEsaving[['thisPop']] = 1   # input$thisPop
                  DUEsaving[['whichFollows']] = 2
                  for (n in names(DUEenv))
                    DUEenv[[n]] = DUEsaving[[n]]
+                 misMatches = character(0)
                  for(inputName in strsplit(
                    "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                    , split=" ")[[1]] ) {
-                   parValue = DUEsaving[[parName(inputName)]]
+                   cat("--", inputName, '\n')
+                   parValue = DUEenv[[parName(inputName)]]
                    misMatch = FALSE
                    tryResult = try( {
                      if(length(parValue) == 1)  { ### a single number; but careful, what if nPops=1?
                        updateNumericInput(session, inputName, value=parValue)
+                       shiny:::.getReactiveEnvironment()$flush()
                        if(input[[inputName]] != parValue) misMatch = TRUE
                      }
                      else {
                        if(is.list(parValue)) { ### 
                          RorT = match(substr(inputName, 1, 6),  c('thetaR', 'thetaT'))
-                         updateNumericInput(session, inputName, value=parValue [[DUEsaving$thisPop]] 
+                         updateNumericInput(session, inputName, value=parValue [[DUEenv$thisPop]] 
                                             [ RorT ])
-                         if(input[[inputName]] != parValue[[DUEsaving$thisPop]] 
-                            [ RorT ])
+                         shiny:::.getReactiveEnvironment()$flush()
+                         if(input[[inputName]] != parValue[[DUEenv$thisPop]] [ RorT ])
                            misMatch = TRUE
                        }
                        else {
-                         updateNumericInput(session, inputName, value=parValue [DUEsaving$thisPop])
-                         if(input[[inputName]] != parValue[DUEsaving$thisPop]) misMatch = TRUE
+                         updateNumericInput(session, inputName, value=parValue [DUEenv$thisPop])
+                         shiny:::.getReactiveEnvironment()$flush()
+                         if(input[[inputName]] != parValue[DUEenv$thisPop]) 
+                           misMatch = TRUE
                        }
                      }
-                   })
-                   if (misMatch) {
-                     cat("====== misMatch ", inputName, " ", parName(inputName), 
-                         ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
-                     cat("in DUEsaving\n"); print(parValue)
-                     cat("in DUEenv\n"); print(DUEenv[[parName(inputName)]])
-                     cat("in numeric input\n"); print(input[[inputName]])
-                   }
-                 }
+                     if(misMatch) misMatches = c(misMatches, misMatch)
+                   })  #  end of "try"
+                   shiny:::.getReactiveEnvironment()$flush()
+                   DUEenv$misMatches = misMatches
+                   # if (misMatch) {
+                   #   cat("====== misMatch ", inputName, " ", parName(inputName), 
+                   #       ifelse(class(tryResult) == 'try-error', "Ooops", "OK") , "\n")
+                   #   # cat("in DUEsaving\n"); print(parValue)
+                   #   cat("in DUEenv\n"); print(DUEenv[[parName(inputName)]])
+                   #   cat("in numeric input\n"); print(input[[inputName]])
+                   # }
+                   
+                 }  # end of "for" loop
                  removeModal()
-                 shiny:::.getReactiveEnvironment()$flush()
                  showModal(ui = loadModalUI())
                  removeModal()
                  DUEenv$lastFileLoaded = isolate(input$chooseFile)
