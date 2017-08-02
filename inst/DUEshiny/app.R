@@ -92,19 +92,14 @@ ui <- fluidPage(
                            column(6,
                                   numericInput(inputId = "responseLimitingTox", 
                                                HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6))
-                  ),
-                  #### testing file selection ####
-                  bsButton(inputId = "loadthatfile", label = 'loadthatfile'),
-                  selectInput(inputId = 'selectingAFile', label="selectingAFile",
-                              choices = rev(dir('.', pattern = 'DUE.*rdata'))
                   )
            )
            , 
            ####  MIDDLE: Doses and Files ####
            column(1, 
                   div(style=paste0(
-                    "border-left:1px solid #000;height:1500px;",
-                    "border-right:1px solid #000;height:1500px;"),
+                    "border-left:1px solid #000;",
+                    "border-right:1px solid #000;"),  ### height:1500px;
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
                     br(),
@@ -137,10 +132,11 @@ ui <- fluidPage(
                                bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
                       )
                     ),
-                    fluidRow(style =  "font-size:large",
-                             bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
-                    ),
-                    uiOutput(outputId = 'lastFileLoaded')
+                    # fluidRow(style =  "font-size:large",
+                    #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
+                    # ),
+                    uiOutput(outputId = 'lastFileLoaded'),
+                    hr()
                   )
            ),
            ####  RIGHT SIDE: Probabilities and Expected Utility ####
@@ -243,6 +239,34 @@ ui <- fluidPage(
                     )
                   )
            )
+  ),
+  hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
+  fluidRow(
+    style="text-align:center; background-color:light-grey; text-size:largest; font-style: italic; font-weight: bold;",
+    #### testing file selection ####
+    column(1, offset=3,  ### because text-align:center is not working
+           bsButton(inputId = "loadthatfile", 
+                    label = HTML('<font size=30 >Load the file selected below</font>'))
+    )
+  ),
+  fluidRow(
+    style="background-color:light-grey; text-size:larger; font-style: italic; font-weight: bold;",
+    column(4, offset=3, style="background-color:light-grey; ",
+           selectInput(inputId = 'selectingAFile', label="Parameter files to select from",
+                       choices = rev(dir('.', pattern = 'DUE.*rdata')),
+                       selected = NULL,
+                       size=40,
+                       width='800px',
+                       selectize=FALSE
+           )
+    ),
+    column(4, 
+           div(style="font-size: 20; background-color:lightgrey",
+               "README for this selection"),
+           hr(),
+           div(style="font-size: 30; background-color:canaryyellow",
+               textOutput('READMEoutput'))
+    )
   )
 )
 
@@ -659,12 +683,12 @@ server <- function(input, output, session) {
     modalDialog(#style="width:4000px",
       size="l", #fade=TRUE,
       strong("README for this selection"),
-      textOutput('READMEoutput'),
+      #textOutput('READMEoutput'),
       hr(),
       selectInput(inputId = 'chooseFile', 
                   label = 'Select a parameter file', 
                   choices = fileChoices,
-                  selected = previouslySelected,
+                  selected = NULL, #### initially, no pre-selected row. Maybe 1 is ok? ####
                   size=40,
                   width='800px',
                   selectize=FALSE)
@@ -764,10 +788,13 @@ server <- function(input, output, session) {
                  }  # end of "for" loop
                  DUEenv$lastFileLoaded = isolate(input$chooseFile)
                })
-
+  
+  
   output$lastFileLoaded = renderUI({
     input$okWillLoadSelectedFile   ### the trigger.
     isolate({
+      #### not the file row number but the actual string. ####
+      updateSelectInput(session, 'selectingAFile', selected = DUEenv$lastFileLoaded)
       if(!is.null(input$chooseFile)) {
         div("Last file loaded:",
             HTML(paste(gsub('##------ | ------##', "<br>", DUEenv$lastFileLoaded)))
@@ -804,9 +831,9 @@ server <- function(input, output, session) {
     })
   )
   observeEvent(
-    input$chooseFile, 
+    input$selectingAFile, 
     {
-      load(input$chooseFile)
+      load(input$selectingAFile)
       DUEenv$READMEtext = ifelse(exists('README'), README, "")
       cat("README is ", DUEenv$READMEtext, '\n')
     }
@@ -814,6 +841,7 @@ server <- function(input, output, session) {
   
   output$READMEoutput<-renderText({
     DUEenv$READMEtext
+    #HTML(paste0("<font size=14> ", DUEenv$READMEtext, " </font"))
   })
   
   observeEvent(
