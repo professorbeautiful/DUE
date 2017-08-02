@@ -118,26 +118,19 @@ ui <- fluidPage(
                       )
                     ),
                     br(),
+                    hr(),
+                    br(),
                     ####phase1resultbutton####
                     div(style=paste0("background-color:", "red"),
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
                     ),
-                    br(), 
-                    hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
-                    br(),
-                    ####Save/load inputs####
-                    div(
-                      fluidRow(style = "font-size:large",
-                               bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
-                      )
-                    ),
+                    hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
                     # fluidRow(style =  "font-size:large",
                     #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
                     # ),
-                    uiOutput(outputId = 'lastFileLoaded'),
-                    hr()
-                  )
+                  )#,
+                 # uiOutput(outputId = 'lastFileLoaded')
            ),
            ####  RIGHT SIDE: Probabilities and Expected Utility ####
            column(5, 
@@ -243,19 +236,25 @@ ui <- fluidPage(
   hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   fluidRow(
     style="text-align:center; background-color:light-grey; text-size:largest; font-style: italic; font-weight: bold;",
-    #### testing file selection ####
-    column(1, offset=3,  ### because text-align:center is not working
+    ####Save/load inputs####
+    column(1, offset=1,
+               bsButton(inputId = "openSave", 
+                        label = HTML("<font size=30 >Save parameters</font>"))# , size = 'medium')
+    ),
+    ####  file selection ####
+    column(1, offset=1,  ### because text-align:center is not working
            bsButton(inputId = "loadthatfile", 
                     label = HTML('<font size=30 >Load the file selected below</font>'))
     )
   ),
   fluidRow(
     style="background-color:light-grey; text-size:larger; font-style: italic; font-weight: bold;",
-    column(4, offset=3, style="background-color:light-grey; ",
+    column(2, offset=1, uiOutput(outputId = 'lastFileLoaded') ),
+    column(4,  style="background-color:light-grey; ",
            selectInput(inputId = 'selectingAFile', label="Parameter files to select from",
                        choices = rev(dir('.', pattern = 'DUE.*rdata')),
                        selected = NULL,
-                       size=40,
+                       size=15,
                        width='800px',
                        selectize=FALSE
            )
@@ -791,15 +790,18 @@ server <- function(input, output, session) {
   
   
   output$lastFileLoaded = renderUI({
-    input$okWillLoadSelectedFile   ### the trigger.
+  #  input$okWillLoadSelectedFile   ### the trigger.
+    input$loadthatfile
     isolate({
+      DUEenv$lastFileLoaded = input$selectingAFile
       #### not the file row number but the actual string. ####
-      updateSelectInput(session, 'selectingAFile', selected = DUEenv$lastFileLoaded)
-      if(!is.null(input$chooseFile)) {
-        div("Last file loaded:",
+      if(!is.null(input$selectingAFile)) {
+        updateSelectInput(session, 'selectingAFile', selected = DUEenv$lastFileLoaded)
+        div("Last file loaded:", hr(),
             HTML(paste(gsub('##------ | ------##', "<br>", DUEenv$lastFileLoaded)))
         )
       }
+      else NULL
     })
   })
   
