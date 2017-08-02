@@ -92,6 +92,11 @@ ui <- fluidPage(
                            column(6,
                                   numericInput(inputId = "responseLimitingTox", 
                                                HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6))
+                  ),
+                  #### testing file selection ####
+                  bsButton(inputId = "loadthatfile", label = 'loadthatfile'),
+                  selectInput(inputId = 'selectingAFile', label="selectingAFile",
+                              choices = rev(dir('.', pattern = 'DUE.*rdata'))
                   )
            )
            , 
@@ -132,14 +137,10 @@ ui <- fluidPage(
                                bsButton(inputId = "openSave", label = HTML("Save <br> parameters"), size = 'medium')
                       )
                     ),
-                    br(),
-                    div(
-                      fluidRow(style =  "font-size:large",
-                               bsButton(inputId = "load", label = HTML("Load saved <br> parameters"), size = 'medium')
-                      ),
-                      br(),
-                      uiOutput(outputId = 'lastFileLoaded')
-                    )
+                    fluidRow(style =  "font-size:large",
+                             bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
+                    ),
+                    uiOutput(outputId = 'lastFileLoaded')
                   )
            ),
            ####  RIGHT SIDE: Probabilities and Expected Utility ####
@@ -338,7 +339,7 @@ server <- function(input, output, session) {
     updateNumericInput(session=session, 'U.RT', value=DUEenv$U.RT)
   })
   resetButtonStyles = function(whichButton) {
-    cat("resetButtonStyles: whichButton = ", whichButton, '\n')
+    #cat("resetButtonStyles: whichButton = ", whichButton, '\n')
     for(button in DUEenv$utilityChoiceNames) 
       updateButton(session, button,
                    style='default')
@@ -355,7 +356,7 @@ server <- function(input, output, session) {
                          ifelse(whichMatched, 'addClass', 'removeClass') ,
                          '("primped"); ')
     evalString = gsub('"', "'", evalString) # replace all DQ with SQ.
-    print(evalString)
+    #print(evalString)  # We know this works.
     div(list(tags$script(evalString)))
   })
   primpMyChoice = function(choice){
@@ -697,11 +698,24 @@ server <- function(input, output, session) {
            inputName)
   }
 
+  observeEvent(input$loadthatfile, loadMyfile())
+                 
   #### okWillLoadSelectedFile ####
   observeEvent(input$okWillLoadSelectedFile, 
-               priority = 1, { 
+               priority = 1, 
+               {
+                 loadMyfile()
+                 removeModal()
+                 loadMyfile()
+                 showModal(ui = loadModalUI())
+                 removeModal()
+                 showModal(ui = loadModalUI())
+                 removeModal()
+               }
+  )
+  loadMyfile = reactive({ 
                  #try({
-                 load(input$chooseFile)   ### Will pull in DUEsaving and README
+                 load(input$selectingAFile)   #### Will pull in DUEsaving and README ####
                  DUEsaving[['thisPop']] = 1   # input$thisPop
                  DUEsaving[['whichFollows']] = 2
                  for (n in names(DUEenv))
@@ -710,7 +724,7 @@ server <- function(input, output, session) {
                  for(inputName in strsplit(
                    "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                    , split=" ")[[1]] ) {
-                   cat("--", inputName, '\n')
+                   # cat("--", inputName, '\n')
                    parValue = DUEenv[[parName(inputName)]]
                    misMatch = FALSE
                    tryResult = try( {
@@ -748,9 +762,6 @@ server <- function(input, output, session) {
                    # }
                    
                  }  # end of "for" loop
-                 removeModal()
-                 showModal(ui = loadModalUI())
-                 removeModal()
                  DUEenv$lastFileLoaded = isolate(input$chooseFile)
                })
 
