@@ -112,11 +112,6 @@ ui <- fluidPage(
                              #)
                     ),
                     br(),
-                    div(
-                      fluidRow(style = "font-size:large", 
-                               bsButton(inputId="doseComparison", label = HTML("Compare <br> doses"), size = 'medium')
-                      )
-                    ),
                     br(),
                     hr(),
                     br(),
