@@ -449,8 +449,8 @@ server <- function(input, output, session) {
         proportionDifference = DUEenv$proportions[DUEenv$thisPop] - popFractionTemp
         DUEenv$proportions[DUEenv$thisPop] <- popFractionTemp 
         proportionWhichFollows = 1 - sum(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$whichFollows])
-        cat("proportionDifference = ", proportionDifference, "\n")
-        cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
+        #cat("proportionDifference = ", proportionDifference, "\n")
+        #cat("proportionWhichFollows = ", proportionWhichFollows, "\n")
         if(proportionWhichFollows >= 0 & proportionWhichFollows <= 1){
           DUEenv$proportions[DUEenv$whichFollows] <- proportionWhichFollows
         } else if (any(DUEenv$proportions[1:DUEenv$nPops][-DUEenv$thisPop] > 0)){
@@ -513,7 +513,7 @@ server <- function(input, output, session) {
       )
     }
     isolate({
-      cat("thisPop is now ", thisPop, '\n')
+      # cat("thisPop is now ", thisPop, '\n')
       DUEenv$thisPop = input$thisPop
       #      cat("BEFORE: theta  medians is ", capture.output(DUEenv$the.medianThresholds.pop), '\n')
       updateNumericInput(session, "thetaRmedian", value = DUEenv$the.medianThresholds.pop[[thisPop]] [1])

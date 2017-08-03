@@ -27,7 +27,7 @@ calculate.probabilities.allDoses <- function( DUEenv) {
 
 plotProbsAndEUsimplified <- function(DUEenv) {
   calculate.probabilities.allDoses(DUEenv)
-  cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
+  # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convertEU <- function(x, isEU=TRUE) {
     #### Map EU on right axis from [-1, 1] to [0,1] on left axis.
     if(isEU) 
