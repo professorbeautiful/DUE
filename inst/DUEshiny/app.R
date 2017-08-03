@@ -760,7 +760,7 @@ server <- function(input, output, session) {
       #### not the file row number but the actual string. ####
       if(!is.null(input$selectingAFile)) {
         updateSelectInput(session, 'selectingAFile', selected = DUEenv$lastFileLoaded)
-        div("Last file loaded:", hr(),
+        div("Last file loaded:", br(),
             HTML(paste(gsub('##------ | ------##', "<br>", DUEenv$lastFileLoaded)))
         )
       }
@@ -792,8 +792,14 @@ server <- function(input, output, session) {
       README = input$README
       save(DUEsaving, README,
            file = fileName)
+      newchoices = rev(dir('.', pattern = 'DUE.*rdata'))
       updateSelectInput(session, inputId = 'selectingAFile',
-                        size=length(dir('.', pattern = 'DUE.*rdata')))
+                        #size=length(dir('.', pattern = 'DUE.*rdata')))
+                        choices=newchoices)
+                        #  Sadly, no "size" parameter for updateSelectInput
+      message <- list(size = length(newchoices))
+      session$sendInputMessage('selectingAFile', message)
+      ## ok doesn't crash but doesn't make box bigger either.
       removeModal()
     })
   )
@@ -937,23 +943,25 @@ server <- function(input, output, session) {
         conditionalPanel(
           'input.SaveLoadCheckbox',
           fluidRow(
-            style="text-align:center; background-color:light-grey; text-size:largest; font-style: italic; font-weight: bold;",
+            #font-style: italic; font-weight: bold;; text-size:100%;
+            style="text-align:center; background-color:light-grey;",
             ####Save/load inputs####
-            column(1, offset=1,
+            column(1, offset=1, style='background:blue;',
                    bsButton(inputId = "openSave", 
-                            label = HTML("<font size=30 >Save parameters</font>"))# , size = 'medium')
+                            label = HTML("<font color='blue' style='background:white;'>Save parameters</font>"))# , size = 'medium')
             ),
             ####  file selection ####
-            column(1, offset=1,  ### because text-align:center is not working
+            column(2, offset=1, style='background:blue;', ### because text-align:center is not working
                    bsButton(inputId = "loadthatfile", 
-                            label = HTML('<font size=30 >Load the file selected below</font>'))
+                            label = HTML('<font color=blue >Load the file selected below</font>'))
             )
           ),
           fluidRow(
-            style="background-color:light-grey; text-size:larger; font-style: italic; font-weight: bold;",
-            column(2, offset=1, uiOutput(outputId = 'lastFileLoaded') ),
+            style="background-color:light-grey; text-size:larger;  font-weight: bold;",
+            column(2, offset=1, hr(), uiOutput(outputId = 'lastFileLoaded') ),
             column(4,  style="background-color:light-grey; ",
-                   selectInput(inputId = 'selectingAFile', label="Parameter files to select from:",
+                   selectInput(inputId = 'selectingAFile', 
+                               label=HTML("<span style='font-style: italic;'> Parameter files to select from:</span>"),
                                choices = currentChoices <- rev(dir('.', pattern = 'DUE.*rdata')),
                                selected = NULL,
                                size=length(currentChoices),
@@ -962,14 +970,15 @@ server <- function(input, output, session) {
                    )
             ),
             column(4, 
-                   div(style="font-size: 20; background-color:lightgrey",
-                       "README for this selection"),
-                   hr(),
-                   div(style="font-size: 30; background-color:canaryyellow",
-                       textOutput('READMEoutput'))
+                   div(style="background-color:lightgrey",
+                       HTML("<span style='font-size: 16; '> README for this selection </span>"),
+                       hr(),
+                       tagAppendAttributes(style="font-size: 16; ", textOutput('READMEoutput'))
+                   )
             )
           )
-        ))
+        )
+    )
   } )
 }
 
