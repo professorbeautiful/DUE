@@ -483,7 +483,10 @@ server <- function(input, output, session) {
           DUEenv$proportions[newPopIndices] <- 0 
           for(i in newPopIndices) {
             DUEenv$the.logmedians.pop[[i]] <- DUEenv$the.logmedians.pop[[DUEenv$nPops]]
+            DUEenv$the.means.pop[[i]] <- DUEenv$the.means.pop[[DUEenv$nPops]]
+            DUEenv$the.medianThresholds.pop[[i]] <- DUEenv$the.medianThresholds.pop[[DUEenv$nPops]]
             DUEenv$the.variances.pop[[i]] <- DUEenv$the.variances.pop[[DUEenv$nPops]]
+            DUEenv$the.CVs.pop[[i]] <- DUEenv$the.CVs.pop[[DUEenv$nPops]]
             DUEenv$the.correlations.pop[[i]] <- DUEenv$the.correlations.pop[[DUEenv$nPops]]
           }
         }
