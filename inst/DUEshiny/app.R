@@ -229,39 +229,7 @@ ui <- fluidPage(
            )
   ),
   hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
-  fluidRow(
-    style="text-align:center; background-color:light-grey; text-size:largest; font-style: italic; font-weight: bold;",
-    ####Save/load inputs####
-    column(1, offset=1,
-               bsButton(inputId = "openSave", 
-                        label = HTML("<font size=30 >Save parameters</font>"))# , size = 'medium')
-    ),
-    ####  file selection ####
-    column(1, offset=1,  ### because text-align:center is not working
-           bsButton(inputId = "loadthatfile", 
-                    label = HTML('<font size=30 >Load the file selected below</font>'))
-    )
-  ),
-  fluidRow(
-    style="background-color:light-grey; text-size:larger; font-style: italic; font-weight: bold;",
-    column(2, offset=1, uiOutput(outputId = 'lastFileLoaded') ),
-    column(4,  style="background-color:light-grey; ",
-           selectInput(inputId = 'selectingAFile', label="Parameter files to select from",
-                       choices = rev(dir('.', pattern = 'DUE.*rdata')),
-                       selected = NULL,
-                       size=15,
-                       width='800px',
-                       selectize=FALSE
-           )
-    ),
-    column(4, 
-           div(style="font-size: 20; background-color:lightgrey",
-               "README for this selection"),
-           hr(),
-           div(style="font-size: 30; background-color:canaryyellow",
-               textOutput('READMEoutput'))
-    )
-  )
+  uiOutput('SaveLoadPanel')
 )
 
 ####Server starts here####
@@ -824,6 +792,8 @@ server <- function(input, output, session) {
       README = input$README
       save(DUEsaving, README,
            file = fileName)
+      updateSelectInput(session, inputId = 'selectingAFile',
+                        size=length(dir('.', pattern = 'DUE.*rdata')))
       removeModal()
     })
   )
@@ -959,6 +929,48 @@ server <- function(input, output, session) {
       removeModal()
     }
   )
+  
+  output$SaveLoadPanel = renderUI( {
+    div(style="background:lightGrey",
+        checkboxInput(inputId='SaveLoadCheckbox', value=FALSE,
+                      label=em(strong("Save & load parameter files"))),
+        conditionalPanel(
+          'input.SaveLoadCheckbox',
+          fluidRow(
+            style="text-align:center; background-color:light-grey; text-size:largest; font-style: italic; font-weight: bold;",
+            ####Save/load inputs####
+            column(1, offset=1,
+                   bsButton(inputId = "openSave", 
+                            label = HTML("<font size=30 >Save parameters</font>"))# , size = 'medium')
+            ),
+            ####  file selection ####
+            column(1, offset=1,  ### because text-align:center is not working
+                   bsButton(inputId = "loadthatfile", 
+                            label = HTML('<font size=30 >Load the file selected below</font>'))
+            )
+          ),
+          fluidRow(
+            style="background-color:light-grey; text-size:larger; font-style: italic; font-weight: bold;",
+            column(2, offset=1, uiOutput(outputId = 'lastFileLoaded') ),
+            column(4,  style="background-color:light-grey; ",
+                   selectInput(inputId = 'selectingAFile', label="Parameter files to select from:",
+                               choices = currentChoices <- rev(dir('.', pattern = 'DUE.*rdata')),
+                               selected = NULL,
+                               size=length(currentChoices),
+                               width='800px',
+                               selectize=FALSE
+                   )
+            ),
+            column(4, 
+                   div(style="font-size: 20; background-color:lightgrey",
+                       "README for this selection"),
+                   hr(),
+                   div(style="font-size: 30; background-color:canaryyellow",
+                       textOutput('READMEoutput'))
+            )
+          )
+        ))
+  } )
 }
 
 shinyApp(ui = ui, server = server)
