@@ -32,7 +32,7 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-  includeCSS('tooltip.css'),
+#  includeCSS('tooltip.css'),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
@@ -90,8 +90,18 @@ ui <- fluidPage(
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), value = .85, step = .1)),
                            column(6,
-                                  numericInput(inputId = "responseLimitingTox", 
-                                               HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6))
+                                  # tagAppendAttributes(
+                                  #   class='RLEtooltip',
+                                    numericInput(inputId = "responseLimitingTox", 
+                                                 HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6)
+                                  #)
+                            , 
+                            bsTooltip(id='responseLimitingTox', 
+                                      title='so you wanna understand?', 
+                                      placement = "top", 
+                                      trigger = "hover",
+                                      options = list(container = "body")) 
+                           )
                   )
            )
            , 
