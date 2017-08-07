@@ -107,6 +107,16 @@ ui <- fluidPage(
            , 
            ####  MIDDLE: Doses and Files ####
            column(1, 
+                  a(
+                    href="DUE_vignette.html", rel="help", target="_blank",
+                    span(
+                      strong(em("Click for information:",
+                                style="color:darkgreen; font-size:small"))
+                      ,
+                      actionButton(inputId = "Info", label="",
+                                   style="background:lightgreen",
+                                   icon=icon("info-sign", lib="glyphicon")))
+                  ),
                   br(), br(),
                   br(), br(),
                   br(), br(),
