@@ -10,20 +10,24 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 
-# Introduction
+### Introduction
 
 
 DUE, the Dose Utility Explorer package for R, is an interactive environment
  for exploring relationships between priors, utilities, and choice of dose,
  when toxicity and response are determined by patient-specific thresholds.
- A user can manupulate inputs describing a hypothetical dose choice scenario.
+ A user can manipulate inputs describing a hypothetical dose choice scenario.
  A number of important aspects have been omitted, in order to focus on the
  factors that are patient-specific.
  
  The main output is expected utility as a function of dose.
  
-### Contributions and history
-This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for publication on CRAN by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.
+##### *Primary uses*
+This package, with its app, is part of a broader effort to make clinical trials more responsive to patients, more rational, and more humane. 
+
+
+##### *Contributions and history*
+This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for eventual publication by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.
 
 In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio shiny, which provides universal access through a published web page. In addition several new features were added. The tcl/tk version is no longer supported.
 
@@ -61,9 +65,9 @@ The package presents a window that includes:
 * lower right: controllers for the utility values 
 
 
-## The threshold distribution inputs
+#### *The threshold distribution inputs*
 
-### Threshold distribution parameters
+##### *Threshold distribution parameters*
 
 We assume that each patient has a pair of thresholds, 
  $\theta_{R}$
@@ -71,34 +75,34 @@ We assume that each patient has a pair of thresholds,
  $\theta_{T}$  for toxicity.
  If the dose exceeds the threshold, then the corresponding event occurs.
  The model for the joint distribution of toxicity and response thresholds
- is a mixture of joint lognormals.
+ is a mixture of joint lognormals. The idea is that patients differ 
  
- Each joint lognormal is described by 
+ The joint lognormal for each sub-population is described by 
+ 
 * the two medians of the corresponding normal distributions,
-$\mu_{R}$ and  $\mu_{T}$, 
+$\mu_{R} = \exp(E(\log \theta_{R}))$ and  $\mu_{T} = \exp(E(\log \theta_{T}))$, 
 * its two coefficients of variation 
 $CV_{R}$ and $CV_{T}$,  and 
 * $\rho$, the correlation between $\log\mu_{R}$ and 
-\log\mu_{T}$.
+$\log\mu_{T}$.
 
 
  A vector the length of the number of subpopulations describes the probabilities
  of each component of the mixture distribution.
  Each of these parameters is controlled by a pair of scale (or slider) objects
- and text boxes, so that either one can be used to change the parameter
+ and input boxes, so that either one can be used to change the parameter
  value.
  
 
-To select which subpopulation the parameters refer to, there is a text box labeled 
+To select which subpopulation the parameters refer to, there is a input box labeled 
 $This\ population$.
- The number of subpopulation is set in the text box 
-
+ The number of subpopulation is set in the input box 
 $\#Pops$ ; if increased or decreased, reasonable adjustments take place elsewhere.
 
- Another text box holds the population fraction for 
+ Another input box holds the population fraction for 
 $This\ population$.
  Because the probabilities of the components must add to one, we provide a box labeled 
-$Which population fraction follows$
+$Which\ population\ fraction\ follows$
 , to select one component that will adjust to accommodate a change in another component's probability.
 
 
@@ -112,11 +116,11 @@ Response-limiting toxicity represents the case where a patient with a low
  Or, a treatment-caused fatality might occur before a response which otherwise
  would have happened can occur.
  This idea is represented by a parameter called 
-$K$.
+$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ gap)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
  It represents the log10 of the ratio between the patient's toxicity threshold
  and the dose at which toxicity is so severe that response cannot happen.
  The assumption is that this ratio is the same for all patients.
- (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Simon's paper on accelerated titration designs.)
+ (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
 
 
 ### Refractoriness
@@ -225,8 +229,8 @@ TO DO.
 
 * In the middle column, a user can click a button to change the dose range and number of ticks on the dose scales. 
 
-* In the middle column, a numeric input box allows setting the $Favorite dose$, or selected dose. This only has the effect of moving the green lines in both plots.
-* In the middle column, the $Phase I$ button brings up a window with the probabilities of the 
+* In the middle column, a numeric input box allows setting the $Favorite\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
+* In the middle column, the $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level.
 
 ### Lognormal conversions
 

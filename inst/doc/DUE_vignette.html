@@ -123,14 +123,19 @@ $(document).ready(function () {
 </div>
 
 
-<div id="introduction" class="section level1">
-<h1>Introduction</h1>
-<p>DUE, the Dose Utility Explorer package for R, is an interactive environment for exploring relationships between priors, utilities, and choice of dose, when toxicity and response are determined by patient-specific thresholds. A user can manupulate inputs describing a hypothetical dose choice scenario. A number of important aspects have been omitted, in order to focus on the factors that are patient-specific.</p>
+<div id="introduction" class="section level3">
+<h3>Introduction</h3>
+<p>DUE, the Dose Utility Explorer package for R, is an interactive environment for exploring relationships between priors, utilities, and choice of dose, when toxicity and response are determined by patient-specific thresholds. A user can manipulate inputs describing a hypothetical dose choice scenario. A number of important aspects have been omitted, in order to focus on the factors that are patient-specific.</p>
 <p>The main output is expected utility as a function of dose.</p>
-<div id="contributions-and-history" class="section level3">
-<h3>Contributions and history</h3>
-<p>This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for publication on CRAN by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.</p>
+<div id="primary-uses" class="section level5">
+<h5><em>Primary uses</em></h5>
+<p>This package, with its app, is part of a broader effort to make clinical trials more responsive to patients, more rational, and more humane.</p>
+</div>
+<div id="contributions-and-history" class="section level5">
+<h5><em>Contributions and history</em></h5>
+<p>This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for eventual publication by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.</p>
 <p>In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio shiny, which provides universal access through a published web page. In addition several new features were added. The tcl/tk version is no longer supported.</p>
+</div>
 </div>
 <div id="inputs" class="section level3">
 <h3>Inputs</h3>
@@ -153,21 +158,26 @@ $(document).ready(function () {
 <div id="overview-of-the-interface" class="section level3">
 <h3>Overview of the interface</h3>
 <p>The package presents a window that includes: * upper left: a graph of the threshold distribution * upper right: a graph of the mappings from dose to the expected utility, together with probabilities of events and event combinations, * lower left: controllers for the threshold distribution * lower right: controllers for the utility values</p>
+<div id="the-threshold-distribution-inputs" class="section level4">
+<h4><em>The threshold distribution inputs</em></h4>
+<div id="threshold-distribution-parameters" class="section level5">
+<h5><em>Threshold distribution parameters</em></h5>
+<p>We assume that each patient has a pair of thresholds, <span class="math inline">\(\theta_{R}\)</span> for response and <span class="math inline">\(\theta_{T}\)</span> for toxicity. If the dose exceeds the threshold, then the corresponding event occurs. The model for the joint distribution of toxicity and response thresholds is a mixture of joint lognormals. The idea is that patients differ</p>
+<p>The joint lognormal for each sub-population is described by</p>
+<ul>
+<li>the two medians of the corresponding normal distributions, <span class="math inline">\(\mu_{R} = \exp(E(\log \theta_{R}))\)</span> and <span class="math inline">\(\mu_{T} = \exp(E(\log \theta_{T}))\)</span>,</li>
+<li>its two coefficients of variation <span class="math inline">\(CV_{R}\)</span> and <span class="math inline">\(CV_{T}\)</span>, and</li>
+<li><span class="math inline">\(\rho\)</span>, the correlation between <span class="math inline">\(\log\mu_{R}\)</span> and <span class="math inline">\(\log\mu_{T}\)</span>.</li>
+</ul>
+<p>A vector the length of the number of subpopulations describes the probabilities of each component of the mixture distribution. Each of these parameters is controlled by a pair of scale (or slider) objects and input boxes, so that either one can be used to change the parameter value.</p>
+<p>To select which subpopulation the parameters refer to, there is a input box labeled <span class="math inline">\(This\ population\)</span>. The number of subpopulation is set in the input box <span class="math inline">\(\#Pops\)</span> ; if increased or decreased, reasonable adjustments take place elsewhere.</p>
+<p>Another input box holds the population fraction for <span class="math inline">\(This\ population\)</span>. Because the probabilities of the components must add to one, we provide a box labeled <span class="math inline">\(Which\ population\ fraction\ follows\)</span> , to select one component that will adjust to accommodate a change in another component’s probability.</p>
 </div>
-<div id="the-threshold-distribution-inputs" class="section level2">
-<h2>The threshold distribution inputs</h2>
-<div id="threshold-distribution-parameters" class="section level3">
-<h3>Threshold distribution parameters</h3>
-<p>We assume that each patient has a pair of thresholds, <span class="math inline">\(\theta_{R}\)</span> for response and <span class="math inline">\(\theta_{T}\)</span> for toxicity. If the dose exceeds the threshold, then the corresponding event occurs. The model for the joint distribution of toxicity and response thresholds is a mixture of joint lognormals.</p>
-<p>Each joint lognormal is described by * the two medians of the corresponding normal distributions, <span class="math inline">\(\mu_{R}\)</span> and <span class="math inline">\(\mu_{T}\)</span>, * its two coefficients of variation <span class="math inline">\(CV_{R}\)</span> and <span class="math inline">\(CV_{T}\)</span>, and * <span class="math inline">\(\rho\)</span>, the correlation between <span class="math inline">\(\log\mu_{R}\)</span> and _{T}$.</p>
-<p>A vector the length of the number of subpopulations describes the probabilities of each component of the mixture distribution. Each of these parameters is controlled by a pair of scale (or slider) objects and text boxes, so that either one can be used to change the parameter value.</p>
-<p>To select which subpopulation the parameters refer to, there is a text box labeled <span class="math inline">\(This\ population\)</span>. The number of subpopulation is set in the text box</p>
-<p><span class="math inline">\(\#Pops\)</span> ; if increased or decreased, reasonable adjustments take place elsewhere.</p>
-<p>Another text box holds the population fraction for <span class="math inline">\(This\ population\)</span>. Because the probabilities of the components must add to one, we provide a box labeled <span class="math inline">\(Which population fraction follows\)</span> , to select one component that will adjust to accommodate a change in another component’s probability.</p>
+</div>
 </div>
 <div id="response-limiting-toxicity" class="section level3">
 <h3>Response-limiting toxicity</h3>
-<p>Response-limiting toxicity represents the case where a patient with a low threshold for toxicity has enough toxicity to prevent response, even if the response threshold is low enough. For example, a toxicity experience might require coming off the treatment or reducing the dose below the threshold. Or, a treatment-caused fatality might occur before a response which otherwise would have happened can occur. This idea is represented by a parameter called <span class="math inline">\(K\)</span>. It represents the log10 of the ratio between the patient’s toxicity threshold and the dose at which toxicity is so severe that response cannot happen. The assumption is that this ratio is the same for all patients. (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Simon’s paper on accelerated titration designs.)</p>
+<p>Response-limiting toxicity represents the case where a patient with a low threshold for toxicity has enough toxicity to prevent response, even if the response threshold is low enough. For example, a toxicity experience might require coming off the treatment or reducing the dose below the threshold. Or, a treatment-caused fatality might occur before a response which otherwise would have happened can occur. This idea is represented by a parameter called <span class="math inline">\(Kdeath\)</span> in the code. Itsinput box is labeled as <span class="math inline">\(RLE:\ log_{10} (response\-limiting gap)\ (RT\to rT)\)</span>. It represents the log10 of the ratio between the patient’s toxicity threshold and the dose at which toxicity is so severe that response cannot happen. The assumption is that this ratio is the same for all patients. (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Simon’s paper on accelerated titration designs.)</p>
 </div>
 <div id="refractoriness" class="section level3">
 <h3>Refractoriness</h3>
@@ -184,7 +194,6 @@ $(document).ready(function () {
 </ul>
 <p>If the <span class="math inline">\(Response-limiting toxicity\)</span> parameter <span class="math inline">\(K\)</span> is small enough, then there also appears an incursion of the <span class="math inline">\(rT\)</span> region towards the left at the bottom, invading the <span class="math inline">\(RT\)</span> region.</p>
 </div>
-</div>
 <div id="probabilities-and-utilities" class="section level2">
 <h2>Probabilities and utilities</h2>
 <div id="calculation-of-probabilities" class="section level3">
@@ -194,7 +203,8 @@ $(document).ready(function () {
 <div id="utility-parameters-and-expected-utility" class="section level3">
 <h3>Utility parameters and expected utility</h3>
 <p>For decision analysis, a necessary input is the utility function which values outcomes.</p>
-<p>The scale/text pairs on the lower right specify the utility values for these four outcomes. There are also buttons to set the utilities to specific values: <span class="math inline">\(Additive, Simple, Cautious, Aggressive\)</span>. All four of these utilities set <span class="math inline">\(U_{rt}=0\)</span>, since that is what you get without any treatment (dose = 0).</p>
+<p>The scale/text pairs on the lower right specify the utility values for these four outcomes. There are also buttons to set the utilities to specific values: <span class="math inline">\(Additive, Simple, Cautious, Aggressive\)</span>.</p>
+<p>All four of these utilities set <span class="math inline">\(U_{rt}=0\)</span>, since that is what you get without any treatment (dose = 0).</p>
 <p>The Simple utility assignment values only the <span class="math inline">\(Rt\)</span> outcome, and sets the other three to zero. It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only <span class="math inline">\(Rt\)</span> is a worthy outcome. But it equates <span class="math inline">\(rt\)</span> with <span class="math inline">\(rT\)</span>, as if toxicity is no concern unless <span class="math inline">\(R\)</span> is achieved.</p>
 <p>The other three utility assignments all penalize the outcome <span class="math inline">\(rT\)</span> with a utility of -1. They differ in the valuation of thr <span class="math inline">\(RT\)</span> outcome:</p>
 <ul>
@@ -213,7 +223,6 @@ $(document).ready(function () {
 <p>The eight boxes at the top of the graph are three-way toggles, which cycle each of the curves through the settings <span class="math inline">\(thick line\)</span>, <span class="math inline">\(thin line\)</span>, and <span class="math inline">\(invisible\)</span>.</p>
 </div>
 </div>
-</div>
 <div id="applications-insights-from-using-the-due-to-do" class="section level1">
 <h1>Applications: Insights from using the DUE [TO-DO]</h1>
 <div id="effect-of-multimodality" class="section level2">
@@ -229,8 +238,8 @@ $(document).ready(function () {
 <h1>Other features</h1>
 <ul>
 <li><p>In the middle column, a user can click a button to change the dose range and number of ticks on the dose scales.</p></li>
-<li>In the middle column, a numeric input box allows setting the <span class="math inline">\(Favorite dose\)</span>, or selected dose. This only has the effect of moving the green lines in both plots.</li>
-<li><p>In the middle column, the <span class="math inline">\(Phase I\)</span> button brings up a window with the probabilities of the</p></li>
+<li>In the middle column, a numeric input box allows setting the <span class="math inline">\(Favorite\ dose\)</span>, or selected dose. This only has the effect of moving the green lines in both plots.</li>
+<li><p>In the middle column, the <span class="math inline">\(Phase\ I\)</span> button brings up a window with the probabilities of stopping at each dose level.</p></li>
 </ul>
 <div id="lognormal-conversions" class="section level3">
 <h3>Lognormal conversions</h3>
