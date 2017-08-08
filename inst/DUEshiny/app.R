@@ -167,6 +167,12 @@ ui <- fluidPage(
                     div(style=paste0("background-color:", "red"),
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
+                    ),
+                    br(),
+                    div(style=paste0("background-color:", "lightgrey"),
+                        checkboxInput(inputId = "SaveLoadMainToggle", 
+                                      label = HTML("Toggle <br> file <br> panel")
+                        )
                     )
                     # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
                     # fluidRow(style =  "font-size:large",
@@ -957,6 +963,15 @@ server <- function(input, output, session) {
     axis(side = 2, lwd = 2)
     mtext('Probability', side = 2, cex = 2, line=3)
   })
+  
+  observeEvent(
+    input$SaveLoadMainToggle, 
+    {
+      try({updateCheckboxInput(session, 'SaveLoadCheckbox', 
+                          value = ! input$SaveLoadCheckbox)
+      })
+    }
+  )
   
   
   ####Changing axes#####
