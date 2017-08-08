@@ -743,7 +743,11 @@ server <- function(input, output, session) {
   setLineBoxes = function(probLineWidths) {
     ## already copied to DUEenv
     for(label in probLineNames) {
-      whichWidth = probLineWidths[label]
+      whichWidth = which(
+        probLineWidths[label] == probLineWidthChoices)
+      if(is.null(whichWidth) | ! is.element(whichWidth, 1:3))
+        whichWidth = 1
+      inputId = paste0('linethickness_', label)
       updateButton(session, inputId, 
                    label=switch(whichWidth, `1`=paste0('(',label,')'),
                                 `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
