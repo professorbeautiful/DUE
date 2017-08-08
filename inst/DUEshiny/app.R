@@ -279,11 +279,10 @@ server <- function(input, output, session) {
   #### In place of setupProbLines(DUEenv) ####
   probLineNames <<- 
     c("R", "T", "rt","rT","Rt","RT","EU", "RLE")
-  probLabels  <<- list()
   probLineWidthChoices <<- c(0, 1, 5)
-  probLineWidths <- rep(probLineWidthChoices[2], 8) 
+  probLineWidths <- rep(probLineWidthChoices[1], 8) 
   names(probLineWidths) <- probLineNames
-  #probLineWidths["EU"] <- probLineWidthChoices[3] #5
+  probLineWidths["EU"] <- probLineWidthChoices[2] #1
   DUEenv$probLineWidths <- probLineWidths 
   
   # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
@@ -740,6 +739,19 @@ server <- function(input, output, session) {
                  removeModal()
                }
   )
+  
+  setLineBoxes = function(probLineWidths) {
+    ## already copied to DUEenv
+    for(label in probLineNames) {
+      whichWidth = probLineWidths[label]
+      updateButton(session, inputId, 
+                   label=switch(whichWidth, `1`=paste0('(',label,')'),
+                                `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
+                   size = switch(whichWidth, `1`='small',
+                                 `2`='', `3`='large'))
+    }
+  }
+  
   loadMyfile = reactive({ 
                  #try({
                  load(input$selectingAFile)   #### Will pull in DUEsaving and README ####
@@ -748,6 +760,7 @@ server <- function(input, output, session) {
                  for (n in names(DUEenv))
                    DUEenv[[n]] = DUEsaving[[n]]
                  misMatches = character(0)
+                 setLineBoxes(DUEsaving$probLineWidths)
                  for(inputName in strsplit(
                    "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                    , split=" ")[[1]] ) {
