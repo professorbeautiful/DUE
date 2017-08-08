@@ -62,14 +62,18 @@ ui <- fluidPage(
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
-                                            numericInput(inputId = "nPops",  "Number of groups", value = 2, min=1))
+                                            numericInput(inputId = "nPops",  "Number of groups", 
+                                                         value = DUEinits.default$nPops, min=1))
                     )
                   ),
                   fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
                            column(4, 
-                                  numericInput(inputId = "thisPop", "This group #", value = 1, min = 1, max = DUEinits.default$nPops)),
+                                  numericInput(inputId = "thisPop", "This group #", 
+                                               value = 1, min = 1, max = DUEinits.default$nPops)),
                            column(4, 
-                                  numericInput(inputId = "thisPopFraction", "This group's proportion", value = 0.6, min=0, max=1, step=0.1)),
+                                  numericInput(inputId = "thisPopFraction", "This group's proportion", 
+                                               value = DUEinits.default$proportions[DUEinits.default$thisPop],
+                                               min=0, max=1, step=0.1)),
                            column(4, 
                                   numericInput(inputId = "whichFollows", 
                                                HTML("Dependent group #"), value = 2))
@@ -77,8 +81,11 @@ ui <- fluidPage(
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
                            column(4, style='background-color:lightgray',
-                                  numericInput(inputId = "thetaRmedian", "Theta R Mean", value= 282),
-                                  numericInput(inputId = "thetaR.CV", "Theta R CV", value = .8)),
+                                  numericInput(inputId = "thetaRmedian", "Theta R Mean", 
+                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
+                                  numericInput(inputId = "thetaR.CV", "Theta R CV", 
+                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
+                           ),
                            column(4, 
                                   #                             style='background-color:lightgray; min-height: 100%; display: flex;
                                   #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
@@ -88,21 +95,25 @@ ui <- fluidPage(
                                                    min = -(1-0.01), max = 1-0.01, step = 0.1))
                            ),
                            column(4, style='background-color:lightgray',
-                                  numericInput(inputId = "thetaTmedian", "Theta T Mean", value = 447),
-                                  numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
-                           
+                                  numericInput(inputId = "thetaTmedian", "Theta T Mean", 
+                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
+                                  
+                                  numericInput(inputId = "thetaT.CV", "Theta T CV", 
+                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][2])
                   ),
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
                            column(6,
                                   numericInput(inputId = "probRefractory", 
-                                               HTML("<br>Pr(refractory tumor)"), value = .85, step = .1)),
+                                               HTML("<br>Pr(refractory tumor)"), 
+                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)),
                            column(6,
                                   # tagAppendAttributes(
                                   #   class='RLEtooltip',
                                     numericInput(inputId = "responseLimitingTox", 
-                                                 HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), value = .6)
+                                                 HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
+                                                 value = DUEinits.default$Kdeath, step = 0.5, min=0))
                                   #)
                             , 
                             bsTooltip(id='responseLimitingTox', 
