@@ -3,12 +3,13 @@ title: "DUE, the Dose Utility Explorer"
 author: "Roger Day, Marie Gerges"
 date: "8/6/2017"
 output: html_document
+numbersections: TRUE
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
-
+<!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html and http://pandoc.org/MANUAL.html -->
 
 ### Introduction
 
@@ -123,14 +124,14 @@ $Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limi
  (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
 
 
-### Refractoriness
+#### *Refractoriness*
 
 Some proportion of patients may have disease which will not respond to the treatment at any dose.
  This parameter appears to be necessary to better reflect experience in
  cancer treatment.
 
 
-### Display of the joint threshold distribution
+#### *Display of the joint threshold distribution*
 
 On the upper left side of the window is the contour plot for the joint threshold
  distribution.
@@ -157,17 +158,21 @@ $Response-limiting toxicity$ parameter
 $K$
 is small enough, then there also appears an incursion of the 
 $rT$ region towards the left at the bottom, invading the 
-$RT$ region.
+$RT$ region. This is discussed above:  [Response-limiting toxicity] .
 
+#### *Log-normal conversions*
 
-## Probabilities and utilities
+The choice of log-normal distributions entails conversion between log and native dose scales. The graph is a log-log graph, so the labeling is on the unlogged dose scale
+ while the spacing is on the logged scale. The contour lines correspond to the density in log-normal space.
 
-### Calculation of probabilities
+## *Probabilities and utilities*
+
+### *Calculation of probabilities*
 
 For each dose in a vector of doses of interest, the probabilities of each of the four regions are computed by integration.
  Varying the dose gives the mapping from dose to each outcome probability.
 
-### Utility parameters and expected utility
+### *Utility parameters and expected utility*
 
 For decision analysis, a necessary input is the utility function which values outcomes.
 
@@ -181,16 +186,22 @@ The scale/text pairs on the lower right specify the utility values for these fou
 $Rt$  outcome, and sets the other three to zero.
  It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern unless $R$ is achieved.
 
- The other three utility assignments all penalize the outcome $rT$ with a utility of -1. They differ in the valuation of thr $RT$ outcome:
+ The other three utility assignments all penalize the outcome $rT$ with a utility of -1. They differ in the valuation of the $RT$ outcome:
  
-* Cautious: $U(RT)$ = -1.
-* Additive: $U(RT)$ =  0.
-* Aggressive: $U(RT)$ = +1.
+ Option |  $U(RT)$
+ -------|--------
+Cautious |     -1
+Additive|     \ 0
+Aggressive| +1
+
+In addition to these defaults, the input boxes allow any assignments to the four utilities.
  
 ### Expected utility
 
 The expected utility $EU$
  for each dose is calculated as the weighted average of the four utilities, weighted by the four event probabilities.
+ 
+ $E(Rt)  Pr(Rt) + E(rt)  Pr(rt) + E(rT)  Pr(rT) + E(RT)  Pr(RT)$
 
 
 ### Display of the expected utility and probabilities
@@ -203,13 +214,36 @@ $favorite dose$ selected in the contour plot.
 
 The eight boxes at the top of the graph are three-way toggles, which
  cycle each of the curves through the settings 
-$thick line$, $thin line$, and $invisible$.
+`thick line`, `thin line`, and `invisible`.
 
+### *Other features of the interface*
 
+#### *In the middle column:*
 
-# Applications: Insights from using the DUE [TO-DO]
+* There is an Information button, which launches this document.
 
+* A user can click a button to change the dose range and number of ticks on the dose scales. 
 
+* A numeric input box allows setting the $Favorite\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
+
+* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level.
+
+#### *At the top* 
+
+Clicking the checkbox at the left of the grey band opens facilities for saving and loading files with parameter values for the joint threshold distribution and the utility values.
+
+#### *At the bottom* 
+
+Clicking the checkbox at the left of the grey band opens an instance of `shinyDebuggingPanel`, allowing access to R and Javascript expressions.
+
+## *Examples*
+
+#### *A single population*
+![alt text](single-population.png)
+
+In this ideal situation, there is a fairly sharp peak in the expected utility EU, with an optimal dose somewhere between $\mu_{R} = 100$ and $\mu_{T} = 200$. Only the `Aggressive` utility function has substantially different optimal, driving the optimal dose near the top of the dose range. The correlation has essentially no effect. Whether correlation = 0, so that all the variation is pharmacodynamics, or correlation near 1, so that it is nearly all pharmacokinetics, the utility curve is basically unchanged.
+
+Lowering the median value $\mu_{T} = 100$ to equal $\mu_{R}$, then toxicity is highly likely, response less so. In that case, the utility choice has profound effects. Only the `Simple` utility shows a local EU peak at 100. With the `Additive` utility, the EU curve is flat. A 3+3 phase I trial on 7 tiers logarithmically spaced from 50 to 200, would stop at tier 100, with maximum tolerated dose (MTD) = 79.4 with probability 72%. 
 
 
 ## Effect of multimodality
@@ -218,24 +252,4 @@ TO DO.
 
 
 
-## Insensitivity of expected utility to changes in dose
-
-
-
-TO DO.
-
-
-# Other features
-
-* In the middle column, a user can click a button to change the dose range and number of ticks on the dose scales. 
-
-* In the middle column, a numeric input box allows setting the $Favorite\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
-* In the middle column, the $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level.
-
-### Lognormal conversions
-
-The choice of lognormal distributions entails conversion between log and native dose scales. 
-
- The graph is a log-log graph, so the labeling is on the unlogged scale
- while the spacing is on the logged scale.
 
