@@ -1,4 +1,0 @@
-plotProbsAndEUreactive <- reactive( {
-  plotProbsAndEUsimplified(DUEenv)
-})
-
