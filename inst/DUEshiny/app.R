@@ -127,23 +127,9 @@ ui <- fluidPage(
            , 
            ####  MIDDLE: Doses and Files ####
            column(1, 
-                  a(
-                    #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
-                    href="DUE_vignette.html", rel="help", target="_blank",
-                    span(
-                      strong(em("Click for information:",
-                                style="color:darkgreen; font-size:200%"))
-                      ,
-                      actionButton(inputId = "Info", label="",
-                                   style="background:lightgreen",
-                                   icon=tagAppendAttributes(
-                                     style="font-size: 3em;",
-                                     icon("info-sign", lib="glyphicon"))) )
-                  ),
                   br(), br(),
                   br(), br(),
                   br(), br(),
-                  br(), 
                   div(style=paste0(
                     "vertical-align:center;",
                     "border-left:1px solid #000;",
@@ -152,6 +138,20 @@ ui <- fluidPage(
                     "border-right:1px solid #000;"),  ### height:1500px;
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
+                    a(
+                      #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
+                      href="DUE_vignette.html", rel="help", target="_blank",
+                      span(
+                        strong(em("Click for information:",
+                                  style="color:darkgreen; font-size:200%"))
+                        ,
+                        actionButton(inputId = "Info", label="",
+                                     style="background:lightgreen",
+                                     icon=tagAppendAttributes(
+                                       style="font-size: 3em;",
+                                       icon("info-sign", lib="glyphicon"))) )
+                    ),
+                    br(), br(), br(), 
                     div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'Selected dose', value=100, min=0)),
                     br(), br(),
