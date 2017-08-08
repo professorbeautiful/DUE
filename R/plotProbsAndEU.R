@@ -34,6 +34,7 @@ plotProbsAndEUsimplified <- function(DUEenv) {
        (x+1)/2
     else x
   }
+  par(mar =  c(5,4,4,6) + 0.1, xpd=NA )
   plot(DUEenv$doseValues, DUEenv$sevenprobs[1,],type="l",col=0,lwd=1, 
        xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
@@ -49,14 +50,15 @@ plotProbsAndEUsimplified <- function(DUEenv) {
   axis(2, at=c(0, 0.33, 0.6, 0.8, 1))
   mtext(side=2, line=2.5, "Probability", cex=2)
 
-  axis(side = 4, lwd=1, line=0, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
-       col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1) )
+  axis(side = 4, line=1, lwd=1, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
+       col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1)
+       , xpd=NA, cex=2)
   # Note: the "at" values are relative to axis 1, the labels are correct for EU.
   #xrange = par("usr")[1:2],
   # pushout = 1.02
   # EUlabelPosition = exp(log(xrange[1]) + (log(xrange[2])-log(xrange[1])*1.02) )
-  mtext(side = 4, line = -1, text = "  E(Utility)", #outer=TRUE,
-        xpd = TRUE, srt=90, cex=2, col=rt.outcome.colors['EU'],
+  mtext(side = 4, line = 4, text = "  E(Utility)", #outer=TRUE,
+        xpd = NA, srt=90, cex=2, col=rt.outcome.colors['EU'],
         ylbias = -0.5)  ### default ylbias = 0.2. Has no effect.
   
   linetypes = c(rep(1,6), 1, 1)
