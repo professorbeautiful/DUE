@@ -9,10 +9,13 @@ browseUs = 'calculate.probabilities'
 
 desc <- packageDescription('DUE')
 
+options.saved = options(warn=-2)
 try(rm(DUEenv))
 try(rm(DUEenvironmentDefault))
+try(rm(DUEsaving))
+options(options.saved)
 
-data(DUEenvironmentDefault)
+data(DUEinits.default)
 rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
                         Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
 probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
@@ -64,7 +67,7 @@ ui <- fluidPage(
                   ),
                   fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
                            column(4, 
-                                  numericInput(inputId = "thisPop", "This group #", value = 1, min = 1, max = DUEenvironmentDefault$nPops)),
+                                  numericInput(inputId = "thisPop", "This group #", value = 1, min = 1, max = DUEinits.default$nPops)),
                            column(4, 
                                   numericInput(inputId = "thisPopFraction", "This group's proportion", value = 0.6, min=0, max=1, step=0.1)),
                            column(4, 
@@ -81,7 +84,7 @@ ui <- fluidPage(
                                   #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
                                   br(style='background-color:white;'),
                                   div(style='background-color:lightgray;', 
-                                      numericInput(inputId = "correlation", "Correlation", value = DUEenvironmentDefault$the.correlations.pop[1],
+                                      numericInput(inputId = "correlation", "Correlation", value = DUEinits.default$the.correlations.pop[1],
                                                    min = -(1-0.01), max = 1-0.01, step = 0.1))
                            ),
                            column(4, style='background-color:lightgray',
@@ -285,17 +288,14 @@ server <- function(input, output, session) {
   probLineWidths["EU"] <- probLineWidthChoices[2] #1
   DUEenv$probLineWidths <- probLineWidths 
   
-  # source("plotProbsAndEUsimplified.R", local = TRUE) # we are not using the reactive version, yet it works!
-  # source("utilityControllers.R", local = TRUE)
-  
   logdose<<-1
   require("mvtnorm")
-  data(DUEenvironmentDefault)
+  data(DUEinits.default)
   isolate({
-    for(objname in names(DUEenvironmentDefault$DUEinits.default))
+    for(objname in names(DUEinits.default))
       eval(parse(text=(paste0(
         "DUEenv$", objname, " <- get('",
-        objname, "', DUEenvironmentDefault$DUEinits.default)"
+        objname, "', DUEinits.default)"
       ))) )
     DUEenv$bgWindow <- "darkblue"
   })
