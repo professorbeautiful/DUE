@@ -100,6 +100,7 @@ ui <- fluidPage(
                                   
                                   numericInput(inputId = "thetaT.CV", "Theta T CV", 
                                                value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][2])
+                           )
                   ),
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   h3("Auxiliary parameters", style='color:blue;'),
@@ -111,16 +112,16 @@ ui <- fluidPage(
                            column(6,
                                   # tagAppendAttributes(
                                   #   class='RLEtooltip',
-                                    numericInput(inputId = "responseLimitingTox", 
-                                                 HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
-                                                 value = DUEinits.default$Kdeath, step = 0.5, min=0))
+                                  numericInput(inputId = "responseLimitingTox", 
+                                               HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
+                                               value = DUEinits.default$Kdeath, step = 0.5, min=0)
                                   #)
-                            , 
-                            bsTooltip(id='responseLimitingTox', 
-                                      title='so you wanna understand?', 
-                                      placement = "top", 
-                                      trigger = "hover",
-                                      options = list(container = "body")) 
+                                  , 
+                                  bsTooltip(id='responseLimitingTox', 
+                                            title='so you wanna understand?', 
+                                            placement = "top", 
+                                            trigger = "hover",
+                                            options = list(container = "body")) 
                            )
                   )
            )
