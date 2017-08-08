@@ -18,11 +18,10 @@ function(app=dir('inst')[1], user='professorbeautiful', project=basename(getwd()
     setwd(paste0("inst/", app))
     cat("wd changing to ", getwd(), "\n")
     tryCatch({
-      require("shinyapps")
-      deployApp(...)
+      rsconnect::deployApp(...)
     },
     finally={
-      cat(paste0("shinyapps::showLogs(appPath = 'inst/", app,"')"), '\n')
+      cat(paste0("rsconnect::showLogs(appPath = 'inst/", app,"')"), '\n')
       setwd(packageWD)
     }
     )
@@ -33,5 +32,5 @@ function(app=dir('inst')[1], user='professorbeautiful', project=basename(getwd()
 .runDeployed =
 function(app="shinyElicit"){
   system("open https://trials.shinyapps.io/" %&% app)
-  cat(paste0("shinyapps::showLogs(appPath = 'inst/", app,"')"), '\n')
+  cat(paste0("rsconnect::showLogs(appPath = 'inst/", app,"')"), '\n')
 }
