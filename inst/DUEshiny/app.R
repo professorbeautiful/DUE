@@ -71,7 +71,7 @@ ui <- fluidPage(
                                   numericInput(inputId = "whichFollows", 
                                                HTML("Dependent group #"), value = 2))
                   ),
-                  hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
                            column(4, style='background-color:lightgray',
                                   numericInput(inputId = "thetaRmedian", "Theta R Mean", value= 282),
@@ -89,7 +89,7 @@ ui <- fluidPage(
                                   numericInput(inputId = "thetaT.CV", "Theta T CV", value = .8))
                            
                   ),
-                  hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
                            column(6,
@@ -223,7 +223,7 @@ ui <- fluidPage(
                                  
                                )
                                ,
-                               hr(), br(), 
+                               shiny::hr(), br(), 
                                fluidRow(
                                  column(4, h3("or choose a preset option here:", style="color:blue")
                                  ),
@@ -266,7 +266,7 @@ ui <- fluidPage(
                   )
            )
   ),
-  hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
+  shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
 shinyDebuggingPanel::withDebuggingPanel()
 )
 
@@ -687,7 +687,7 @@ server <- function(input, output, session) {
       size="l", #fade=TRUE,
       strong("README for this selection"),
       #textOutput('READMEoutput'),
-      hr(),
+      shiny::hr(),
       selectInput(inputId = 'chooseFile', 
                   label = 'Select a parameter file', 
                   choices = fileChoices,
@@ -908,10 +908,10 @@ server <- function(input, output, session) {
                               size="l", 
                               h2("Results of Phase 1 trials using the doses"),
                               textOutput('phase1Doses'),
-                              hr(),
+                              shiny::hr(),
                               tagAppendAttributes(style="text-size:larger",
                                                   tableOutput('phase1Results')),
-                              hr(),
+                              shiny::hr(),
                               h2('Probability of stopping ("pr_stop_at"'),
                               plotOutput('phase1plot'),
                               footer = tagList(
@@ -999,7 +999,7 @@ server <- function(input, output, session) {
           ),
           fluidRow(
             style="background-color:light-grey; text-size:larger;  font-weight: bold;",
-            column(2, offset=1, hr(), uiOutput(outputId = 'lastFileLoaded') ),
+            column(2, offset=1, shiny::hr(), uiOutput(outputId = 'lastFileLoaded') ),
             column(4,  style="background-color:light-grey; ",
                    selectInput(inputId = 'selectingAFile', 
                                label=HTML("<span style='font-style: italic;'> Parameter files to select from:</span>"),
@@ -1013,7 +1013,7 @@ server <- function(input, output, session) {
             column(4, 
                    div(style="background-color:lightgrey",
                        HTML("<span style='font-size: 16; '> README for this selection </span>"),
-                       hr(),
+                       shiny::hr(),
                        tagAppendAttributes(style="font-size: 16; ", textOutput('READMEoutput'))
                    )
             )
