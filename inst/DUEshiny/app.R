@@ -32,13 +32,11 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-#  includeCSS('tooltip.css'),
+  uiOutput('SaveLoadPanel'),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
-  shinyDebuggingPanel::withDebuggingPanel() ,
-  HTML('<i class="fa fa-check"></i>') , 
   ####  LEFT SIDE: Contour plots ####
   fluidRow(style='text-align:center',
            column(5, 
@@ -48,8 +46,16 @@ ui <- fluidPage(
                            column(4, offset=2, "R = response", br(), "r = non-response"), 
                            column(4, "T = toxicity", br(), "t = non-toxicity")
                   ),
-                  fluidRow(
-                    plotOutput("ThresholdContour", click = 'click_threshold')), 
+                  #tagAppendAttributes(
+                    # style="margin-left: 50%;
+                    #   margin-right: -50%;
+                    #   transform: translate(50%, 0%);",
+                    #style="font-color:red;",
+                  fluidRow(column(8, offset=2, #align='center',
+                    plotOutput("ThresholdContour", 
+                               click = 'click_threshold',
+                               width="700px", height="700px")
+                  )), 
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
@@ -247,14 +253,15 @@ ui <- fluidPage(
                                           style=paste0('background-color:black; color:white;'))
                                  ),
                                  br(), br()
-                               )
+                               ),
+                               br()
                       )
                     )
                   )
            )
   ),
   hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
-  uiOutput('SaveLoadPanel')
+shinyDebuggingPanel::withDebuggingPanel()
 )
 
 ####Server starts here####
