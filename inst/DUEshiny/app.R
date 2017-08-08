@@ -165,7 +165,10 @@ ui <- fluidPage(
                   h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
-                  , plotOutput("linePlot"),
+                  , fluidRow(column(8, offset=2, #align='center',
+                                    plotOutput("linePlot",
+                                               height="700px", 
+                                               width="700px") )),
                   div(
                     br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
