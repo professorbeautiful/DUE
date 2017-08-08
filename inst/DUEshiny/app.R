@@ -117,11 +117,13 @@ ui <- fluidPage(
                     href="DUE_vignette.html", rel="help", target="_blank",
                     span(
                       strong(em("Click for information:",
-                                style="color:darkgreen; font-size:small"))
+                                style="color:darkgreen; font-size:200%"))
                       ,
                       actionButton(inputId = "Info", label="",
                                    style="background:lightgreen",
-                                   icon=icon("info-sign", lib="glyphicon")))
+                                   icon=tagAppendAttributes(
+                                     style="font-size: 3em;",
+                                     icon("info-sign", lib="glyphicon"))) )
                   ),
                   br(), br(),
                   br(), br(),
