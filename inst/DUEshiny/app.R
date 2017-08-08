@@ -114,6 +114,7 @@ ui <- fluidPage(
            ####  MIDDLE: Doses and Files ####
            column(1, 
                   a(
+                    #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
                     href="DUE_vignette.html", rel="help", target="_blank",
                     span(
                       strong(em("Click for information:",
