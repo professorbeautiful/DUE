@@ -109,7 +109,7 @@ ui <- fluidPage(
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), 
                                                value = DUEinits.default$refractory, step = .1, min=0,max=1)),
-                           column(6,
+                           column(6, 
                                   # tagAppendAttributes(
                                   #   class='RLEtooltip',
                                   numericInput(inputId = "responseLimitingTox", 
@@ -117,8 +117,18 @@ ui <- fluidPage(
                                                value = DUEinits.default$Kdeath, step = 0.5, min=0)
                                   #)
                                   , 
-                                  bsTooltip(id='responseLimitingTox', 
-                                            title='so you wanna understand?', 
+                                  bsPopover(id='responseLimitingTox', 
+                                            title='Response-limiting toxicity event (RLE)',
+                                            content=paste(
+                                              collapse='<br>',
+                                              'RLE represents the case where a patient with a low',
+                                              ' threshold for toxicity has enough toxicity to prevent response, even if',
+                                            'the response threshold is low enough. ',
+                                            'This parameter is the #orders of magnitude between', 
+                                            'the upper and lower boundaries of the RT region. ',
+                                            'Below that, the patient will experience rT instead.',
+                                            'A number > 10 means every RT stays RT',
+                                            'Zero means that every RTs converts to rT'), 
                                             placement = "top", 
                                             trigger = "hover",
                                             options = list(container = "body")) 
