@@ -40,9 +40,9 @@ ui <- fluidPage(
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
-  ####  LEFT SIDE: Contour plots ####
-  fluidRow(style='text-align:center',
-           column(5, 
+  fluidRow(style='text-align:center', 
+           ####  LEFT SIDE: Contour plots ####
+           column(5, id='leftColumn',
                   h2("Joint Prob Density of Thresholds", br(), 
                      style='color:blue'),
                   fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
@@ -54,7 +54,7 @@ ui <- fluidPage(
                     #   margin-right: -50%;
                     #   transform: translate(50%, 0%);",
                     #style="font-color:red;",
-                  fluidRow(column(8, offset=2, #align='center',
+                  fluidRow(column(8, offset=2, id='divThresholdContour',
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold',
                                width="700px", height="700px")
@@ -164,10 +164,10 @@ ui <- fluidPage(
                                        icon("info-sign", lib="glyphicon"))) )
                     ),
                     br(), br(), br(), 
-                    div(style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
+                    div(id='divFavoriteDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'Selected dose', value=100, min=0)),
                     br(), br(),
-                    div(style = "background-color:green;", 
+                    div(style = "background-color:green;", id='divDoseAxes',
                              #column(2, 
                              bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
                              #)
@@ -176,12 +176,12 @@ ui <- fluidPage(
                     br(),
                     br(),
                     ####phase1resultbutton####
-                    div(style=paste0("background-color:", "red"),
+                    div(style=paste0("background-color:", "red"), id='divPhaseI',
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
                     ),
                     br(),
-                    div(style=paste0("background-color:", "lightgrey"),
+                    div(style=paste0("background-color:", "lightgrey"), id='divFileToggle',
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
@@ -1072,7 +1072,32 @@ server <- function(input, output, session) {
           )
         )
     )
-  } )
+  } )  ### end SaveLoadPanel
+  
+  # addPopover(session, 'leftColumn', title="Left side", 
+  #            content="Joint distribution of thresholds for response and toxicity", placement = 'top')
+  addPopover(session, 'divFavoriteDose', title="Dose", 
+             content="Select a dose by clicking on plot (left),<br>or type or scroll here.")
+  addPopover(session, 'divDoseAxes', title="Dose axes", 
+             content=paste(sep='<br>', 
+                           "Set both axes in left plot, and horizontal axis in right plot.",
+                           "Also used as dose tiers for Phase I trial (button below).") )
+  addPopover(session, 'divPhaseI', title="Phase I stopping", 
+             content=paste(sep='<br>', 
+                           "Click here to see the stopping probabilities",
+                           'of a 3x3 trial with dose tiers = dose axis ticks.') )
+  addPopover(session, 'divFileToggle', title="Toggle file panel (above)", 
+             content=paste(sep='<br>', 
+                           "Opens and closes the panel at the top",
+                           "for saving and loading current settings.") )
+  addPopover(session, 'divThresholdContour', title="Joint distribution", 
+             content=paste(sep='<br>', 
+                           "Patients have two thresholds, for R and for T.",
+                           "This is a contour plot for their joint distribution.",
+                           "Click to change the 'selected dose', moving the green cross.",
+                           "This divides the region into the four outcome combinations.",
+                           "The big numbers are at the medians for each sub-group.") )
+  
 }
 
 shinyApp(ui = ui, server = server)
