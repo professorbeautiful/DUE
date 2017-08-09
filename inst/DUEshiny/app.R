@@ -315,18 +315,21 @@ server <- function(input, output, session) {
         "DUEenv$", objname, " <- get('",
         objname, "', DUEinits.default)"
       ))) )
-    DUEenv$bgWindow <- "darkblue"
+    DUEenv$probLineWidths =  ### back off by 1 because drawing the boxes jacks them by 1.
+      #probLineWidthChoices[(-1 + match(DUEinits.default$probLineWidths, probLineWidthChoices)) %% 4 + 3*()]
+      sapply(DUEinits.default$probLineWidths, function(n) {
+        whichWidth = which(n == probLineWidthChoices)
+        whichWidth = whichWidth - 1
+        if(whichWidth == 0) whichWidth = length(probLineWidthChoices)
+        return (probLineWidthChoices[whichWidth])
+      })      
   })
-  DUEenv$label.utilitychoice <- "X"
-  # setupProbLines()
-  DUEenv$label.utilityTitle <- "Utility functions"
-  DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
   #### End of DUEstartShiny ####    
   
-    ## isolate({doseParameters(resetToDefaults = TRUE)})
+  ## isolate({doseParameters(resetToDefaults = TRUE)})
   ## Unknown why this call to doseParameters does not change DUEenv.
   ## But this source'ing approach works.
-  source('doseParametersForApp.R', local=TRUE)
+  # source('doseParametersForApp.R', local=TRUE)
   
   ##### Create Utility Choice Buttons ####
   isolate({
@@ -337,7 +340,6 @@ server <- function(input, output, session) {
       "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
     )
     DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
-    DUEput('testing', 'testing')  ### OK
   })
   
   
