@@ -109,29 +109,30 @@ ui <- fluidPage(
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), 
                                                value = DUEinits.default$refractory, step = .1, min=0,max=1)),
-                           column(6, 
+                           popify(
+                             title='Response-limiting toxicity event (RLE)',
+                             content=paste(
+                               sep='<br>',
+                               'RLE represents the case where a patient with a low',
+                               ' threshold for toxicity has enough toxicity to prevent response, even if',
+                               'the response threshold is low enough. ',
+                               'This parameter is the #orders of magnitude between', 
+                               'the upper and lower boundaries of the RT region. ',
+                               'Below that, the patient will experience rT instead.',
+                               'A number > 10 means every RT stays RT.',
+                               'Zero means that every RTs converts to rT.'), 
+                             placement = "top", 
+                             trigger = "hover",
+                             options = list(container = "body"),
+                             column(6, 
                                   # tagAppendAttributes(
                                   #   class='RLEtooltip',
                                   numericInput(inputId = "responseLimitingTox", 
                                                HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
                                                value = DUEinits.default$Kdeath, step = 0.5, min=0)
                                   #)
-                                  , 
-                                  bsPopover(id='responseLimitingTox', 
-                                            title='Response-limiting toxicity event (RLE)',
-                                            content=paste(
-                                              collapse='<br>',
-                                              'RLE represents the case where a patient with a low',
-                                              ' threshold for toxicity has enough toxicity to prevent response, even if',
-                                            'the response threshold is low enough. ',
-                                            'This parameter is the #orders of magnitude between', 
-                                            'the upper and lower boundaries of the RT region. ',
-                                            'Below that, the patient will experience rT instead.',
-                                            'A number > 10 means every RT stays RT',
-                                            'Zero means that every RTs converts to rT'), 
-                                            placement = "top", 
-                                            trigger = "hover",
-                                            options = list(container = "body")) 
+                             )
+                                  #bsPopover(id='responseLimitingTox', 
                            )
                   )
            )
