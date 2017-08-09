@@ -323,12 +323,7 @@ server <- function(input, output, session) {
   DUEenv$Unames = paste0("U.", c('rt','rT','Rt','RT'))
   #### End of DUEstartShiny ####    
   
-  
-  #### Overrides - DUEget, DUEput -- unnecessary! ####
-  DUEget = function(objname) DUEenv[[objname]]
-  DUEput = function(objname, value) 
-    DUEenv[[objname]] = value
-  ## isolate({doseParameters(resetToDefaults = TRUE)})
+    ## isolate({doseParameters(resetToDefaults = TRUE)})
   ## Unknown why this call to doseParameters does not change DUEenv.
   ## But this source'ing approach works.
   source('doseParametersForApp.R', local=TRUE)
