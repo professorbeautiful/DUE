@@ -35,7 +35,10 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-  uiOutput('SaveLoadPanel'),
+  tags$style(".popover{
+            max-width: 100%;
+             }"),
+  div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
@@ -60,28 +63,30 @@ ui <- fluidPage(
                                width="700px", height="700px")
                   )), 
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
-                  fluidRow(
+                  fluidRow(id = 'pop_nPops',
                     column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
                                             numericInput(inputId = "nPops",  "Number of groups", 
                                                          value = DUEinits.default$nPops, min=1))
                     )
                   ),
-                  fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
-                           column(4, 
+                  fluidRow( 
+                           style='background-color:lightgray; vertical-align:center; min-height: 100%;',
+                           column(4, id='popThisPop',
                                   numericInput(inputId = "thisPop", "This group #", 
                                                value = 1, min = 1, max = DUEinits.default$nPops)),
-                           column(4, 
+                           column(4, id='popThisPopFraction',
                                   numericInput(inputId = "thisPopFraction", "This group's proportion", 
                                                value = DUEinits.default$proportions[DUEinits.default$thisPop],
                                                min=0, max=1, step=0.1)),
-                           column(4, 
+                           column(4, id = 'popWhichFollows',
                                   numericInput(inputId = "whichFollows", 
                                                HTML("Dependent group #"), value = 2))
                   ),
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
-                  fluidRow(style='background-color:lightgray; vertical-align:center; min-height: 100%;',
+                  fluidRow(id = 'popParamsThisPop', 
+                           style='background-color:lightgray; vertical-align:center; min-height: 100%;',
                            column(4, style='background-color:lightgray',
-                                  numericInput(inputId = "thetaRmedian", "Theta R Mean", 
+                                  numericInput(inputId = "thetaRmedian", "Theta R Median", 
                                                value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
                                   numericInput(inputId = "thetaR.CV", "Theta R CV", 
                                                value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
@@ -95,7 +100,7 @@ ui <- fluidPage(
                                                    min = -(1-0.01), max = 1-0.01, step = 0.1))
                            ),
                            column(4, style='background-color:lightgray',
-                                  numericInput(inputId = "thetaTmedian", "Theta T Mean", 
+                                  numericInput(inputId = "thetaTmedian", "Theta T Median", 
                                                value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
                                   
                                   numericInput(inputId = "thetaT.CV", "Theta T CV", 
@@ -105,7 +110,7 @@ ui <- fluidPage(
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   h3("Auxiliary parameters", style='color:blue;'),
                   fluidRow(style='background-color:lightgray;',
-                           column(6,
+                           column(6, id = 'popRefractory',
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), 
                                                value = DUEinits.default$refractory, step = .1, min=0,max=1)),
@@ -196,17 +201,20 @@ ui <- fluidPage(
            ####  RIGHT SIDE: Probabilities and Expected Utility ####
            column(5, 
                   h2("Probabilities and Expected Utility, E(U)", style="color:blue")
-                  , fluidRow(style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
+                  , fluidRow(id = 'popLineThickness', 
+                             style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
-                  , fluidRow(column(8, offset=2, #align='center',
+                  , fluidRow(id = 'popLinePlot',
+                             column(8, offset=2, #align='center',
                                     plotOutput("linePlot",
                                                height="700px", 
                                                width="700px") )),
-                  div(
+                  div(id = 'popUtilities',
                     br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
-                      fluidRow(style='background-color:lightgrey;',
+                      fluidRow(id = 'popCustomUtilities',
+                               style='background-color:lightgrey;',
                                fluidRow(
                                  column(4, 
                                         #        style="text-align:center; vertical-align:center;",                                        ,
@@ -256,7 +264,7 @@ ui <- fluidPage(
                                )
                                ,
                                shiny::hr(), br(), 
-                               fluidRow(
+                               fluidRow(id = 'popPresetUtilities',
                                  column(4, h3("or choose a preset option here:", style="color:blue")
                                  ),
                                  column(4, style=paste0('color:', rt.outcome.colors['RT']),
@@ -299,7 +307,7 @@ ui <- fluidPage(
            )
   ),
   shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
-shinyDebuggingPanel::withDebuggingPanel()
+  div(id = 'popDebugging', shinyDebuggingPanel::withDebuggingPanel() )
 )
 
 ####Server starts here####
@@ -1074,14 +1082,57 @@ server <- function(input, output, session) {
     )
   } )  ### end SaveLoadPanel
   
+  #   https://getbootstrap.com/javascript/#popovers-options
   # addPopover(session, 'leftColumn', title="Left side", 
   #            content="Joint distribution of thresholds for response and toxicity", placement = 'top')
+  
+  addPopover(session, 'popFilePanel', title="File panel: save and load parameters",
+             content=paste(sep='<br>',
+                           'Click toggle checkbox, left side of grey bar',
+                           'for saving and loading current settings.'))
+  
+  #### popOvers for left side ####
+  addPopover(session, 'divThresholdContour', title="Joint distribution", 
+             content=paste(sep='<br>', 
+                           "Patients have two thresholds, for R and for T.",
+                           "This is a contour plot for their joint distribution.",
+                           "Click to change the 'selected dose', moving the green cross.",
+                           "This divides the region into the four outcome combinations.",
+                           "The big numbers are at the medians for each sub-group.") )
+  addPopover(session, 'pop_nPops', title="Number of sub-groups", 
+             content=paste(sep='<br>', 
+                           "Number of distinct sub-groups in the joint threshold distribution."))
+  addPopover(session, 'popThisPop', title="Which sub-group", 
+             content=paste(sep='<br>', 
+                           'Which sub-group that inputs in this box are currently showing.' ))
+  addPopover(session, 'popThisPopFraction', title="Proportion for this sub-group", 
+             content=paste(sep='<br>',
+                           'Proportion of this sub-group in the patient population.' ))
+  addPopover(session, 'popWhichFollows', title="Which sub-group's proportion will change", 
+             content=paste(sep='<br>',
+                           '(Relevant if # sub-groups is 3 or more.)',
+                           'If this proportion changes, which other sub-group must change so sum=1?' ))
+  addPopover(session, 'popParamsThisPop', title="Parameters for this sub-group",  placement = 'top',
+             content=paste(sep='<br>',
+                           'Theta R Median & Theta T Median:',
+                           'Median (on the dose scale) for this sub-group.',
+                           'Theta R CV & Theta T CV:',
+                           'Coefficient of variation (on the log-dose scale) for this sub-group.',
+                           'Correlation:',
+                           'Correlation of R and T <strong>log</strong> thresholds for this sub-group.'))
+  addPopover(session, 'popRefractory', title="Probability of a refractory tumor",  placement = 'top',
+             content=paste(sep='<br>',
+                           'Accounting for a proportion totally resistant to treatment,',
+                           'regardless of which sub-group the patient is in.' ))
+  
+  #### popOvers for central column ####
   addPopover(session, 'divFavoriteDose', title="Dose", 
              content="Select a dose by clicking on plot (left),<br>or type or scroll here.")
   addPopover(session, 'divDoseAxes', title="Dose axes", 
-             content=paste(sep='<br>', 
+             content=# div(style="text-width:200px;", 
+               paste(sep='<br>', 
                            "Set both axes in left plot, and horizontal axis in right plot.",
-                           "Also used as dose tiers for Phase I trial (button below).") )
+                           "Also used as dose tiers for Phase I trial (button below).") ) #)
   addPopover(session, 'divPhaseI', title="Phase I stopping", 
              content=paste(sep='<br>', 
                            "Click here to see the stopping probabilities",
@@ -1090,14 +1141,41 @@ server <- function(input, output, session) {
              content=paste(sep='<br>', 
                            "Opens and closes the panel at the top",
                            "for saving and loading current settings.") )
-  addPopover(session, 'divThresholdContour', title="Joint distribution", 
-             content=paste(sep='<br>', 
-                           "Patients have two thresholds, for R and for T.",
-                           "This is a contour plot for their joint distribution.",
-                           "Click to change the 'selected dose', moving the green cross.",
-                           "This divides the region into the four outcome combinations.",
-                           "The big numbers are at the medians for each sub-group.") )
-  
+ 
+  #### popOvers for right side ####
+  addPopover(session, 'popLineThickness', title="Line thckness buttons",  
+             content=paste(sep='<br>',
+                           'Each button is a three-way toggle for a plot line. ',
+                           'Invisible (small box, line name in parentheses).',
+                           'Thin line (small box, no parentheses)',
+                           'Thick line (large box)',
+                           'Click box to cycle through these 3 choices.' ))
+  addPopover(session, 'popLinePlot', title="Plot of outcomes and E(U).",  
+             content=paste(sep='<br>',
+                           'Dose-probability curves:',
+                           '---for R (total response), T (total toxicity),',
+                           '---for the 4 quadrant outcomes and RLE, and ',
+                           '---for E(U), the expected utility.' ))
+  addPopover(session, 'popUtilities', title="Utility values for each outcome",  placement = 'top',
+             content=paste(sep='<br>',
+                           'Preset buttons in the bottom row.',
+                           'You can also modify the values in the top row. ',
+                           'The E(U) curve above will respond to utility changes.' ))
+  addPopover(session, 'popCustomUtilities', title="Custom Utilities",  placement = 'top',
+             content=paste(sep='<br>',
+                           'You can change values by typing ',
+                           'or by clicking the little up&down arrows.'
+             ))
+  addPopover(session, 'popPresetUtilities', title="Preset Utility Assignments",  placement = 'top',
+             content=paste(sep='<br>',
+                           'Additive: +1 for Response, -1 for Toxicity',
+                           'Simple:  +1 for Rt',
+                           'Aggressive: U(RT) = +1  (toxicity doesn\'t matter)',
+                           'Cautious: U(RT) = -1  (response doesn\'t matter)' ))
+  addPopover(session, 'popDebugging', title="Debugging panel",  placement = 'top',
+             content=paste(sep='<br>',
+                           'Click toggle checkbox, left side of grey bar, to open debugging panel.',
+                           'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
 }
 
 shinyApp(ui = ui, server = server)
