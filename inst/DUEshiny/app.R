@@ -38,6 +38,7 @@ ui <- fluidPage(
   tags$style(".popover{
             max-width: 100%;
              }"),
+  tags$script(' $(".popover").disabled=input.divPopoverToggle;'), ## Needs work!
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
@@ -190,7 +191,13 @@ ui <- fluidPage(
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
+                    ),
+                    div(style=paste0("background-color:", "lightgrey"), id='divPopoverToggle',
+                        checkboxInput(inputId = "togglePopovers", 
+                                      label = HTML("Show/hide <br> the helpful <br> popovers")
+                        )
                     )
+                    
                     # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
                     # fluidRow(style =  "font-size:large",
                     #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
