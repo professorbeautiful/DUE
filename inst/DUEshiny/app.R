@@ -1183,6 +1183,7 @@ server <- function(input, output, session) {
              content=paste(sep='<br>',
                            'Click toggle checkbox, left side of grey bar, to open debugging panel.',
                            'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
+  session$onSessionEnded(stopApp)
 }
 
 shinyApp(ui = ui, server = server)
