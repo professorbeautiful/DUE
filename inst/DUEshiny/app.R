@@ -35,7 +35,7 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-  tags$style(".popover{max-width: 100%; }"),
+  tags$style(".popover{max-width: 100%; font-size:large}"),
   
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
@@ -178,7 +178,7 @@ ui <- fluidPage(
                     div(style=paste0("background-color:", "lightgrey"), id='popPopoverToggle',
                         checkboxInput(inputId = "togglePopovers", 
                                       label = HTML("Show/hide <br> the helpful <br> popovers",
-                                                   value=TRUE)
+                                                   value=FALSE)
                         )
                     )
                     
@@ -1182,33 +1182,69 @@ server <- function(input, output, session) {
                              'Click toggle checkbox, left side of grey bar, to open debugging panel.',
                              'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
   }
+  stopOnePopover = function(pop) {
+    output$JSevaluation = renderUI({
+      scriptString = paste(
+        'stopOnePopoverString = 
+        "$(\\"*[id=\\\'"', pop, '\\\']\\").popover(\\\'destroy\\\');" ;',
+        'eval(stopOnePopoverString); '
+      )
+      tags$script( scriptString )
+      ## This works!  JS console shows an error, but it works.
+      ## TypeError: null is not an object (evaluating 'a.$element.off')
+    } )
+  }
   stopAllPopovers = function(){
     cat("stopAllPopovers\n")
+    # X = "$('*[id^=\\\\'pop\\\\']').popover('destroy');"
+    # print(X)
+    # cat(X, '\n')
+    # X="alert(eval('1234'));"   # This works.
+    # X="alert(eval($('*')));" # This works.
+    # X='var popWord = \"pop\"; alert(eval("popWord")) ;'  ### This works
+    # X='var popWord = \"pop\"; 
+    # alert(eval($(\'*[id^="popWord" ]\').popover(\'destroy\')  ));  ' 
+    ### This runs (in R eval box), but does not achieve goal.
     output$JSevaluation = renderUI({
-      tags$script(' alert(eval("HERE"));')
-      #$("*[id^=\'pop\']").popover(\'destroy\');')
-      #      $("*[id^='pop']").popover('destroy');
-    })
+      scriptString = paste(
+        'stopAllPopoversString =
+            "$(\\"*[id^=\\\'pop\\\']\\").popover(\\\'destroy\\\');" ;',
+        'eval(stopAllPopoversString); '
+      )
+      tags$script( scriptString )
+      # stopAllPopoversString =
+      # "$(\"*[id^=\'pop\']\").popover(\'destroy\');" ; 
+      #  eval(stopAllPopoversString);
+        ## This works!  JS console shows an error, but it works.
+        ## TypeError: null is not an object (evaluating 'a.$element.off')
+    } ) 
   }
+      #      
+      #      $("*[id^='pop']").popover('destroy');   
+      #      $('*[id^=\'pop\']').popover('destroy');
+      #      eval("$('*[id^=\\'pop\\']').popover('destroy');")
+      #     alert(eval("$('*[id^=\\'pop\\']').popover('destroy');"));
+  # Xtemp = eval("$('*[id^=\\'pop\\']').popover('destroy');");  alert(Xtemp);
+  # JS:   stopAllPopoversString = "$('*[id^=\\'pop\\']').popover('destroy');"
+  
+  output$JSevaluation = renderUI({
+    tags$script( "eval(stopAllPopoversString); ")
+  } )
+      ### These work in JS console... if we can master the quoting problem to get it evaluated.
+  
   addAllPopovers()
-    observeEvent(input$togglePopovers, {
-      cat('input$togglePopovers ', input$togglePopovers, '\n')
+  
+  observeEvent(input$togglePopovers, {
+    cat('input$togglePopovers ', input$togglePopovers, '\n')
     if(input$togglePopovers) 
       addAllPopovers()
     else 
-      addAllPopovers()
-      # $("*[id^='pop']")  # This works.
-      # $("*[id^='pop']").popover('destroy')
-      #togglePopovers;'), ## Needs work!
-      # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
-    # output$JSevaluation = renderUI({
-    #   if (wasClicked(input$evalButtonJS)) {
-    #     evalString = gsub("\"", "'", isolate(input$evalStringJS))
-    #     div(list(tags$script(paste0("alert(eval(\"", 
-    #                                 evalString, "\"))"))))
-    #   }
-    # })
+      stopAllPopovers()
+    # $("*[id^='pop']")  # This works.
+    # $("*[id^='pop']").popover('destroy')
+    # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
   })
+  
   session$onSessionEnded(stopApp)
 }
 
