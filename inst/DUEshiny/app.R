@@ -35,10 +35,8 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-  tags$style(".popover{
-            max-width: 100%;
-             }"),
-  tags$script(' $(".popover").disabled=input.divPopoverToggle;'), ## Needs work!
+  tags$style(".popover{max-width: 100%; }"),
+  
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
@@ -58,7 +56,7 @@ ui <- fluidPage(
                     #   margin-right: -50%;
                     #   transform: translate(50%, 0%);",
                     #style="font-color:red;",
-                  fluidRow(column(8, offset=2, id='divThresholdContour',
+                  fluidRow(column(8, offset=2, id='popThresholdContour',
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold',
                                width="700px", height="700px")
@@ -114,31 +112,15 @@ ui <- fluidPage(
                            column(6, id = 'popRefractory',
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), 
-                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)),
-                           popify(
-                             title='Response-limiting toxicity event (RLE)',
-                             content=paste(
-                               sep='<br>',
-                               'RLE represents the case where a patient with a low',
-                               ' threshold for toxicity has enough toxicity to prevent response, even if',
-                               'the response threshold is low enough. ',
-                               'This parameter is the #orders of magnitude between', 
-                               'the upper and lower boundaries of the RT region. ',
-                               'Below that, the patient will experience rT instead.',
-                               'A number > 10 means every RT stays RT.',
-                               'Zero means that every RTs converts to rT.'), 
-                             placement = "top", 
-                             trigger = "hover",
-                             options = list(container = "body"),
-                             column(6, 
+                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)
+                           ),
+                           column(6, id = 'popRLE',
                                   # tagAppendAttributes(
                                   #   class='RLEtooltip',
                                   numericInput(inputId = "responseLimitingTox", 
                                                HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
                                                value = DUEinits.default$Kdeath, step = 0.5, min=0)
                                   #)
-                             )
-                                  #bsPopover(id='responseLimitingTox', 
                            )
                   )
            )
@@ -170,10 +152,10 @@ ui <- fluidPage(
                                        icon("info-sign", lib="glyphicon"))) )
                     ),
                     br(), br(), br(), 
-                    div(id='divFavoriteDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
+                    div(id='popFavoriteDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('favoriteDose', 'Selected dose', value=100, min=0)),
                     br(), br(),
-                    div(style = "background-color:green;", id='divDoseAxes',
+                    div(style = "background-color:green;", id='popDoseAxes',
                              #column(2, 
                              bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
                              #)
@@ -182,19 +164,21 @@ ui <- fluidPage(
                     br(),
                     br(),
                     ####phase1resultbutton####
-                    div(style=paste0("background-color:", "red"), id='divPhaseI',
+                    div(style=paste0("background-color:", "red"), 
+                        id='popPhaseI',
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
                     ),
                     br(),
-                    div(style=paste0("background-color:", "lightgrey"), id='divFileToggle',
+                    div(style=paste0("background-color:", "lightgrey"), id='popFileToggle',
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
                     ),
-                    div(style=paste0("background-color:", "lightgrey"), id='divPopoverToggle',
+                    div(style=paste0("background-color:", "lightgrey"), id='popPopoverToggle',
                         checkboxInput(inputId = "togglePopovers", 
-                                      label = HTML("Show/hide <br> the helpful <br> popovers")
+                                      label = HTML("Show/hide <br> the helpful <br> popovers",
+                                                   value=TRUE)
                         )
                     )
                     
@@ -1093,96 +1077,138 @@ server <- function(input, output, session) {
   # addPopover(session, 'leftColumn', title="Left side", 
   #            content="Joint distribution of thresholds for response and toxicity", placement = 'top')
   
-  addPopover(session, 'popFilePanel', title="File panel: save and load parameters",
-             content=paste(sep='<br>',
-                           'Click toggle checkbox, left side of grey bar',
-                           'for saving and loading current settings.'))
-  
-  #### popOvers for left side ####
-  addPopover(session, 'divThresholdContour', title="Joint distribution", 
-             content=paste(sep='<br>', 
-                           "Patients have two thresholds, for R and for T.",
-                           "This is a contour plot for their joint distribution.",
-                           "Click to change the 'selected dose', moving the green cross.",
-                           "This divides the region into the four outcome combinations.",
-                           "The big numbers are at the medians for each sub-group.") )
-  addPopover(session, 'pop_nPops', title="Number of sub-groups", 
-             content=paste(sep='<br>', 
-                           "Number of distinct sub-groups in the joint threshold distribution."))
-  addPopover(session, 'popThisPop', title="Which sub-group", 
-             content=paste(sep='<br>', 
-                           'Which sub-group that inputs in this box are currently showing.' ))
-  addPopover(session, 'popThisPopFraction', title="Proportion for this sub-group", 
-             content=paste(sep='<br>',
-                           'Proportion of this sub-group in the patient population.' ))
-  addPopover(session, 'popWhichFollows', title="Which sub-group's proportion will change", 
-             content=paste(sep='<br>',
-                           '(Relevant if # sub-groups is 3 or more.)',
-                           'If this proportion changes, which other sub-group must change so sum=1?' ))
-  addPopover(session, 'popParamsThisPop', title="Parameters for this sub-group",  placement = 'top',
-             content=paste(sep='<br>',
-                           'Theta R Median & Theta T Median:',
-                           'Median (on the dose scale) for this sub-group.',
-                           'Theta R CV & Theta T CV:',
-                           'Coefficient of variation (on the log-dose scale) for this sub-group.',
-                           'Correlation:',
-                           'Correlation of R and T <strong>log</strong> thresholds for this sub-group.'))
-  addPopover(session, 'popRefractory', title="Probability of a refractory tumor",  placement = 'top',
-             content=paste(sep='<br>',
-                           'Accounting for a proportion totally resistant to treatment,',
-                           'regardless of which sub-group the patient is in.' ))
-  
-  #### popOvers for central column ####
-  addPopover(session, 'divFavoriteDose', title="Dose", 
-             content="Select a dose by clicking on plot (left),<br>or type or scroll here.")
-  addPopover(session, 'divDoseAxes', title="Dose axes", 
-             content=# div(style="text-width:200px;", 
-               paste(sep='<br>', 
-                           "Set both axes in left plot, and horizontal axis in right plot.",
-                           "Also used as dose tiers for Phase I trial (button below).") ) #)
-  addPopover(session, 'divPhaseI', title="Phase I stopping", 
-             content=paste(sep='<br>', 
-                           "Click here to see the stopping probabilities",
-                           'of a 3x3 trial with dose tiers = dose axis ticks.') )
-  addPopover(session, 'divFileToggle', title="Toggle file panel (above)", 
-             content=paste(sep='<br>', 
-                           "Opens and closes the panel at the top",
-                           "for saving and loading current settings.") )
- 
-  #### popOvers for right side ####
-  addPopover(session, 'popLineThickness', title="Line thckness buttons",  
-             content=paste(sep='<br>',
-                           'Each button is a three-way toggle for a plot line. ',
-                           'Invisible (small box, line name in parentheses).',
-                           'Thin line (small box, no parentheses)',
-                           'Thick line (large box)',
-                           'Click box to cycle through these 3 choices.' ))
-  addPopover(session, 'popLinePlot', title="Plot of outcomes and E(U).",  
-             content=paste(sep='<br>',
-                           'Dose-probability curves:',
-                           '---for R (total response), T (total toxicity),',
-                           '---for the 4 quadrant outcomes and RLE, and ',
-                           '---for E(U), the expected utility.' ))
-  addPopover(session, 'popUtilities', title="Utility values for each outcome",  placement = 'top',
-             content=paste(sep='<br>',
-                           'Preset buttons in the bottom row.',
-                           'You can also modify the values in the top row. ',
-                           'The E(U) curve above will respond to utility changes.' ))
-  addPopover(session, 'popCustomUtilities', title="Custom Utilities",  placement = 'top',
-             content=paste(sep='<br>',
-                           'You can change values by typing ',
-                           'or by clicking the little up&down arrows.'
-             ))
-  addPopover(session, 'popPresetUtilities', title="Preset Utility Assignments",  placement = 'top',
-             content=paste(sep='<br>',
-                           'Additive: +1 for Response, -1 for Toxicity',
-                           'Simple:  +1 for Rt',
-                           'Aggressive: U(RT) = +1  (toxicity doesn\'t matter)',
-                           'Cautious: U(RT) = -1  (response doesn\'t matter)' ))
-  addPopover(session, 'popDebugging', title="Debugging panel",  placement = 'top',
-             content=paste(sep='<br>',
-                           'Click toggle checkbox, left side of grey bar, to open debugging panel.',
-                           'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
+  addAllPopovers = function() {
+    cat("addAllPopovers\n")
+    addPopover(session, 'popFilePanel', title="File panel: save and load parameters",
+               content=paste(sep='<br>',
+                             'Click toggle checkbox, left side of grey bar',
+                             'for saving and loading current settings.'))
+    
+    #### popOvers for left side ####
+    addPopover(session, 'popThresholdContour', title="Joint distribution", 
+               content=paste(sep='<br>', 
+                             "Patients have two thresholds, for R and for T.",
+                             "This is a contour plot for their joint distribution.",
+                             "Click to change the 'selected dose', moving the green cross.",
+                             "This divides the region into the four outcome combinations.",
+                             "The big numbers are at the medians for each sub-group.") )
+    addPopover(session, 'pop_nPops', title="Number of sub-groups", 
+               content=paste(sep='<br>', 
+                             "Number of distinct sub-groups in the joint threshold distribution."))
+    addPopover(session, 'popThisPop', title="Which sub-group", 
+               content=paste(sep='<br>', 
+                             'Which sub-group that inputs in this box are currently showing.' ))
+    addPopover(session, 'popThisPopFraction', title="Proportion for this sub-group", 
+               content=paste(sep='<br>',
+                             'Proportion of this sub-group in the patient population.' ))
+    addPopover(session, 'popWhichFollows', title="Which sub-group's proportion will change", 
+               content=paste(sep='<br>',
+                             '(Relevant if # sub-groups is 3 or more.)',
+                             'If this proportion changes, which other sub-group must change so sum=1?' ))
+    addPopover(session, 'popParamsThisPop', title="Parameters for this sub-group",  placement = 'top',
+               content=paste(sep='<br>',
+                             'Theta R Median & Theta T Median:',
+                             'Median (on the dose scale) for this sub-group.',
+                             'Theta R CV & Theta T CV:',
+                             'Coefficient of variation (on the log-dose scale) for this sub-group.',
+                             'Correlation:',
+                             'Correlation of R and T <strong>log</strong> thresholds for this sub-group.'))
+    addPopover(session, 'popRefractory', placement = 'top',
+               title="Probability of a refractory tumor", 
+               content=paste(sep='<br>',
+                             'Accounting for a proportion totally resistant to treatment,',
+                             'regardless of which sub-group the patient is in.' ))
+    addPopover(session, 'popRLE', placement = 'top',
+               title='Response-limiting toxicity event (RLE)',
+               content=paste(sep='<br>',
+                             'RLE represents the case where a patient with a low',
+                             ' threshold for toxicity has enough toxicity to prevent response, even if',
+                             'the response threshold is low enough. ',
+                             'This parameter is the #orders of magnitude between', 
+                             'the upper and lower boundaries of the RT region. ',
+                             'Below that, the patient will experience rT instead.',
+                             'A number > 10 means every RT stays RT.',
+                             'Zero means that every RTs converts to rT.')
+    )
+    #### popOvers for central column ####
+    addPopover(session, 'popFavoriteDose', title="Dose", 
+               content="Select a dose by clicking on plot (left),<br>or type or scroll here.")
+    addPopover(session, 'popDoseAxes', title="Dose axes", 
+               content=# div(style="text-width:200px;", 
+                 paste(sep='<br>', 
+                       "Set both axes in left plot, and horizontal axis in right plot.",
+                       "Also used as dose tiers for Phase I trial (button below).") ) #)
+    addPopover(session, 'popPhaseI', title="Phase I stopping", 
+               content=paste(sep='<br>', 
+                             "Click here to see the stopping probabilities",
+                             'of a 3x3 trial with dose tiers = dose axis ticks.') )
+    addPopover(session, 'popFileToggle', title="Toggle file panel (above)", 
+               content=paste(sep='<br>', 
+                             "Opens and closes the panel at the top",
+                             "for saving and loading current settings.") )
+    
+    #### popOvers for right side ####
+    addPopover(session, 'popLineThickness', title="Line thckness buttons",  
+               content=paste(sep='<br>',
+                             'Each button is a three-way toggle for a plot line. ',
+                             'Invisible (small box, line name in parentheses).',
+                             'Thin line (small box, no parentheses)',
+                             'Thick line (large box)',
+                             'Click box to cycle through these 3 choices.' ))
+    addPopover(session, 'popLinePlot', title="Plot of outcomes and E(U).",  
+               content=paste(sep='<br>',
+                             'Dose-probability curves:',
+                             '---for R (total response), T (total toxicity),',
+                             '---for the 4 quadrant outcomes and RLE, and ',
+                             '---for E(U), the expected utility.' ))
+    addPopover(session, 'popUtilities', title="Utility values for each outcome",  placement = 'top',
+               content=paste(sep='<br>',
+                             'Preset buttons in the bottom row.',
+                             'You can also modify the values in the top row. ',
+                             'The E(U) curve above will respond to utility changes.' ))
+    addPopover(session, 'popCustomUtilities', title="Custom Utilities",  placement = 'top',
+               content=paste(sep='<br>',
+                             'You can change values by typing ',
+                             'or by clicking the little up&down arrows.'
+               ))
+    addPopover(session, 'popPresetUtilities', title="Preset Utility Assignments",  placement = 'top',
+               content=paste(sep='<br>',
+                             'Additive: +1 for Response, -1 for Toxicity',
+                             'Simple:  +1 for Rt',
+                             'Aggressive: U(RT) = +1  (toxicity doesn\'t matter)',
+                             'Cautious: U(RT) = -1  (response doesn\'t matter)' ))
+    addPopover(session, 'popDebugging', title="Debugging panel",  placement = 'top',
+               content=paste(sep='<br>',
+                             'Click toggle checkbox, left side of grey bar, to open debugging panel.',
+                             'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
+  }
+  stopAllPopovers = function(){
+    cat("stopAllPopovers\n")
+    output$JSevaluation = renderUI({
+      tags$script(' alert(eval("HERE"));')
+      #$("*[id^=\'pop\']").popover(\'destroy\');')
+      #      $("*[id^='pop']").popover('destroy');
+    })
+  }
+  addAllPopovers()
+    observeEvent(input$togglePopovers, {
+      cat('input$togglePopovers ', input$togglePopovers, '\n')
+    if(input$togglePopovers) 
+      addAllPopovers()
+    else 
+      addAllPopovers()
+      # $("*[id^='pop']")  # This works.
+      # $("*[id^='pop']").popover('destroy')
+      #togglePopovers;'), ## Needs work!
+      # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
+    # output$JSevaluation = renderUI({
+    #   if (wasClicked(input$evalButtonJS)) {
+    #     evalString = gsub("\"", "'", isolate(input$evalStringJS))
+    #     div(list(tags$script(paste0("alert(eval(\"", 
+    #                                 evalString, "\"))"))))
+    #   }
+    # })
+  })
   session$onSessionEnded(stopApp)
 }
 
