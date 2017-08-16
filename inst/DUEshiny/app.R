@@ -177,9 +177,8 @@ ui <- fluidPage(
                     ),
                     div(style=paste0("background-color:", "lightgrey"), id='popPopoverToggle',
                         checkboxInput(inputId = "togglePopovers", 
-                                      label = HTML("Show/hide <br> the helpful <br> popovers",
+                                      label = HTML("Show/hide <br> the helpful <br> popovers"),
                                                    value=FALSE)
-                        )
                     )
                     
                     # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
