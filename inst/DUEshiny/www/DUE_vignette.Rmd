@@ -2,14 +2,15 @@
 title: "DUE, the Dose Utility Explorer"
 author: "Roger Day, Marie Gerges"
 date: "8/7/2017"
-output: html_document
+# output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 numbersections: TRUE
 ---
-<!-- rmarkdown::html_vignette -->
-<!-- vignette: > -->
-<!--   %\VignetteIndexEntry{Vignette Title} -->
-<!--   %\VignetteEngine{knitr::rmarkdown} -->
-<!--   %\VignetteEncoding{UTF-8} -->
+
   
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
