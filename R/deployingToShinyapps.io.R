@@ -31,6 +31,6 @@ function(app=dir('inst')[1], user='professorbeautiful', project=basename(getwd()
 
 .runDeployed =
 function(app="shinyElicit"){
-  system("open https://trials.shinyapps.io/" %&% app)
+  system(paste0("open https://trials.shinyapps.io/", app))
   cat(paste0("rsconnect::showLogs(appPath = 'inst/", app,"')"), '\n')
 }
