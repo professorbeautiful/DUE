@@ -14,6 +14,7 @@ numbersections: TRUE
   
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(DUE)
 ```
 <!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html and http://pandoc.org/MANUAL.html -->
 
@@ -65,6 +66,7 @@ Not included are:
 ### Overview of the interface
 
 The package presents a window that includes:
+
 * upper left: a graph of the threshold distribution 
 * upper right: a graph of the mappings from dose to the expected utility,
  together with probabilities of events and event combinations,
@@ -74,17 +76,70 @@ The package presents a window that includes:
 
 #### *The threshold distribution inputs*
 
-##### *Threshold distribution parameters*
-
+##### The joint threshold model
 We assume that each patient has a pair of thresholds, 
  $\theta_{R}$
  for response and 
  $\theta_{T}$  for toxicity.
- If the dose exceeds the threshold, then the corresponding event occurs.
+ If the dose exceeds the threshold, then the corresponding event, $R$ or $T$, occurs.
+
  The model for the joint distribution of toxicity and response thresholds
- is a mixture of joint lognormals. The idea is that patients differ 
+ is a mixture of joint lognormals.  
+The groups in the mixture might differ by differences in pharmacokinetics, affecting both thresholds, so that one expects them to be centered along a line. Pharmacokinetics processes mediate the conversion of the dose into the delivered concentation. The groups can also differ in the pharmacodynamics: the effect of the concentration at the affected tissues   Pharmacodynamics processes mediate the effects of exposure on the tissues. A discrete factor affecting pharmacodynamics of response affects only $\theta_{R}$, so that groups are placed horizontally on the plot. Likewise, a discrete factor affecting pharmacodynamics of toxicity affects only $\theta_{T}$, and the groups are placed vertically.
+
+```{r echo=FALSE, fig.width=8}
+print(getwd())
+print(dir())
+
+envHolder = new.env()
+getExampleFile = function(string) {
+  dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
+  filename = paste0(dirString,  rev(grep(value=TRUE, string,
+                                     dir(dirString)))[1]) 
+  if(class(filename) == 'try-error') {
+    cat("file not found ", string, "\n")
+    print(getwd())
+    print(dir())
+  }
+  filename
+}
+  # filename = system.file(package='DUE', 
+#      'inst', 'DUEshiny',
+#      rev(grep(value=TRUE, 'Pharmacokinetic-example-two-groups',
+#           dir('inst/DUEshiny')))[1]) 
+rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
+                        Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
+probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
+
+plotThresholdInVignette= function(string) {
+  filename = getExampleFile(string) 
+  if(class(filename) != 'try-error') {
+    load(filename, envir = envHolder)
+   rt.outcome.colors = envHolder$rt.outcome.colors
+    try({
+      plotThresholdContour(theDUEenv = envHolder$DUEsaving, context='vignette')
+      mtext(side = 3, string, cex=1)
+    })
+  }
+}
+par(mfrow=c(1, 3) )
+plotThresholdInVignette('Pharmacokinetic-example-two-groups') 
+plotThresholdInVignette('Pharmacodynamics-response-two-groups') 
+plotThresholdInVignette('Pharmacodynamics-toxicity-two-groups') 
+```
+
+The number of groups is set in the input box labeled $Number\ of\ groups$ (with value $input\$nPops$ ); if increased or decreased, reasonable adjustments take place elsewhere.
+
+ A vector the length of the number of groups describes the probabilities
+ of each component of the mixture distribution.
+
+To select which group the parameters refer to, there is an input box labeled 
+$This\ group\ \#$.
+ Another input box labeled $This\ group's\ fraction$ holds the fraction belonging to this group within the total population.
+ Because the probabilities of the components must add to one, wen the groups' fraction changes another group's fraction must change in the opposite direction. When there are more than 2 groups, there is more than one choice for which group changes. We provide a box labeled $Dependent\ group\ \#$, to select one component that will adjust to accommodate a change in another component's probability.
+
  
- The joint lognormal for each sub-population is described by 
+The joint lognormal density for each group in the mixture is described by these parameters: 
  
 * the two medians of the corresponding normal distributions,
 $\mu_{R} = \exp(E(\log \theta_{R}))$ and  $\mu_{T} = \exp(E(\log \theta_{T}))$, 
@@ -93,24 +148,7 @@ $CV_{R}$ and $CV_{T}$,  and
 * $\rho$, the correlation between $\log\mu_{R}$ and 
 $\log\mu_{T}$.
 
-
- A vector the length of the number of subpopulations describes the probabilities
- of each component of the mixture distribution.
- Each of these parameters is controlled by a pair of scale (or slider) objects
- and input boxes, so that either one can be used to change the parameter
- value.
- 
-
-To select which subpopulation the parameters refer to, there is a input box labeled 
-$This\ population$.
- The number of subpopulation is set in the input box 
-$\#Pops$ ; if increased or decreased, reasonable adjustments take place elsewhere.
-
- Another input box holds the population fraction for 
-$This\ population$.
- Because the probabilities of the components must add to one, we provide a box labeled 
-$Which\ population\ fraction\ follows$
-, to select one component that will adjust to accommodate a change in another component's probability.
+(The corresponding input values are: $input\$thetaRmedian$, $input\$thetaTmedian$, $input\$thetaR.CV$, $input\$thetaT.CV$, $input\$correlation$.)
 
 
 ### Response-limiting toxicity
@@ -142,10 +180,10 @@ Some proportion of patients may have disease which will not respond to the treat
 On the upper left side of the window is the contour plot for the joint threshold
  distribution.
  If one clicks on the graph close to one of the modes, then the parameter
-$This population$
- should change to refer to the corresponding subpopulation.
+$This\ group\ \#$
+ should change to refer to the corresponding group
  If the click is too far away, then a 
-$favorite dose$
+$favorite\ dose$
  is selected, corresponding to the closest diagonal point 
  $(D,D)$.
 $D$
@@ -153,10 +191,10 @@ $D$
  four outcomes: 
 
 
-* rt: neither response nor toxicity
-* rT: only toxicity
-* Rt: only response
-* RT: both response and toxicity
+* $rt\ \ $:  neither response nor toxicity
+* $rT\ $: only toxicity
+* $Rt\ $: only response
+* $RT$: both response and toxicity
 
 
 If the 

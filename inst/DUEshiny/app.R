@@ -1207,9 +1207,16 @@ server <- function(input, output, session) {
     output$JSevaluation = renderUI({
       scriptString = paste(
         'stopAllPopoversString =
-            "$(\\"*[id^=\\\'pop\\\']\\").popover(\\\'destroy\\\');" ;',
+        "$(\\"*[id^=\\\'pop\\\']\\").popover(\\\'destroy\\\');" ;',
         'eval(stopAllPopoversString); '
-      )
+      ) # Selects the popovers just fine!
+      # scriptString = paste(
+      #   'stopAllPopoversString =
+      #   "$(\\\'[data-toggle="popover"]\\\').popover(\\\'destroy\\\');" ;',
+      #   'eval(stopAllPopoversString); '
+      # )  ### Does NOT select the popovers,
+      #    ### despite https://www.w3schools.com/bootstrap/bootstrap_ref_js_popover.asp
+      cat(scriptString, '\n')
       tags$script( scriptString )
       # stopAllPopoversString =
       # "$(\"*[id^=\'pop\']\").popover(\'destroy\');" ; 
@@ -1226,19 +1233,20 @@ server <- function(input, output, session) {
   # Xtemp = eval("$('*[id^=\\'pop\\']').popover('destroy');");  alert(Xtemp);
   # JS:   stopAllPopoversString = "$('*[id^=\\'pop\\']').popover('destroy');"
   
-  output$JSevaluation = renderUI({
-    tags$script( "eval(stopAllPopoversString); ")
-  } )
-      ### These work in JS console... if we can master the quoting problem to get it evaluated.
+  # output$JSevaluation = renderUI({
+  #   tags$script( "eval(stopAllPopoversString); ")
+  # } )
+  #     ### These work in JS console... if we can master the quoting problem to get it evaluated.
   
-  addAllPopovers()
   
   observeEvent(input$togglePopovers, {
     cat('input$togglePopovers ', input$togglePopovers, '\n')
+    stopAllPopovers()
+    stopAllPopovers()
     if(input$togglePopovers) 
       addAllPopovers()
-    else 
-      stopAllPopovers()
+    # else 
+    #   stopAllPopovers()
     # $("*[id^='pop']")  # This works.
     # $("*[id^='pop']").popover('destroy')
     # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it

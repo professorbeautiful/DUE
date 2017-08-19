@@ -1,13 +1,14 @@
-plotThresholdContour = function (theDUEenv=DUEenv) 
+plotThresholdContour = function (theDUEenv=DUEenv, context='shiny') 
 {
   #scoping error; had to assign DUEenv to theDUEenv -promise already under evaluation: recursive default argument reference or earlier problems?
   DUEenv=theDUEenv  
-  cexQ = 4; OKfont = c("sans serif", "bold")
-    recalculate.means.and.variances()
+  cexValue = ifelse(context=='shiny', 3, 1); 
+  OKfont = c("sans serif", "bold")
+    recalculate.means.and.variances(DUEenv)
     the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
         log10(DUEenv$doseValues)))
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
-        cat("plotThresholdContour: the.logmedians.pop[[i]] = ", DUEenv$the.logmedians.pop[[i]], "\n")
+        # cat("plotThresholdContour: the.logmedians.pop[[i]] = ", DUEenv$the.logmedians.pop[[i]], "\n")
         return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
             sigma = DUEenv$the.variances.pop[[i]]))
     })
@@ -17,8 +18,8 @@ plotThresholdContour = function (theDUEenv=DUEenv)
     contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
         xlim = range(DUEenv$doseValues), ylim = range(DUEenv$doseValues),
         log = "xy", axes = F, xlab="", ylab="")
-    mtext(side=2, line=1.5, "Threshold of Toxicity", cex=6, font=4)
-    mtext(side=1, line=1.5, "Threshold of Response", cex=3)
+    mtext(side=2, line=2, "Threshold of Toxicity", cex=cexValue) #font=4?
+    mtext(side=1, line=2, "Threshold of Response", cex=cexValue)
     DUEenv$parPlotSize.contour <- par("plt")
     DUEenv$usrCoords.contour <- par("usr")
 ### vfont works for text but not for axis or title. (ERROR)
@@ -36,7 +37,7 @@ plotThresholdContour = function (theDUEenv=DUEenv)
     #font.main=4, family="HersheySerif")
     ###  Works for title() not for axis().
     abline(a = 0, b = 1, lty = 2, col = "black", lwd = 3)
-    drawQuadrants()
+    drawQuadrants(cexQ = ifelse(context=='shiny', 4, 2))
     for (iPop in 1:DUEenv$nPops)
         text(DUEenv$the.medianThresholds.pop[[iPop]][1],
                 DUEenv$the.medianThresholds.pop[[iPop]][2],

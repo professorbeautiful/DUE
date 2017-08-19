@@ -1,5 +1,5 @@
 drawQuadrants <-
-  function () 
+  function (cexQ = 4) 
   {
     DUEenv = get('DUEenv', envir=parent.frame())
     
@@ -8,7 +8,6 @@ drawQuadrants <-
     DUEcopy("rt.outcome.strings")
     #DUEcopy("rt.outcome.colors")
     DUEcopy("Kdeath")
-    cexQ = 4; 
     bold_italic = 4
     text(15, favoriteDose/2, rt.outcome.strings["RT"], col = rt.outcome.colors["RT"], 
          font=bold_italic, cex = cexQ)
