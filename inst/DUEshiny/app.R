@@ -811,6 +811,8 @@ server <- function(input, output, session) {
                    , split=" ")[[1]] ) {
                    # cat("--", inputName, '\n')
                    parValue = DUEenv[[parName(inputName)]]
+                   if(inputName == 'selectedDose' & is.null(parValue))
+                     parValue = DUEenv[['favoriteDose']]
                    misMatch = FALSE
                    tryResult = try( {
                      if(length(parValue) == 1)  { ### a single number; but careful, what if nPops=1?
