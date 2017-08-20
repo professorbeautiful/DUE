@@ -634,14 +634,31 @@ server <- function(input, output, session) {
     DUEenv$Kdeath= input$responseLimitingTox
   })
   
-  observe({
+  observeEvent(input$click_threshold, {
     save_options = options(warn = -1)  #ignore initial warning
     try({
-      newFavoriteDose = mean(c(input$click_threshold$x, input$click_threshold$y))
-      if (!is.na(newFavoriteDose)){
-        updateNumericInput(session, 'favoriteDose', value = newFavoriteDose)
-        DUEenv$favoriteDose = newFavoriteDose
-      }
+      xClick=input$click_threshold$x
+      yClick=input$click_threshold$y
+      logX = log10(xClick)
+      logY = log10(yClick)
+      logMean = mean(c(logX, logY))
+      distance2ToDiag = sqrt((logX-logMean)^2 + (logY-logMean)^2)
+      DUEenv$the.logmedians.pop
+      distance2ToMedians = sapply(DUEenv$the.logmedians.pop[1:DUEenv$nPops],
+                                  function(XY)
+                                    sqrt((logX-XY[1])^2 + (logY-XY[2])^2)
+      )
+      distances = c(distance2ToMedians, distance2ToDiag)
+      minDistance = min(... = distances)
+      whichMinDistance = which(minDistance == distances)[1]
+      if(whichMinDistance == DUEenv$nPops+1) { ## new dose
+        newSelectedDose = 10^(logMean)
+        if (!is.na(newSelectedDose)){
+         updateNumericInput(session, inputId = 'favoriteDose', value = newSelectedDose )
+         DUEenv$favoriteDose = newSelectedDose
+        }
+      }else 
+        updateNumericInput(session, inputId = 'thisPop', value = whichMinDistance )
       options(save_options)
     })
   })
