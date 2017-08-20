@@ -224,7 +224,7 @@ The scale/text pairs on the lower right specify the utility values for these fou
  There are also buttons to set the utilities to specific values:
  $Additive, Simple, Cautious,  Aggressive$.
 
- All four of these utilities set $U_{rt}=0$, since that is what you get without any treatment (dose = 0).
+ All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0).
 
  The Simple utility assignment values only the 
 $Rt$  outcome, and sets the other three to zero.
@@ -253,8 +253,8 @@ The expected utility $EU$
 On the upper right side of the window is a graph showing these probabilities
  (left-side scale) and expected utilities (right-side scale).
  The vertical green line corresponds to the 
-$favorite dose$ selected in the contour plot.
- The black dotted vertical line picks out the dose maximizing expected utility.
+$Selected\ dose$ indicated by the green cross in the contour plot.
+ The black dotted vertical line picks out the dose maximizing expected utility. The horizontal red line shows the dose corresponding to $Pr(T) = 1/3$.
 
 The eight boxes at the top of the graph are three-way toggles, which
  cycle each of the curves through the settings 
@@ -264,17 +264,17 @@ The eight boxes at the top of the graph are three-way toggles, which
 
 #### *In the middle column:*
 
-* There is an Information button, which launches this document.
+* There is an $Information$ button, which launches this document.
 
 * A user can click a button to change the dose range and number of ticks on the dose scales. 
 
-* A numeric input box allows setting the $Favorite\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
+* A numeric input box allows setting the $Selected\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
 
-* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level.
+* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level. The doses at which the ticks occur are used as the dose tiers in the Phase I trial.  
 
 #### *At the top* 
 
-Clicking the checkbox at the left of the grey band opens facilities for saving and loading files with parameter values for the joint threshold distribution and the utility values.
+Clicking the checkbox at the left of the grey band opens a $file\ panel$, a facility for saving and loading files with parameter values for the joint threshold distribution and the utility values. (For convenience, the middle column also has a toggle for this $file \ panel$.)
 
 #### *At the bottom* 
 
