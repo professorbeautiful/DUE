@@ -152,8 +152,8 @@ ui <- fluidPage(
                                        icon("info-sign", lib="glyphicon"))) )
                     ),
                     br(), br(), br(), 
-                    div(id='popFavoriteDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        numericInput('favoriteDose', 'Selected dose', value=100, min=0)),
+                    div(id='pop_selectedDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
+                        numericInput('selectedDose', 'Selected dose', value=100, min=0)),
                     br(), br(),
                     div(style = "background-color:green;", id='popDoseAxes',
                              #column(2, 
@@ -654,8 +654,8 @@ server <- function(input, output, session) {
       if(whichMinDistance == DUEenv$nPops+1) { ## new dose
         newSelectedDose = 10^(logMean)
         if (!is.na(newSelectedDose)){
-         updateNumericInput(session, inputId = 'favoriteDose', value = newSelectedDose )
-         DUEenv$favoriteDose = newSelectedDose
+         updateNumericInput(session, inputId = 'selectedDose', value = newSelectedDose )
+         DUEenv$selectedDose = newSelectedDose
         }
       }else 
         updateNumericInput(session, inputId = 'thisPop', value = whichMinDistance )
@@ -664,7 +664,7 @@ server <- function(input, output, session) {
   })
   
   observe({
-    DUEenv$favoriteDose = input$favoriteDose
+    DUEenv$selectedDose = input$selectedDose
   })
   
   output$linePlot <- renderPlot({
@@ -807,7 +807,7 @@ server <- function(input, output, session) {
                  misMatches = character(0)
                  setLineBoxes(DUEsaving$probLineWidths)
                  for(inputName in strsplit(
-                   "favoriteDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
+                   "selectedDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                    , split=" ")[[1]] ) {
                    # cat("--", inputName, '\n')
                    parValue = DUEenv[[parName(inputName)]]
@@ -1147,7 +1147,7 @@ server <- function(input, output, session) {
                              'Zero means that every RTs converts to rT.')
     )
     #### popOvers for central column ####
-    addPopover(session, 'popFavoriteDose', title="Dose", 
+    addPopover(session, 'pop_selectedDose', title="Dose", 
                content="Select a dose by clicking on plot (left),<br>or type or scroll here.")
     addPopover(session, 'popDoseAxes', title="Dose axes", 
                content=# div(style="text-width:200px;", 

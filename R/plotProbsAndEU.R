@@ -84,5 +84,5 @@ plotProbsAndEUsimplified <- function(DUEenv) {
   segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors["T"])
   segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(DUEenv$highest.EU, TRUE), lty=2, lwd=2, 
            col=DUEenv$rt.outcome.colors["EU"])
-  abline(v=DUEenv$favoriteDose, col="green")
+  abline(v=DUEenv$selectedDose, col="green")
 }
