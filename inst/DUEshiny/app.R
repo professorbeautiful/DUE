@@ -993,7 +993,8 @@ server <- function(input, output, session) {
   observeEvent(
     input$SaveLoadMainToggle, 
     {
-      try({updateCheckboxInput(session, 'SaveLoadCheckbox', 
+      try(silent = TRUE,
+          {updateCheckboxInput(session, 'SaveLoadCheckbox', 
                           value = ! input$SaveLoadCheckbox)
       })
     }
