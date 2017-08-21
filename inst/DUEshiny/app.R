@@ -16,19 +16,17 @@ try(rm(DUEsaving))
 options(options.saved)
 
 data(DUEinits.default)
-rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                        Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
-probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
-#"darkgreen" "red" "darkblue" "magenta" "dark goldenrod" "sea green" "black"
 
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
-           bsButton(paste0('linethickness_', label<-probLineNames[labelNum]), label=label),
-           style=paste0('color:', rt.outcome.colors[labelNum], ';',
-                        'border-color:', rt.outcome.colors[labelNum], ';') ) )
+           bsButton(paste0('linethickness_', 
+                           label<-probLineNames(labelNum)), label=label),
+           style=paste0('color:', rt.outcome.colors(label), ';',
+                        'border-color:', rt.outcome.colors(label), ';') ) 
+  )
 linethicknessButtons = 
-  lapply(1:length(probLineNames), make_linethicknessButton)   
+  lapply(probLineNames(), make_linethicknessButton)   
 
 
 ####UI starts here####
@@ -223,13 +221,13 @@ ui <- fluidPage(
                                           column(4,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.Rt", "U.Rt", value=1),
-                                                   style=paste0('color:', rt.outcome.colors['Rt'],
+                                                   style=paste0('color:', rt.outcome.colors('Rt'),
                                                                 "; font-style:italic; font-size:200%;"
                                                    ))),
                                           column(4, offset=1,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.rt", "U.rt", value=0),
-                                                   style=paste0('color:', rt.outcome.colors['rt'],
+                                                   style=paste0('color:', rt.outcome.colors('rt'),
                                                                 "; font-style:italic; font-size:200%;"
                                                    )))
                                         ),
@@ -239,13 +237,13 @@ ui <- fluidPage(
                                           column(4,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.RT", "U.RT", value=0),
-                                                   style=paste0('color:', rt.outcome.colors['RT'],
+                                                   style=paste0('color:', rt.outcome.colors('RT'),
                                                                 "; font-style:italic; font-size:200%;"
                                                    ))),
                                           column(4, offset=1,
                                                  tagAppendAttributes(
                                                    numericInput(inputId="U.rT", "U.rT", value=-1),
-                                                   style=paste0('color:', rt.outcome.colors['rT'],
+                                                   style=paste0('color:', rt.outcome.colors('rT'),
                                                                 "; font-style:italic; font-size:200%;"
                                                    )))
                                         )
@@ -257,28 +255,28 @@ ui <- fluidPage(
                                fluidRow(id = 'popPresetUtilities',
                                  column(4, h3("or choose a preset option here:", style="color:blue")
                                  ),
-                                 column(4, style=paste0('color:', rt.outcome.colors['RT']),
+                                 column(4, style=paste0('color:', rt.outcome.colors('RT')),
                                         #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
                                         HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                          style=paste0('background-color:', rt.outcome.colors('RT'),
                                                        '; color:white;')),
                                         #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                         tagAppendAttributes(
                                           bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                                          style=paste0('background-color:', rt.outcome.colors['RT'],
+                                          style=paste0('background-color:', rt.outcome.colors('RT'),
                                                        '; color:white;'))
                                  ),
                                  # we could also try transform: rotate(7deg);
-                                 column(1, style=paste0('color:', rt.outcome.colors['rT']),
-                                        # span(style=paste0('color:', rt.outcome.colors['rT']),
+                                 column(1, style=paste0('color:', rt.outcome.colors('rT')),
+                                        # span(style=paste0('color:', rt.outcome.colors('rT')),
                                         #      '⬅︎') ,
                                         # # LEFTWARDS ARROW
                                         # Unicode: U+2190, UTF-8: E2 86 90,
                                         tagAppendAttributes(
                                           bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                                          style=paste0('background-color:', rt.outcome.colors['rT'],
+                                          style=paste0('background-color:', rt.outcome.colors('rT'),
                                                        '; color:white;')
                                         )
                                  ),
@@ -307,11 +305,9 @@ server <- function(input, output, session) {
   DUEenv = reactiveValues()
   
   #### In place of setupProbLines(DUEenv) ####
-  probLineNames <<- 
-    c("R", "T", "rt","rT","Rt","RT","EU", "RLE")
   probLineWidthChoices <<- c(0, 1, 5)
   probLineWidths <- rep(probLineWidthChoices[1], 8) 
-  names(probLineWidths) <- probLineNames
+  names(probLineWidths) <- probLineNames()
   probLineWidths["EU"] <- probLineWidthChoices[2] #1
   DUEenv$probLineWidths <- probLineWidths 
   
@@ -784,7 +780,7 @@ server <- function(input, output, session) {
   
   setLineBoxes = function(probLineWidths) {
     ## already copied to DUEenv
-    for(label in probLineNames) {
+    for(label in probLineNames()) {
       whichWidth = which(
         probLineWidths[label] == probLineWidthChoices)
       if(is.null(whichWidth) | ! is.element(whichWidth, 1:3))
