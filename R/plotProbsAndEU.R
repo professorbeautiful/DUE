@@ -1,8 +1,5 @@
 plotProbsAndEU <-
   function(DUEenv=DUEenv, context='shiny') {
-    rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                            Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
-    probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
     DUEenv$sevenprobs <- 
       sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
     DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
@@ -34,14 +31,14 @@ plotProbsAndEU <-
   mtext(side=2, line=2.5, "Probability", cex=2)
 
   axis(side = 4, line=1, lwd=1, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
-       col=rt.outcome.colors["EU"], labels=round(axisvalues*2-1, 1)
+       col=rt.outcome.colors("EU"), labels=round(axisvalues*2-1, 1)
        , xpd=NA, cex=2)
   # Note: the "at" values are relative to axis 1, the labels are correct for EU.
   #xrange = par("usr")[1:2],
   # pushout = 1.02
   # EUlabelPosition = exp(log(xrange[1]) + (log(xrange[2])-log(xrange[1])*1.02) )
   mtext(side = 4, line = 4, text = "  E(Utility)", #outer=TRUE,
-        xpd = NA, srt=90, cex=2, col=rt.outcome.colors['EU'],
+        xpd = NA, srt=90, cex=2, col=rt.outcome.colors('EU'),
         ylbias = -0.5)  ### default ylbias = 0.2. Has no effect.
   
   linetypes = c(rep(1,6), 1, 1)
@@ -53,19 +50,20 @@ plotProbsAndEU <-
   for(i in 1:8) {
     shortlist <- c(1, round(DUEenv$nDoses/2), DUEenv$nDoses)
     if(linewidths[i] > 0) {
+      outcome.string = rt.outcome.strings(i)
       lines(DUEenv$doseValues, convertEU(DUEenv$sevenprobs[i,], i==EUindex),
             lty=linetypes[i], lwd=linewidths[i], 
-            col=rt.outcome.colors[i])
+            col=rt.outcome.colors(outcome.string))
       text(DUEenv$doseValues[shortlist],
            convertEU(DUEenv$sevenprobs[i, shortlist], i==EUindex), 
-           col=rt.outcome.colors[i],
-           label=rt.outcome.strings[i],
+           col=rt.outcome.colors(outcome.string),
+           label=outcome.string,
            cex=1.2, xpd=NA, adj=c(0, -1))
     }
   }
-  segments(5, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors["T"])
-  segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors["T"])
+  segments(5, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors("T"))
   segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(DUEenv$highest.EU, TRUE), lty=2, lwd=2, 
-           col=DUEenv$rt.outcome.colors["EU"])
+           col=rt.outcome.colors("EU"))
   abline(v=DUEenv$selectedDose, col="green")
 }
