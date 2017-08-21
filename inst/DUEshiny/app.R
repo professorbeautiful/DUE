@@ -668,8 +668,9 @@ server <- function(input, output, session) {
   })
   
   output$linePlot <- renderPlot({
-    plotProbsAndEUsimplified(DUEenv)
+    plotProbsAndEU(DUEenv=DUEenv, context='shiny')
   })
+  
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot({
     input$okWillLoadSelectedFile  ### Attempt to force the plot.

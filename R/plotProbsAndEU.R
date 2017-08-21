@@ -1,33 +1,16 @@
 plotProbsAndEU <-
-  function() {
-    if(DUEenv$settingSliderValues == TRUE)
-      return
-    read.Uvalues()  ### copies from the sliders to the vector "utility"
-    DUEenv$sevenprobs <- DUEenv$sevenprobs <- 
+  function(DUEenv=DUEenv, context='shiny') {
+    rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
+                            Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
+    probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
+    DUEenv$sevenprobs <- 
       sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
-    plotProbsAndEUsimplified(DUEenv)
-  }
-
-
-calculate.probabilities.allDoses <- function( DUEenv) {
- # DUEenv$utility  ### To make sure the reactivity happens.
-  #theDUEenv = DUEenv
-  DUEenv$sevenprobs <- 
-    sapply(log10(DUEenv$doseValues), 
-           calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility)
-  
-  DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
-  DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
-  DUEenv$best.dose.p.Rt <- DUEenv$doseValues[DUEenv$sevenprobs["Rt",]==DUEenv$highestprob..Rt]	
-  DUEenv$best.dose.EU <- DUEenv$doseValues[DUEenv$sevenprobs["EU",]==DUEenv$highest.EU] [1]
-  DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$sevenprobs["T",]-DUEenv$MTDtoxicity)<=0])
-}
-
-####Code for app.R starts here####
-
-plotProbsAndEUsimplified <- function(DUEenv) {
-  calculate.probabilities.allDoses(DUEenv)
-  # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
+    DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
+    DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
+    DUEenv$best.dose.p.Rt <- DUEenv$doseValues[DUEenv$sevenprobs["Rt",]==DUEenv$highestprob..Rt]	
+    DUEenv$best.dose.EU <- DUEenv$doseValues[DUEenv$sevenprobs["EU",]==DUEenv$highest.EU] [1]
+    DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$sevenprobs["T",]-DUEenv$MTDtoxicity)<=0])
+    # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convertEU <- function(x, isEU=TRUE) {
     #### Map EU on right axis from [-1, 1] to [0,1] on left axis.
     if(isEU) 
