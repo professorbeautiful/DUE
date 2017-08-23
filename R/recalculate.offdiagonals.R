@@ -1,4 +1,4 @@
-recalculate.offdiagonals <- function (correl, .thisPop, theDUEenv=DUEenv) 
+recalculate.offdiagonals <- function (correl, .thisPop) 
 {
   #DUEenv = theDUEenv
   DUEenv = get('DUEenv', envir=parent.frame())
@@ -6,11 +6,10 @@ recalculate.offdiagonals <- function (correl, .thisPop, theDUEenv=DUEenv)
   #DUEget(c(nPops,the.correlations.pop,the.variances.pop,the.logmedians.pop))
   if (missing(.thisPop)) {
     for (..thisPop in 1:DUEenv$nPops) 
-      recalculate.offdiagonals(correl=correl, .thisPop = ..thisPop, theDUEenv=DUEenv )
+      recalculate.offdiagonals(correl=correl, .thisPop = ..thisPop )
     return(NULL)
   }
   if (!missing(correl)) {
-    #cat("recalculate.offdiagonals:  correl=", correl, "\n")
     DUEenv$the.correlations.pop[[DUEenv$thisPop]] <- correl
     print(DUEenv$the.correlations.pop)
   }
