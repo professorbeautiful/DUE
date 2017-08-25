@@ -109,7 +109,7 @@ The groups in the mixture might differ by differences in pharmacokinetics, affec
 ```{r echo=FALSE}
 print(getwd())
 print(dir())
-# knitr::read_chunk("DUE_vignette_plottingFunctions.R")
+knitr::read_chunk(system.file(package='DUE', 'doc/DUE_vignette_plottingFunctions.R'))
 ```
 ```{r plottingFunctions}
 plotThresholdInVignette=function(x){}
