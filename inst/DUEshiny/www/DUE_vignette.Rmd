@@ -1,7 +1,7 @@
 ---
 title: "DUE, the Dose Utility Explorer"
 author: "Roger Day, Marie Gerges"
-date: "8/7/2017"
+date: "`r Sys.Date()`"
 # output: html_document
 output: rmarkdown::html_vignette
 vignette: >
@@ -12,7 +12,7 @@ numbersections: TRUE
 ---
 
   
-```{r setup, include=FALSE}
+```{r setup, include=FALSE,  echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(DUE)
 ```
@@ -28,20 +28,29 @@ DUE, the Dose Utility Explorer package for R, is an interactive environment
  A number of important aspects have been omitted, in order to focus on the
  factors that are patient-specific.
  
- The main output is expected utility as a function of dose.
- 
-##### *Primary uses*
-This package, with its app, is part of a broader effort to make clinical trials more responsive to patients, more rational, and more humane. 
+ The primary output is the expected utility, as a function of dose.
 
+##### *Primary uses*
+This package, with its app, is part of a broader effort to make clinical trials more responsive to patients, more rational, and more humane. One use is to explore the consequences of unconscious assumptions we tend to make as we plan clinical trials. 
+
+* Is the success of a clinical trial plot dependent on assumptions whose truth we do not know?
+* Can a research plan be made more robust against assumptions?
+* When does our valuation of toxicity versus response matter?
+* When is the expected utility strongly dependent on dose? When is it multimodal as a function of dose?
+* When is the effect of pharmoacokinetics variation important?
+* How much improvement can we expect if we can stratify on patient subgroup, or limit recruitment to, one of multiple subgroups of patients?
+
+In addition, there are potential uses for individual patients. One aspect of personalized medicine is personalized dose.
 
 ##### *Contributions and history*
+
 This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for eventual publication by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.
 
 In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio shiny, which provides universal access through a published web page. In addition several new features were added. The tcl/tk version is no longer supported.
 
 ### Inputs
-Factors included are:
 
+The factors accounted for are:
 
 * The current “prior” or population joint distribution of thresholds for toxicity
  and for response; the distribution may be multimodal.
@@ -55,14 +64,17 @@ Factors included are:
 Not included are:
 
 * The possibility that probabilities of events might be non-monotonic in dose.
-* Priors for the parameters describing the joint distribution.
-* Data that might have contributed to the 
-"prior" for the pair of thresholds.
+* Priors for the parameters describing the joint distribution (hyperparameters).
+* Updating of the threshold distribution for the pair of thresholds with data.
 * The scientific, commercial, or prestige-related value of the information
  to be gained.
 * Costs of the drug or of dealing with adverse events, not incurred by the
  patient.
- 
+* Multiple degrees of the response and toxicity outcomes.
+
+The inputs are difficult to assign values to. In principle one could estimate the "prior", the joint threshold distribution. But this would require treating many patients at many doses. Each patient's outcome would tell us only which quadrant the patient is in. Therefore this program is best thought of as a platform for thought experiments.
+
+
 ### Overview of the interface
 
 The package presents a window that includes:
@@ -72,6 +84,12 @@ The package presents a window that includes:
  together with probabilities of events and event combinations,
 * lower left: controllers for the threshold distribution
 * lower right: controllers for the utility values 
+
+Here is a view of the full interface. 
+![ . ](single-population-20.png)
+
+Other views for various examples appear in the section [*Examples*].
+
 
 
 #### *The threshold distribution inputs*
@@ -85,47 +103,32 @@ We assume that each patient has a pair of thresholds,
 
  The model for the joint distribution of toxicity and response thresholds
  is a mixture of joint lognormals.  
-The groups in the mixture might differ by differences in pharmacokinetics, affecting both thresholds, so that one expects them to be centered along a line. Pharmacokinetics processes mediate the conversion of the dose into the delivered concentation. The groups can also differ in the pharmacodynamics: the effect of the concentration at the affected tissues   Pharmacodynamics processes mediate the effects of exposure on the tissues. A discrete factor affecting pharmacodynamics of response affects only $\theta_{R}$, so that groups are placed horizontally on the plot. Likewise, a discrete factor affecting pharmacodynamics of toxicity affects only $\theta_{T}$, and the groups are placed vertically.
+The groups in the mixture might differ by differences in pharmacokinetics, affecting both thresholds, so that one expects them to be centered along a line. Pharmacokinetics processes mediate the conversion of the dose into the delivered concentation.  
 
-```{r echo=FALSE, fig.width=8}
-print(getwd())
-print(dir())
+```{r echo=FALSE}
+knitr::read_chunk("DUE_vignette_plottingFunctions.R")
+```
+```{r plottingFunctions}
+```
 
-envHolder = new.env()
-getExampleFile = function(string) {
-  dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
-  filename = paste0(dirString,  rev(grep(value=TRUE, string,
-                                     dir(dirString)))[1]) 
-  if(class(filename) == 'try-error') {
-    cat("file not found ", string, "\n")
-    print(getwd())
-    print(dir())
-  }
-  filename
-}
-  # filename = system.file(package='DUE', 
-#      'inst', 'DUEshiny',
-#      rev(grep(value=TRUE, 'Pharmacokinetic-example-two-groups',
-#           dir('inst/DUEshiny')))[1]) 
-rt.outcome.colors <<- c(R='#00ff00', T='#ff0000', rt='#8E9233', rT='#F007E6', 
-                        Rt='#009215', RT='#7367D4', EU='#000000', RLE='#6C9291')
-probLineNames <<- rt.outcome.strings <<- names(rt.outcome.colors)
-
-plotThresholdInVignette= function(string) {
-  filename = getExampleFile(string) 
-  if(class(filename) != 'try-error') {
-    load(filename, envir = envHolder)
-   rt.outcome.colors = envHolder$rt.outcome.colors
-    try({
-      plotThresholdContour(theDUEenv = envHolder$DUEsaving, context='vignette')
-      mtext(side = 3, string, cex=1)
-    })
-  }
-}
-par(mfrow=c(1, 3) )
+```{r fig.height=4, fig.width=8}
+ par(mfrow=c(1, 2) )
 plotThresholdInVignette('Pharmacokinetic-example-two-groups') 
-plotThresholdInVignette('Pharmacodynamics-response-two-groups') 
+plotEUprobsInVignette('Pharmacokinetic-example-two-groups') 
+```
+The groups can also differ in the pharmacodynamics: the effect of the concentration at the affected tissues.
+  Pharmacodynamics processes mediate the effects of exposure on the tissues.
+A discrete factor affecting pharmacodynamics of response affects only $\theta_{R}$, so that groups are placed horizontally on the plot. 
+```{r fig.height=4, fig.width=8}
+ par(mfrow=c(1, 2) )
+plotThresholdInVignette('Pharmacodynamics-response-two-groups')
+plotEUprobsInVignette('Pharmacodynamics-response-two-groups')
+```
+A discrete factor affecting pharmacodynamics of toxicity affects only $\theta_{T}$, and the groups are placed vertically.
+```{r fig.height=4, fig.width=8}
+ par(mfrow=c(1, 2) )
 plotThresholdInVignette('Pharmacodynamics-toxicity-two-groups') 
+plotEUprobsInVignette('Pharmacodynamics-toxicity-two-groups') 
 ```
 
 The number of groups is set in the input box labeled $Number\ of\ groups$ (with value $input\$nPops$ ); if increased or decreased, reasonable adjustments take place elsewhere.
@@ -165,7 +168,7 @@ $Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limi
  It represents the log10 of the ratio between the patient's toxicity threshold
  and the dose at which toxicity is so severe that response cannot happen.
  The assumption is that this ratio is the same for all patients.
- (This works similarly to the relaionship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
+ (This works similarly to the relationship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
 
 
 #### *Refractoriness*
@@ -175,21 +178,17 @@ Some proportion of patients may have disease which will not respond to the treat
  cancer treatment.
 
 
-#### *Display of the joint threshold distribution*
+#### *Interaction with the joint threshold distribution*
 
 On the upper left side of the window is the contour plot for the joint threshold
  distribution.
  If one clicks on the graph close to one of the modes, then the parameter
 $This\ group\ \#$
  should change to refer to the corresponding group
- If the click is too far away, then a 
-$favorite\ dose$
- is selected, corresponding to the closest diagonal point 
- $(D,D)$.
-$D$
- is selected, it divides the graph into four quadrants, corresponding to
- four outcomes: 
+ If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new  
+$Selected\ dose$.
 
+The $Selected\ dose$, whether selected by clikcing or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
 * $rt\ \ $:  neither response nor toxicity
 * $rT\ $: only toxicity
@@ -199,15 +198,17 @@ $D$
 
 If the 
 $Response-limiting toxicity$ parameter 
-$K$
+$input\$Kdeath$
 is small enough, then there also appears an incursion of the 
 $rT$ region towards the left at the bottom, invading the 
 $RT$ region. This is discussed above:  [Response-limiting toxicity] .
+If $input\$Kdeath$ equals 1, then the vertical distance between the horizontal $Selected\ dose$ line and the incursion line is one order of magnitude. 
+
 
 #### *Log-normal conversions*
 
 The choice of log-normal distributions entails conversion between log and native dose scales. The graph is a log-log graph, so the labeling is on the unlogged dose scale
- while the spacing is on the logged scale. The contour lines correspond to the density in log-normal space.
+ while the spacing is on the logged scale. The contour lines correspond to the density in log-bivariate-normal space.
 
 ## *Probabilities and utilities*
 
@@ -226,7 +227,7 @@ The scale/text pairs on the lower right specify the utility values for these fou
 
  All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0).
 
- The Simple utility assignment values only the 
+ The $Simple$ utility assignment values only the 
 $Rt$  outcome, and sets the other three to zero.
  It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern unless $R$ is achieved.
 
@@ -234,18 +235,18 @@ $Rt$  outcome, and sets the other three to zero.
  
  Option |  $U(RT)$
  -------|--------
-Cautious |     -1
-Additive|     \ 0
-Aggressive| +1
+$Cautious$ |     -1
+$Additive$|     \ 0
+$Aggressive$| +1
 
 In addition to these defaults, the input boxes allow any assignments to the four utilities.
  
 ### Expected utility
 
 The expected utility $EU$
- for each dose is calculated as the weighted average of the four utilities, weighted by the four event probabilities.
+ for each dose is calculated as the weighted average of the four utilities, weighted by the four event probabilities:
  
- $E(Rt)  Pr(Rt) + E(rt)  Pr(rt) + E(rT)  Pr(rT) + E(RT)  Pr(RT)$
+ $EU = E(Rt)  Pr(Rt) + E(rt)  Pr(rt) + E(rT)  Pr(rT) + E(RT)  Pr(RT)$
 
 
 ### Display of the expected utility and probabilities
@@ -270,7 +271,7 @@ The eight boxes at the top of the graph are three-way toggles, which
 
 * A numeric input box allows setting the $Selected\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
 
-* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level. The doses at which the ticks occur are used as the dose tiers in the Phase I trial.  
+* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level. The doses at which the ticks occur are used as the dose tiers in the Phase I trial. This is a place-holder for a bridge to another R shiny application, the $CTDesignExperimenter$, which is in progress.
 
 #### *At the top* 
 
@@ -283,7 +284,7 @@ Clicking the checkbox at the left of the grey band opens an instance of `shinyDe
 ## *Examples*
 
 #### *A single population*
-![alt text](single-population.png)
+![ . ](single-population-20.png)
 
 In this ideal situation, there is a fairly sharp peak in the expected utility EU, with an optimal dose somewhere between $\mu_{R} = 100$ and $\mu_{T} = 200$. Only the `Aggressive` utility function has substantially different optimal, driving the optimal dose near the top of the dose range. The correlation has essentially no effect. Whether correlation = 0, so that all the variation is pharmacodynamics, or correlation near 1, so that it is nearly all pharmacokinetics, the utility curve is basically unchanged.
 
@@ -292,7 +293,7 @@ Lowering the median value $\mu_{T} = 100$ to equal $\mu_{R}$, then toxicity is h
 
 ## Effect of multimodality
 
-TO DO.
+
 
 
 
