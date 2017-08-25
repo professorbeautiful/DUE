@@ -1,5 +1,5 @@
-plotProbsAndEU <-
-  function(DUEenv=DUEenv, context='shiny') {
+plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
+    cexValue = ifelse(context=='shiny', 2, 1); 
     DUEenv$sevenprobs <- 
       sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
     DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
@@ -26,9 +26,9 @@ plotProbsAndEU <-
   # plot.title="Probabilities and Expected Utility, E(U)"
   # title(main=plot.title, cex.main=2, col.main="blue")
   axis(side = 1, at = DUEenv$doseTicks)
-  mtext(side=1, line=2.5, "Dose", cex=2)
+  mtext(side=1, line=2.5, "Dose", cex=cexValue)
   axis(2, at=c(0, 0.33, 0.6, 0.8, 1))
-  mtext(side=2, line=2.5, "Probability", cex=2)
+  mtext(side=2, line=2.5, "Probability", cex=cexValue)
 
   axis(side = 4, line=1, lwd=1, at=(axisvalues<-c(0, 0.25, 0.5, 0.75, 1)), 
        col=rt.outcome.colors("EU"), labels=round(axisvalues*2-1, 1)
@@ -38,7 +38,7 @@ plotProbsAndEU <-
   # pushout = 1.02
   # EUlabelPosition = exp(log(xrange[1]) + (log(xrange[2])-log(xrange[1])*1.02) )
   mtext(side = 4, line = 4, text = "  E(Utility)", #outer=TRUE,
-        xpd = NA, srt=90, cex=2, col=rt.outcome.colors('EU'),
+        xpd = NA, srt=90, cex=cexValue, col=rt.outcome.colors('EU'),
         ylbias = -0.5)  ### default ylbias = 0.2. Has no effect.
   
   linetypes = c(rep(1,6), 1, 1)
