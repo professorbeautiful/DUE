@@ -15,6 +15,7 @@ numbersections: TRUE
 ```{r setup, include=FALSE,  echo=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 library(DUE)
+require(knitr)
 ```
 <!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html and http://pandoc.org/MANUAL.html -->
 
@@ -106,9 +107,13 @@ We assume that each patient has a pair of thresholds,
 The groups in the mixture might differ by differences in pharmacokinetics, affecting both thresholds, so that one expects them to be centered along a line. Pharmacokinetics processes mediate the conversion of the dose into the delivered concentation.  
 
 ```{r echo=FALSE}
-knitr::read_chunk("DUE_vignette_plottingFunctions.R")
+print(getwd())
+print(dir())
+# knitr::read_chunk("DUE_vignette_plottingFunctions.R")
 ```
 ```{r plottingFunctions}
+plotThresholdInVignette=function(x){}
+plotEUprobsInVignette=function(x){}
 ```
 
 ```{r fig.height=4, fig.width=8}
