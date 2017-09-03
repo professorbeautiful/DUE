@@ -33,6 +33,8 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
+  singleton(tags$head(tags$script(src = "pop_patch.js"))),
+  uiOutput('JSstopPopups'),
   tags$style(".popover{max-width: 100%; font-size:large}"),
   
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
@@ -1095,6 +1097,9 @@ server <- function(input, output, session) {
   
   addAllPopovers = function() {
     cat("addAllPopovers\n")
+    output$JSstopPopups = renderUI({
+      " "
+    } )
     addPopover(session, 'popFilePanel', title="File panel: save and load parameters",
                content=paste(sep='<br>',
                              'Click toggle checkbox, left side of grey bar',
@@ -1163,6 +1168,12 @@ server <- function(input, output, session) {
                              "Opens and closes the panel at the top",
                              "for saving and loading current settings.") )
     
+    addPopover(session, 'popPopoverToggle', title="Toggle the popovers", 
+               content=paste(sep='<br>', 
+                             "Starts and stops", 
+                             " the little popover windows",
+                             "full of help") )
+    
     #### popOvers for right side ####
     addPopover(session, 'popLineThickness', title="Line thckness buttons",  
                content=paste(sep='<br>',
@@ -1198,72 +1209,35 @@ server <- function(input, output, session) {
                              'Click toggle checkbox, left side of grey bar, to open debugging panel.',
                              'See <a href="http://www.github.com/professorbeautiful/shinyDebuggingPanel"> www.github.com/professorbeautiful/shinyDebuggingPanel </a>for details.'))
   }
+  stopAllPopovers = function(){
+    cat("stopAllPopovers\n")
+    output$JSstopPopups = renderUI({
+      tags$script( "destroyAllPopovers();" )
+    } )
+  }
   stopOnePopover = function(pop) {
-    output$JSevaluation = renderUI({
-      scriptString = paste(
-        'stopOnePopoverString = 
-        "$(\\"*[id=\\\'"', pop, '\\\']\\").popover(\\\'destroy\\\');" ;',
-        'eval(stopOnePopoverString); '
-      )
+    scriptString = paste0(
+      'stopOnePopoverString =', 
+      '"$(\\"*[id=\\\'', pop, '\\\']\\").popover(\\\'destroy\\\');" ;',
+      '   eval(stopOnePopoverString); '
+    )
+    cat(scriptString, '\n')
+    output$JSstopPopups = renderUI({
       tags$script( scriptString )
       ## This works!  JS console shows an error, but it works.
       ## TypeError: null is not an object (evaluating 'a.$element.off')
     } )
   }
-  stopAllPopovers = function(){
-    cat("stopAllPopovers\n")
-    # X = "$('*[id^=\\\\'pop\\\\']').popover('destroy');"
-    # print(X)
-    # cat(X, '\n')
-    # X="alert(eval('1234'));"   # This works.
-    # X="alert(eval($('*')));" # This works.
-    # X='var popWord = \"pop\"; alert(eval("popWord")) ;'  ### This works
-    # X='var popWord = \"pop\"; 
-    # alert(eval($(\'*[id^="popWord" ]\').popover(\'destroy\')  ));  ' 
-    ### This runs (in R eval box), but does not achieve goal.
-    output$JSevaluation = renderUI({
-      scriptString = paste(
-        'stopAllPopoversString =
-        "$(\\"*[id^=\\\'pop\\\']\\").popover(\\\'destroy\\\');" ;',
-        'eval(stopAllPopoversString); '
-      ) # Selects the popovers just fine!
-      # scriptString = paste(
-      #   'stopAllPopoversString =
-      #   "$(\\\'[data-toggle="popover"]\\\').popover(\\\'destroy\\\');" ;',
-      #   'eval(stopAllPopoversString); '
-      # )  ### Does NOT select the popovers,
-      #    ### despite https://www.w3schools.com/bootstrap/bootstrap_ref_js_popover.asp
-      cat(scriptString, '\n')
-      tags$script( scriptString )
-      # stopAllPopoversString =
-      # "$(\"*[id^=\'pop\']\").popover(\'destroy\');" ; 
-      #  eval(stopAllPopoversString);
-        ## This works!  JS console sometimes shows an error, but it works.
-        ## TypeError: null is not an object (evaluating 'a.$element.off')
-    } ) 
-  }
-      #      
-      #      $("*[id^='pop']").popover('destroy');   
-      #      $('*[id^=\'pop\']').popover('destroy');
-      #      eval("$('*[id^=\\'pop\\']').popover('destroy');")
-      #     alert(eval("$('*[id^=\\'pop\\']').popover('destroy');"));
-  # Xtemp = eval("$('*[id^=\\'pop\\']').popover('destroy');");  alert(Xtemp);
-  # JS:   stopAllPopoversString = "$('*[id^=\\'pop\\']').popover('destroy');"
-  
-  # output$JSevaluation = renderUI({
-  #   tags$script( "eval(stopAllPopoversString); ")
-  # } )
-  #     ### These work in JS console... if we can master the quoting problem to get it evaluated.
-  
   
   observeEvent(input$togglePopovers, {
     cat('input$togglePopovers ', input$togglePopovers, '\n')
-    stopAllPopovers()
-    stopAllPopovers()
-    if(input$togglePopovers) 
+    #stopAllPopovers()
+    if(input$togglePopovers == TRUE) {
+      #output$JSstopPopups = NULL
       addAllPopovers()
-    # else 
-    #   stopAllPopovers()
+    }
+    else 
+      stopAllPopovers()
     # $("*[id^='pop']")  # This works.
     # $("*[id^='pop']").popover('destroy')
     # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
