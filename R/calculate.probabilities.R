@@ -1,3 +1,18 @@
+#' pmvnorm.mixture
+#' partialCumulative
+#' 
+#' Cumulative probability of a lognormal mixture distribution.
+#' 
+#' @param DUEenv Environment object or reactive values object containing model parameters.
+#' @param Rrange Range of values for response (R) thresholds.
+#' @param Trange Range of values for toxicity (T) thresholds.
+#' @param i (partialCumulative) Which subgroup.
+#' @param RorT (partialCumulative) Which threshold dimension.
+#' @param logdose (partialCumulative) Logarithm (natural) of dose.
+#' @param log10dose (partialCumulative) Logarithm (base 10) of dose.
+#' @param utility Utility table for treating.
+#' @details Details for pmvnorm.mixture
+
 pmvnorm.mixture = function(DUEenv, Rrange, Trange) {
   vEpsilon =  diag(rep(1e-8,2))  ### in case a variance got stuck at zero.
   sum(apply(as.array(1:DUEenv$nPops), 1, function(i)
@@ -6,12 +21,43 @@ pmvnorm.mixture = function(DUEenv, Rrange, Trange) {
                                     sigma=vEpsilon + DUEenv$the.variances.pop[[i]])) )
 }
 
+#' partialCumulative
+#' 
+#' @description Normal univariate cumulative for one subgroup
+#' 
+#' @details Details for pmvnorm.mixture
+
 partialCumulative = 
   function(DUEenv, i, RorT, logdose) {
     DUEenv$proportions[i] * pnorm(logdose, 
                                   mean=DUEenv$the.logmedians.pop[[i]] [RorT], 
                                   sd=sqrt(DUEenv$the.variances.pop[[i]] [RorT,RorT]))
   }
+
+#' calculate.probabilities
+#' 
+#' 
+#' @description Produce a vector of probabilities and expected utility.
+#' @details calculate.probabilities
+#' @return A vector of length 8:
+#' \code{
+#' probability.vector <- c(
+#' R=p.R.marginal,
+#' T=p.T.marginal,
+#' rt=p.rt,
+#' rT=p.rT,
+#' Rt=p.Rt,
+#' RT=p.RT,
+#' EU=expected.utility,
+#' RLE=p.RLE
+#' )
+#' }
+#' @examples
+#'   DUEshinyHome = system.file(package='DUE'
+#'   , 'DUEshiny')
+#'   aFile = grep(v=T, 'Simple-One-Pop-tight-CV.rdata', dir(DUEshinyHome))
+#'   load(paste(DUEshinyHome, aFile, sep='/'))
+#'   calculate.probabilities(DUEsaving, log10dose = 2.3)
 
 calculate.probabilities <-
   function(DUEenv, log10dose, logdose, utility, ...) {
