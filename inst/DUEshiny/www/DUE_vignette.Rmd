@@ -13,11 +13,53 @@ numbersections: TRUE
 
   
 ```{r setup, include=FALSE,  echo=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-library(DUE)
 require(knitr)
+require(DUE)
+knitr::opts_chunk$set(
+  echo = FALSE
+  )
 ```
-<!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html and http://pandoc.org/MANUAL.html -->
+
+<!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html 
+http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
+-->
+```{r plottingFunctions}
+envHolder = new.env()
+getExampleFile = function(string) {
+  dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
+  filename = paste0(dirString,  rev(grep(value=TRUE, string,
+                                         dir(dirString)))[1]) 
+  if(class(filename) == 'try-error') {
+    cat("file not found ", string, "\n")
+    print(getwd())
+    print(dir())
+  }
+  filename
+}
+
+plotThresholdInVignette= function(string) {
+  filename = getExampleFile(string) 
+  if(class(filename) != 'try-error') {
+    load(filename, envir = envHolder)
+    rt.outcome.colors = envHolder$rt.outcome.colors
+    try({
+      plotThresholdContour(theDUEenv = envHolder$DUEsaving, context='vignette')
+      mtext(side = 3, string, cex=1)
+    })
+  }
+}
+plotEUprobsInVignette= function(string) {
+  filename = getExampleFile(string) 
+  if(class(filename) != 'try-error') {
+    load(filename, envir = envHolder)
+    rt.outcome.colors = envHolder$rt.outcome.colors
+    try({
+      plotProbsAndEU(DUEenv = envHolder$DUEsaving, context='vignette')
+      mtext(side = 3, string, cex=1)
+    })
+  }
+}
+```
 
 ### Introduction
 
@@ -106,49 +148,8 @@ We assume that each patient has a pair of thresholds,
  is a mixture of joint lognormals.  
 The groups in the mixture might differ by differences in pharmacokinetics, affecting both thresholds, so that one expects them to be centered along a line. Pharmacokinetics processes mediate the conversion of the dose into the delivered concentation.  
 
-```{r echo=FALSE}
-print(getwd())
-print(dir())
-knitr::read_chunk(system.file(package='DUE', 'doc/DUE_vignette_plottingFunctions.R'))
 
-```
-```{r plottingFunctions}
-envHolder = new.env()
-getExampleFile = function(string) {
-  dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
-  filename = paste0(dirString,  rev(grep(value=TRUE, string,
-                                         dir(dirString)))[1]) 
-  if(class(filename) == 'try-error') {
-    cat("file not found ", string, "\n")
-    print(getwd())
-    print(dir())
-  }
-  filename
-}
 
-plotThresholdInVignette= function(string) {
-  filename = getExampleFile(string) 
-  if(class(filename) != 'try-error') {
-    load(filename, envir = envHolder)
-    rt.outcome.colors = envHolder$rt.outcome.colors
-    try({
-      plotThresholdContour(theDUEenv = envHolder$DUEsaving, context='vignette')
-      mtext(side = 3, string, cex=1)
-    })
-  }
-}
-plotEUprobsInVignette= function(string) {
-  filename = getExampleFile(string) 
-  if(class(filename) != 'try-error') {
-    load(filename, envir = envHolder)
-    rt.outcome.colors = envHolder$rt.outcome.colors
-    try({
-      plotProbsAndEU(DUEenv = envHolder$DUEsaving, context='vignette')
-      mtext(side = 3, string, cex=1)
-    })
-  }
-}
-```
 
 ```{r fig.height=4, fig.width=8}
  par(mfrow=c(1, 2) )

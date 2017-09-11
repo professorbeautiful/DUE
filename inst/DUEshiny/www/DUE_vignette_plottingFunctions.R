@@ -1,7 +1,5 @@
 ## @knitr plottingFunctions
 
-library(DUE)
-
 envHolder = new.env()
 getExampleFile = function(string) {
   dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')

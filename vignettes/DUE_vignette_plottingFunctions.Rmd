@@ -1,5 +1,5 @@
 ## @knitr plottingFunctions
-
+```{r plottingFunctions}
 envHolder = new.env()
 getExampleFile = function(string) {
   dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
@@ -35,3 +35,4 @@ plotEUprobsInVignette= function(string) {
     })
   }
 }
+```

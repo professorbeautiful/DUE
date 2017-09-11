@@ -21,4 +21,5 @@ License: GPL-2
 Copyright: Roger Day, Marie Gerges, Meihua Wang
 LazyLoad: yes
 VignetteBuilder: knitr
-RoxygenNote: 5.0.1
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.0.1
