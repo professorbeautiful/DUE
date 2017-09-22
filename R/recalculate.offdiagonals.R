@@ -1,6 +1,5 @@
 recalculate.offdiagonals <- function (correl, .thisPop) 
 {
-  #DUEenv = theDUEenv
   DUEenv = get('DUEenv', envir=parent.frame())
   #DUEenv = get('DUEenv', envir = parent.frame(2))
   #DUEget(c(nPops,the.correlations.pop,the.variances.pop,the.logmedians.pop))
