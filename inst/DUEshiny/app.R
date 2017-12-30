@@ -17,6 +17,8 @@ options(options.saved)
 
 data(DUEinits.default)
 
+file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www')
+
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
@@ -138,9 +140,9 @@ ui <- fluidPage(
                     "border-right:1px solid #000;"),  ### height:1500px;
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
-                    a(
+                    #a(
                       #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
-                      href="DUE_vignette.html", rel="help", target="_blank",
+                      #href="DUE_vignette.html", rel="help", target="_blank",
                       span(
                         strong(em("Click for information:",
                                   style="color:darkgreen; font-size:200%"))
@@ -150,7 +152,8 @@ ui <- fluidPage(
                                      icon=tagAppendAttributes(
                                        style="font-size: 3em;",
                                        icon("info-sign", lib="glyphicon"))) )
-                    ),
+                    #)
+                    ,
                     br(), br(), br(), 
                     div(id='pop_selectedDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('selectedDose', 'Selected dose', value=100, min=0)),
@@ -946,6 +949,11 @@ server <- function(input, output, session) {
   #### phase1Results ####
   output$phase1Results = renderTable({
     DUEenv$phase_one_result
+  })
+  
+  observeEvent(input$Info, {
+    #system(paste0('open ', system.file(package="DUE", "doc/DUE_vignette.html")))
+    browseURL(system.file(package="DUE", "doc/DUE_vignette.html"))
   })
   
   observeEvent(input$phase1ResultButton, {
