@@ -267,8 +267,8 @@ The scale/text pairs on the lower right specify the utility values for these fou
 
  All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0).
 
- The $Simple$ utility assignment values only the 
-$Rt$  outcome, and sets the other three to zero.
+ The $Simple$ utility assignment considers  only the 
+$Rt$  outcome to be valuable, with utility value = 1, and sets the other three utility values to zero.
  It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern unless $R$ is achieved.
 
  The other three utility assignments all penalize the outcome $rT$ with a utility of -1. They differ in the valuation of the $RT$ outcome:
