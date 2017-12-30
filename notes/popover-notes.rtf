@@ -1,0 +1,158 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf830
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 HelveticaNeue;\f2\fnil\fcharset0 Consolas;
+}
+{\colortbl;\red255\green255\blue255;\red255\green0\blue0;\red0\green0\blue0;\red15\green112\blue1;
+\red255\green255\blue255;\red0\green0\blue255;\red27\green31\blue34;\red244\green246\blue249;\red255\green255\blue255;
+\red21\green23\blue26;}
+{\*\expandedcolortbl;;\csgenericrgb\c100000\c0\c0;\csgenericrgb\c0\c0\c0;\cssrgb\c0\c50196\c0;
+\cssrgb\c100000\c100000\c100000;\csgenericrgb\c0\c0\c100000;\cssrgb\c14118\c16078\c18039;\cssrgb\c96471\c97255\c98039;\cssrgb\c100000\c100000\c100000;
+\cssrgb\c10588\c12157\c13725\c4706;}
+\margl1440\margr1440\vieww17160\viewh8300\viewkind0
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+
+\f0\fs24 \cf0 note on popovers\
+\
+after clicking to TRUE\
+with TRACE on,\
+RECV \{"method":"update","data":\{"togglePopovers":true\}\}\
+SEND \{"busy":"busy"\}\
+input$togglePopovers  TRUE \
+stopAllPopovers\
+addAllPopovers\
+\
+Then all the add popover messages were sent, e.g.\
+\cf2 SEND \{"custom":\{"updateTooltipOrPopover":\{"action":"add","type":"popover","id":"popPresetUtilities","options":\{"content":"Additive: +1 for Response, -1 for Toxicity<br>Simple:  +1 for Rt<br>Aggressive: U(RT) = +1  (toxicity doesn't matter)<br>Cautious: U(RT) = -1  (response doesn't matter)","placement":"top","trigger":"hover","title":"Preset Utility Assignments"\}\}\}\}\cf0 \
+\
+but then, the JS box was evaluated? No, it uses the JSevaluation box \
+\
+\cf2 SEND \{"recalculating":\{"name":"JSevaluation","status":"recalculating"\}\}\
+\cf0 stopAllPopoversString =\
+        "$(\\"*[id^=\\'pop\\']\\").popover(\\'destroy\\');" ; eval(stopAllPopoversString);   <== printed byt the \
+\cf2 SEND \{"recalculating":\{"name":"JSevaluation","status":"recalculated"\}\}\
+SEND \{"busy":"idle"\}\
+SEND \{"errors":[],"values":\{"JSevaluation":\{"html":"<script>stopAllPopoversString =\\n        \\"$(\\\\\\"*[id^=\\\\'pop\\\\']\\\\\\").popover(\\\\'destroy\\\\');\\" ; eval(stopAllPopoversString); <\\/script>","deps":[]\}\},"inputMessages":[]\}\
+RECV \{"method":"update","data":\{"evalStringR":"#stopAllPopovers()\\n#addAllPopovers()"\}\}\
+\
+\cf3 So despite the order, addAllPopovers was done first, then the stopAllPopvers message was sent.\
+We have this INSIDE stopAllPopovers:\
+	output$JSevaluation = renderUI(\{ \'85 \})\
+\
+\
+\
+=-=-=-=-=-=-=\
+2017-09-03\
+\
+Putting this in the JS box\
+	"popover(\\\\'destroy\\\\');" ;\
+yields the correct string in the alert:\
+	popover('destroy')\
+MAKE SURE THERE ARE NO TRAILING NEWLINES \
+ALL ON ONE LINE.\
+\
+REMEMBER THAT THE JS BOX CODE SUBSTITUTES QUOTES!\
+\
+\
+This\
+	"$(\\\\"*[id=\\\\'popLineThickness\\\\']\\\\").popover(\\\\'destroy\\\\');" ; \
+is alert-boxed as\
+	$('*[id='popLineThickness']').popover('destroy');\
+This string is an error in JS console.\
+But remember, we have code that replaces quotes.\
+Putting this in JS console\
+	$("*[id='popLineThickness']").popover('destroy');\
+seems to work. No popup \
+Though, it is still there, there is a flashing red box (because the JS console is up),\
+but the \cf3 popLineThickness does not appear\cf3 .\
+All the popups have flashing red box, then the popup appears.\
+\
+Now clicking the toggle TWICE (T->F->T) turns OFF all popovers,\
+AND the \cf3 popLineThickness popover is now working again!\
+(The first toggle did nothing)\cf3 \
+So definitely, addAllPopovers can turn them off!\
+\
+From the R box running stopOnePopover('popLineThickness'), \
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+stopOnePopoverString = "$(\\"*[id=\\'"popLineThickness\\']\\").popover(\\'destroy\\');" ; eval(stopOnePopoverString);
+\f0\fs24 \cf3 \cb1 \kerning1\expnd0\expndtw0 \
+should be a paste0.  And, remove extra quote.\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+stopOnePopoverString = "$(\\"*[id=\\'popLineThickness\\']\\").popover(\\'destroy\\');" ; eval(stopOnePopoverString);
+\f0\fs24 \cf3 \cb1 \kerning1\expnd0\expndtw0 \
+This works in JS console.  popLineThickness popover is now disabled.\
+Running it again, still disabled.\
+\
+\pard\pardeftab720\partightenfactor0
+
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+stopOnePopoverString = "$(\\"*[id=\\'popLineThickness\\']\\").popover(\\'destroy\\');" ;eval(stopOnePopoverString);
+\f0\fs24 \cf3 \cb1 \kerning1\expnd0\expndtw0 \
+\
+This sets 
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+stopOnePopoverString
+\f0\fs24 \cf3 \cb1 \kerning1\expnd0\expndtw0  correctly, and in JS console 
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+eval(stopOnePopoverString);
+\f0\fs24 \cf3 \cb1 \kerning1\expnd0\expndtw0   works.\
+\
+
+\f1\fs28 \cf4 \cb5 \expnd0\expndtw0\kerning0
+stopOnePopoverString ="$(\\"*[id=\\'popLineThickness\\']\\").popover(\\'destroy\\');" ; eval(stopOnePopoverString);\
+\cf3 \
+=-=-=-=-\
+I ran \cf4 \
+	addPopover(session, 'popPresetUtilities',\'85\
+\cf3 from the R box multiple times.\
+It did indeed TOGGLE the popup.\
+The JS console command turns off the popup, does NOT toggle.\
+\
+=-=-=-=-\
+Aha!   A known bug in bootstrap:\
+\
+{\field{\*\fldinst{HYPERLINK "https://stackoverflow.com/questions/27238938/bootstrap-popover-destroy-recreate-works-only-every-second-time"}}{\fldrslt https://stackoverflow.com/questions/27238938/bootstrap-popover-destroy-recreate-works-only-every-second-time}}\
+\
+Here is the code for shinyBS.addTooltip\
+\cf6 function (id, type, opts) \{\
+  var $id = shinyBS.getTooltipTarget(id);\
+  var dopts = \{html: true\};\
+  opts = $.extend(opts, dopts);\
+  \
+  if(type == "tooltip") \{\
+    $id.tooltip("destroy");\
+    $id.tooltip(opts);\
+  \} else if(type == "popover") \{\
+    $id.popover("destroy");\
+    $id.popover(opts);\
+  \}\
+  \
+\}\
+\
+\cf3 Here is the suggested replacement, from {\field{\*\fldinst{HYPERLINK "https://github.com/ebailey78/shinyBS/issues/88"}}{\fldrslt https://github.com/ebailey78/shinyBS/issues/88}}:\cf6 \
+\
+\pard\pardeftab720\sl340\partightenfactor0
+
+\f2\fs23\fsmilli11900 \cf7 \cb8 \outl0\strokewidth0 \strokec7 shinyBS.addTooltip = function(id, type, opts) \{\
+  var $id = shinyBS.getTooltipTarget(id);\
+  var dopts = \{html: true\};\
+  opts = $.extend(opts, dopts);\
+\
+  if(type == "tooltip") \{\
+    $id.tooltip("destroy");\
+    setTimeout(function() \{$id.tooltip(opts);\},200);\
+  \} else if(type == "popover") \{\
+    $id.popover("destroy");\
+    setTimeout(function() \{$id.popover(opts);\},200);\
+  \}\
+\}\
+\pard\pardeftab720\sl340\sa320\partightenfactor0
+
+\f1\fs28 \cf7 \cb9 and add the following to your ui: (assuming the file is named pop_patch.js)\
+\pard\pardeftab720\sl280\partightenfactor0
+
+\f2\fs23\fsmilli11900 \cf7 \cb10 singleton(tags$head(tags$script(src = "pop_patch.js"))),
+\f1\fs28 \cb9 \
+}

@@ -1,0 +1,9 @@
+Possible solution to the 
+"install-test-install-corrupt-db-quit-restart-crap-didn't-save-workspace cycle"
+stuff.
+
+https://github.com/hadley/devtools/pull/1001 
+
+
+Also, for the "Unable to retrieve package records"  problem
+https://groups.google.com/forum/#!topic/shiny-discuss/l6nug9hMh7g
