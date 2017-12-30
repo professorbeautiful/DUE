@@ -228,7 +228,7 @@ $This\ group\ \#$
  If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new  
 $Selected\ dose$.
 
-The $Selected\ dose$, whether selected by clikcing or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
+The $Selected\ dose$, whether selected by clicking or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
 * $rt\ \ $:  neither response nor toxicity
 * $rT\ $: only toxicity
