@@ -1,0 +1,17 @@
+Question the choice of utility values make a real difference? 
+
+How do PD versus PK affect sensitivity of utility to dose?
+
+Ditto for multimodality and RLE.
+
+When does the Pr(T) = 1/3 rule from Phase 1 3+3 designs come close to the optimal E(U), and when is it way off?
+ for a DUE paper
+
+When does the choice of utility values make a real difference?
+
+How do PD versus PK affect sensitivity of utility to dose?
+
+Ditto for multimodality and RLE.
+
+When does the Pr(T) = 1/3 rule from Phase 1 3+3 designs come close to the optimal E(U), and when is it way off?
+
