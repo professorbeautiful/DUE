@@ -1,5 +1,11 @@
-## @knitr plottingFunctions
-```{r plottingFunctions}
+## ----setup, include=FALSE,  echo=FALSE-----------------------------------
+require(knitr)
+require(DUE)
+knitr::opts_chunk$set(
+  echo = FALSE
+  )
+
+## ----plottingFunctions---------------------------------------------------
 envHolder = new.env()
 getExampleFile = function(string) {
   dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
@@ -35,4 +41,19 @@ plotEUprobsInVignette= function(string) {
     })
   }
 }
-```
+
+## ----fig.height=4, fig.width=8-------------------------------------------
+ par(mfrow=c(1, 2) )
+plotThresholdInVignette('Pharmacokinetic-example-two-groups') 
+plotEUprobsInVignette('Pharmacokinetic-example-two-groups') 
+
+## ----fig.height=4, fig.width=8-------------------------------------------
+ par(mfrow=c(1, 2) )
+plotThresholdInVignette('Pharmacodynamics-response-two-groups')
+plotEUprobsInVignette('Pharmacodynamics-response-two-groups')
+
+## ----fig.height=4, fig.width=8-------------------------------------------
+ par(mfrow=c(1, 2) )
+plotThresholdInVignette('Pharmacodynamics-toxicity-two-groups') 
+plotEUprobsInVignette('Pharmacodynamics-toxicity-two-groups') 
+
