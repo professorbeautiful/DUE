@@ -39,19 +39,23 @@ partialCumulative =
 #' 
 #' @description Produce a vector of probabilities and expected utility.
 #' @details calculate.probabilities
+#' 
 #' @return A vector of length 8:
 #' \code{
 #' probability.vector <- c(
-#' R=p.R.marginal,
-#' T=p.T.marginal,
-#' rt=p.rt,
-#' rT=p.rT,
-#' Rt=p.Rt,
-#' RT=p.RT,
-#' EU=expected.utility,
-#' RLE=p.RLE
+#' R=p.R.marginal, # marginal probability of response
+#' T=p.T.marginal, # marginal probability of toxicity 
+#' rt=p.rt,        # probability of non-response and non-toxicity 
+#' rT=p.rT,        # probability of non-response and toxicity
+#' Rt=p.Rt,        # probability of response and non-toxicity
+#' RT=p.RT,        # probability of response and toxicity
+#' EU=expected.utility,        # 
+#' RLE=p.RLE       # probability of response-limiting toxicity event
+#'                 #  (a toxicity so severe that R cannot happen, 
+#'                 # or might as well not have;  RLE has occurred.)
 #' )
 #' }
+#'
 #' @examples
 #'   DUEshinyHome = system.file(package='DUE'
 #'   , 'DUEshiny')
@@ -61,15 +65,6 @@ partialCumulative =
 
 calculate.probabilities <-
   function(DUEenv, log10dose, logdose, utility, ...) {
-    
-    ####  p.R.marginal :  marginal probability of response  ####
-    ####  p.T.marginal :  marginal probability of toxicity  ####
-    ####  p.rt:  probability of non-response and non-toxicity  ####
-    ####  p.rT:  probability of non-response and toxicity      ####
-    ####  p.Rt:  probability of response and non-toxicity      ####
-    ####  p.RT:  probability of response and toxicity          ####
-    ####  p.RLE:  probability of response-limiting toxicity event          ####
-    ##      (a toxicity so severe that R cannot happen, or might as well not have;  RLE has occurred.)
     
     if(missing(utility))
       utility = DUEenv$utility
