@@ -160,6 +160,37 @@ calculate.probabilities <-
     return(probability.vector)
   }
 
+calculate.probabilities.allDoses <- function(DUEenv, ...) {
+    sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv, ... = ...)
+}
+
+extractUtilitySummaries <- function(eightprobs, doseValues, MTDtoxicity) {
+  highestprob.Rt = max(eightprobs["Rt",])
+  highest.EU = max(eightprobs["EU",])
+  best.dose.p.Rt = doseValues[eightprobs["Rt",]==highestprob.Rt]
+  best.dose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
+  best.dose.p.T = max(doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
+  return(data.frame(
+    highestprob.Rt,
+    highest.EU,
+    best.dose.p.Rt,
+    best.dose.EU,
+    best.dose.p.T
+  ))  
+}
+
+calculate.probabilities.<- function(design, DUEenvRow=DUEinits.default, ...) {
+  # For each row of the design matrix, place the values in calculate the 
+  sapply(1:nrow(design), function(row){
+    arglist = design[row, ]
+    for(arg in names(arglist))  DUEenv[[arg]] = arglist[[arg]]
+    calculate.probabilities (DUEenv, log10dose=2, utility, ...) 
+    
+  })
+  DUEenv$eightprobs <- 
+    sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
+}
+
 checkcalcs=function(...){
   p7=calculate.probabilities(DUEenv=denv, 3, ...); 
   c(sum=sum(p7[3:6]), 
