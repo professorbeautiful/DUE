@@ -1,12 +1,12 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
     cexValue = ifelse(context=='shiny', 2, 1); 
-    DUEenv$sevenprobs <- 
+    DUEenv$eightprobs <- 
       sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
-    DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
-    DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
-    DUEenv$best.dose.p.Rt <- DUEenv$doseValues[DUEenv$sevenprobs["Rt",]==DUEenv$highestprob..Rt]	
-    DUEenv$best.dose.EU <- DUEenv$doseValues[DUEenv$sevenprobs["EU",]==DUEenv$highest.EU] [1]
-    DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$sevenprobs["T",]-DUEenv$MTDtoxicity)<=0])
+    DUEenv$highestprob..Rt <- max(DUEenv$eightprobs["Rt",])
+    DUEenv$highest.EU <- max(DUEenv$eightprobs["EU",])
+    DUEenv$best.dose.p.Rt <- DUEenv$doseValues[DUEenv$eightprobs["Rt",]==DUEenv$highestprob..Rt]	
+    DUEenv$best.dose.EU <- DUEenv$doseValues[DUEenv$eightprobs["EU",]==DUEenv$highest.EU] [1]
+    DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$eightprobs["T",]-DUEenv$MTDtoxicity)<=0])
     # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convertEU <- function(x, isEU=TRUE) {
     #### Map EU on right axis from [-1, 1] to [0,1] on left axis.
@@ -15,14 +15,14 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
     else x
   }
   par(mar =  c(5,4,4,6) + 0.1, xpd=NA )
-  plot(DUEenv$doseValues, DUEenv$sevenprobs[1,],type="l",col=0,lwd=1, 
+  plot(DUEenv$doseValues, DUEenv$eightprobs[1,],type="l",col=0,lwd=1, 
        xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
   )
   
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")
   DUEenv$usrCoords.ProbsAndEU <- par("usr")
-  if(browseIf(message="Just finished plot-- not yet done title-- check sevenprobs[1,]")) browser()
+  if(browseIf(message="Just finished plot-- not yet done title-- check eightprobs[1,]")) browser()
   # plot.title="Probabilities and Expected Utility, E(U)"
   # title(main=plot.title, cex.main=2, col.main="blue")
   axis(side = 1, at = DUEenv$doseTicks)
@@ -51,11 +51,11 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
     shortlist <- c(1, round(DUEenv$nDoses/2), DUEenv$nDoses)
     if(linewidths[i] > 0) {
       outcome.string = rt.outcome.strings(i)
-      lines(DUEenv$doseValues, convertEU(DUEenv$sevenprobs[i,], i==EUindex),
+      lines(DUEenv$doseValues, convertEU(DUEenv$eightprobs[i,], i==EUindex),
             lty=linetypes[i], lwd=linewidths[i], 
             col=rt.outcome.colors(outcome.string))
       text(DUEenv$doseValues[shortlist],
-           convertEU(DUEenv$sevenprobs[i, shortlist], i==EUindex), 
+           convertEU(DUEenv$eightprobs[i, shortlist], i==EUindex), 
            col=rt.outcome.colors(outcome.string),
            label=outcome.string,
            cex=1.2, xpd=NA, adj=c(0, -1))
