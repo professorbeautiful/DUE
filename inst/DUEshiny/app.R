@@ -17,7 +17,7 @@ options(options.saved)
 
 data(DUEinits.default)
 
-file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www')
+try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
 
 make_linethicknessButton = function(labelNum)
   column(1,
