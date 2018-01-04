@@ -3,9 +3,17 @@ NOTES on building the package and running the app.
 To run the app, 
 shiny::runApp('inst/DUEshiny', launch.browser = TRUE)
 
-devtools::install(build_vignettes = TRUE)
-This does not change or create any html files.
-Recently changed in vignette: 'clikcing' is corrected.
+devtools::build_vignettes()
+  Building DUE vignettes
+  Warning in as.POSIXlt.POSIXct(Sys.time()) :
+    unknown timezone 'zone/tz/2017c.1.0/zoneinfo/America/Montreal'
+  Moving DUE_vignette.html, DUE_vignette.R, DUE_vignette_plottingFunctions.R to inst/doc/
+  Copying DUE_vignette.Rmd to inst/doc/
+
+FAILS:  devtools::install(build_vignettes = TRUE)
+Error is 
+  cp: DUE/inst/DUEshiny/www/DUE_vignette.html: No such file or directory
+Can't figure this out so far. So just do 
 
 Under the Knit dropdown, Knit Directory has to be set to Document Directory,
 or else the example files can't be found.
