@@ -17,7 +17,9 @@ options(options.saved)
 
 data(DUEinits.default)
 
+optsaved = options(warn=-2)
 try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
+options(optsaved)
 
 make_linethicknessButton = function(labelNum)
   column(1,
@@ -35,6 +37,7 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
+  shiny::includeScript('windowZoomWarning.js'),
   singleton(tags$head(tags$script(src = "pop_patch.js"))),
   uiOutput('JSstopPopups'),
   tags$style(".popover{max-width: 100%; font-size:large}"),
