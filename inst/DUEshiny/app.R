@@ -952,8 +952,12 @@ server <- function(input, output, session) {
   })
   
   observeEvent(input$Info, {
-    #system(paste0('open ', system.file(package="DUE", "doc/DUE_vignette.html")))
-    browseURL(system.file(package="DUE", "doc/DUE_vignette.html"))
+    htmlFile = system.file(package="DUE", "DUEshiny/www/DUE_vignette.html") 
+    htmlFile = 'www/DUE_vignette.html'   ### shinyapps.io can see either file.
+    # system(paste0('open ', htmlFile ))
+    # system('open https://trials.shinyapps.io/DUEshiny/www/DUE_vignette.html' )
+    # no error but doesn't work.
+    browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
   })
   
   observeEvent(input$phase1ResultButton, {
