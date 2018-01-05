@@ -143,9 +143,9 @@ ui <- fluidPage(
                     "border-right:1px solid #000;"),  ### height:1500px;
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
-                    #a(
-                      #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
-                      #href="DUE_vignette.html", rel="help", target="_blank",
+                    a(
+                      href="DUE_vignette.html", rel="help", target="_blank",
+                      ### must be in www.
                       span(
                         strong(em("Click for information:",
                                   style="color:darkgreen; font-size:200%"))
@@ -155,7 +155,7 @@ ui <- fluidPage(
                                      icon=tagAppendAttributes(
                                        style="font-size: 3em;",
                                        icon("info-sign", lib="glyphicon"))) )
-                    #)
+                    )
                     ,
                     br(), br(), br(), 
                     div(id='pop_selectedDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
