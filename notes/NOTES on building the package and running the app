@@ -2,21 +2,27 @@ NOTES on building the package and running the app.
 
 To run the app, 
 shiny::runApp('inst/DUEshiny', launch.browser = TRUE)
-
-devtools::build_vignettes()
+To build vignettes,
+  devtools::build_vignettes()
   Building DUE vignettes
   Warning in as.POSIXlt.POSIXct(Sys.time()) :
     unknown timezone 'zone/tz/2017c.1.0/zoneinfo/America/Montreal'
   Moving DUE_vignette.html, DUE_vignette.R, DUE_vignette_plottingFunctions.R to inst/doc/
   Copying DUE_vignette.Rmd to inst/doc/
-Then you have to get the html file into inst/DUEshiny/www.
+==>>  ln ./inst/doc/DUE_vignette.html ./inst/DUEshiny/www/
+This seems to get the html file into inst/DUEshiny/www OK.
+Does not need to be re-done. Repeating build_vignettes worked.
+
+
+Previous error:
   FAILS:  devtools::install(build_vignettes = TRUE)
   Error is 
     cp: DUE/inst/DUEshiny/www/DUE_vignette.html: No such file or directory
   Possibly due to the usage of a file link (to save the need to copy).
-==>>  I removed the link and did
+I removed the link and did
    cp inst/doc/DUE_vignette.html inst/DUEshiny/www
 "by hand".
+But now, the link works ok. So still confused, but ok.
 
 Under the Knit dropdown, Knit Directory has to be set to Document Directory,
 or else the example files can't be found.
