@@ -35,5 +35,6 @@ function(app, user='professorbeautiful', project=basename(getwd()),
 function(app){
   if(missing(app))
     app = dir('inst')[dir('inst')!='doc'][1]  ## The first folder except for 'doc'.  system(paste0("open https://trials.shinyapps.io/", app))
+  browseURL(paste0('https://trials.shinyapps.io/', app))
   cat(paste0("rsconnect::showLogs(appPath = 'inst/", app,"')"), '\n')
 }
