@@ -23,8 +23,10 @@ knitr::opts_chunk$set(
 <!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html 
 http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
 -->
+
+
 ```{r plottingFunctionsInclude}
-source("DUE_vignette_plottingFunctions.R")
+source("../inst/doc/DUE_vignette_plottingFunctions.R")
 
 ```
 
