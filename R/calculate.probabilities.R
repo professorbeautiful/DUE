@@ -167,12 +167,16 @@ calculate.probabilities.allDoses <- function(DUEenv, ...) {
 extractUtilitySummaries <- function(eightprobs, doseValues, MTDtoxicity) {
   highestprob.Rt = max(eightprobs["Rt",])
   highest.EU = max(eightprobs["EU",])
+  lowestprob.Rt = min(eightprobs["Rt",])
+  lowest.EU = min(eightprobs["EU",])
   best.dose.p.Rt = doseValues[eightprobs["Rt",]==highestprob.Rt]
   best.dose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
   best.dose.p.T = max(doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
   return(data.frame(
     highestprob.Rt,
     highest.EU,
+    lowestprob.Rt,
+    lowest.EU,
     best.dose.p.Rt,
     best.dose.EU,
     best.dose.p.T
