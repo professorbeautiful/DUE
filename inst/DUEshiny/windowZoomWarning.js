@@ -24,4 +24,4 @@ if(window.innerWidth < 2500) {
   alert('Window zoom is too high. For best appearance, please zoom out (e.g. on OSX, Cmd-minus).');
 }
 
-
+/* jQuery("body").css("zoom", "50%") */
