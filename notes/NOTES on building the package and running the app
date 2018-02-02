@@ -12,6 +12,8 @@ To build vignettes,
 ==>>  ln ./inst/doc/DUE_vignette.html ./inst/DUEshiny/www/
 This seems to get the html file into inst/DUEshiny/www OK.
 Does not need to be re-done. Repeating build_vignettes worked.
+File appears when clicking Run App.
+But people who download the package from git may not know to do this.
 
 
 Previous error:
