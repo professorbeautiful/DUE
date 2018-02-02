@@ -965,36 +965,63 @@ server <- function(input, output, session) {
   
   observeEvent(input$phase1ResultButton, {
     if(input$phase1ResultButton > 0){
-      DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
+      DUEenv$phase1Doses = DUEenv$doseTicks 
+      ### Temporary for testing. Later add components to Phase 1 window.
       doses = DUEenv$phase1Doses
       print(doses)
-      toxProbabilities = sapply(log10(doses), 
+      probabilityVectors = sapply(log10(doses), 
                                 calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
-      ) ['T', ]
+      ) 
+      toxProbabilities = probabilityVectors['T', ]
+      EU = probabilityVectors['EU', ]
+      phase_one_summary = phase_one_exact(PrTox = toxProbabilities)
+      
+      #show the expected expected utility across all enrolled patients.
+      # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
+      phase_one_summary$EN_pts = 
+        with(phase_one_summary, 
+             pr_enter_tier * (3 + 3*(1-pr_Term_1-pr_Go_1) ) )
+      DUEenv$expected_total_EU = 
+        sum( phase_one_summary$EN_pts * EU )
+      #show the expected expected utility of the Phase 1 MTD.
+      # for now, stopping at the first tier means there is no MTD.
+      #  and not stopping means MTD = highest tier
+      phase_one_summary$probMTD = 
+        c(phase_one_summary$pr_stop_at[-1],
+          1 - sum(phase_one_summary$pr_stop_at) )
+      DUEenv$expected_EU_at_MTD = sum(phase_one_summary$probMTD * EU)
       DUEenv$phase_one_result = 
         data.frame(doses=doses,
-                   round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
+                   lapply(phase_one_summary, round, digits = 4 )
         )
       print(DUEenv$phase_one_result )
       ## standard 3+3 design
       showModal(ui = 
-                  modalDialog(easyClose = TRUE, 
-                              size="l", 
-                              h2("Results of Phase 1 trials using the doses"),
-                              textOutput('phase1Doses'),
-                              shiny::hr(),
-                              tagAppendAttributes(style="text-size:larger",
-                                                  tableOutput('phase1Results')),
-                              shiny::hr(),
-                              h2('Probability of stopping ("pr_stop_at"'),
-                              plotOutput('phase1plot'),
-                              footer = tagList(
-                                modalButton(label = "Cancel")
-                              )
+                  modalDialog(
+                    easyClose = TRUE, 
+                    size="l", 
+                    h2("Results of Phase 1 trials using the doses"),
+                    textOutput('phase1Doses'),
+                    shiny::hr(),
+                    tagAppendAttributes(style="text-size:larger",
+                                        tableOutput('phase1Results')),
+                    shiny::hr(),
+                    h2('Probability of stopping ("pr_stop_at")'),
+                    plotOutput('phase1plot'),
+                    h2("Expected EU across all enrolled patients:",
+                       textOutput('ID_expected_total_EU') ),
+                    h2("Expected EU at MTD:",
+                       textOutput('ID_expected_EU_at_MTD') ),
+                    footer = tagList(
+                      modalButton(label = "Cancel")
+                    )
                   )
       ) 
     }
   })
+  output$ID_expected_total_EU = renderText({round(digits=2, DUEenv$expected_total_EU)})
+  output$ID_expected_EU_at_MTD = renderText({round(digits=2, DUEenv$expected_EU_at_MTD)})
+  
   output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
          log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
