@@ -1,5 +1,7 @@
 Setting the window zoom.
 
+=-=-=-=-=-    See windowZoomWarning.js    for a quick fix  =-=-=-=-=-=-=-=-=-=
+
 The problem:  sometimes the browser zoom is set to zoom-in, and the interface is messed up.
 Zooming back out all the way fixes it.—but poor user!
 How can this be handled?
