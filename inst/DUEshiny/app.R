@@ -159,7 +159,7 @@ ui <- fluidPage(
                       ### must be in www.
                       span(
                         strong(em("Click for information:",
-                                  style="color:darkgreen; font-size:200%"))
+                                  style="color:darkgreen; font-size:150%"))
                         ,
                         actionButton(inputId = "Info", label="",
                                      style="background:lightgreen",
