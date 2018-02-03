@@ -63,8 +63,19 @@ ui <- fluidPage(
                     #style="font-color:red;",
                   fluidRow(column(8, offset=2, id='popThresholdContour',
                     plotOutput("ThresholdContour", 
-                               click = 'click_threshold',
-                               width="700px", height="700px")
+                               click = 'click_threshold'
+                               #, width="100%", height="100%"  
+                                    #No plot appears.
+                               # , width="35vw", height="35vw"
+                               # Looks ok but too big on zoom out.
+                               # , width="700px", height="700px" 
+                                  # original. Bad on zoom in.
+                               # , height=reactive(ifelse(!is.null(input$innerWidth),
+                               #                        input$innerWidth*3/5,700))
+                               # , width=reactive(ifelse(!is.null(input$innerWidth),
+                               #                        input$innerWidth*3/5,700))
+                               # OK, but belongs in SERVER renderPlot
+                               )
                   )), 
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(id = 'pop_nPops',
@@ -202,9 +213,9 @@ ui <- fluidPage(
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
                              column(8, offset=2, #align='center',
-                                    plotOutput("linePlot",
-                                               height="700px", 
-                                               width="700px") )),
+                                    plotOutput("linePlot"
+                                               #, height="700px", width="700px"
+                                               ) )),
                   div(id = 'popUtilities',
                     br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
@@ -676,7 +687,13 @@ server <- function(input, output, session) {
   })
   
   ####Plotting Threshold Contour####
-  output$ThresholdContour<- renderPlot({
+  output$ThresholdContour<- renderPlot(
+    height=reactive(ifelse(!is.null(input$innerWidth),
+                             input$innerWidth*0.25,700)),
+    width=reactive(ifelse(!is.null(input$innerWidth),
+                            input$innerWidth*0.25,700)),
+    ### See https://stackoverflow.com/questions/40538365/r-shiny-how-to-get-square-plot-to-use-full-width-of-panel/40539526#40539526
+    expr =     {
     input$okWillLoadSelectedFile  ### Attempt to force the plot.
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
