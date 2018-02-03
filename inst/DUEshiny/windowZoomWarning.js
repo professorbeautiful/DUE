@@ -11,7 +11,16 @@ $(document).on(
 $(window).resize( 
   innerWidthHandler );
                             
- 
+                            
+//  All these attempts don't work well
+/* jQuery("*").css("zoom", "97%") */
+/*  $("#ThresholdContour{height:100vh !important;}");  
+$("#ThresholdContour{width:100vw !important;}"); 
+$("#popLinePlot{height:100vh !important;}");  
+$("#popLinePlot{width:100vw !important;}");  
+//  # tags$head(tags$style("#popLinePlot{width:100vw !important;}") ), 
+*/
+
 var snap = function (r, snaps, ratios)
 {
   var i;
