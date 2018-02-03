@@ -27,6 +27,8 @@ var snapThis = function()
   );
 };
 
+// This works when the app is first opened.
+
 if(window.innerWidth > 3500) {
   alert('Window zoom is too low. For best appearance, please zoom in (e.g. on OSX, Cmd-plus).');
 }
@@ -34,4 +36,3 @@ if(window.innerWidth > 3500) {
 if(window.innerWidth < 2500) {
   alert('Window zoom is too high. For best appearance, please zoom out (e.g. on OSX, Cmd-minus).');
 }
-
