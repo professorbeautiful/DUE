@@ -1,0 +1,12 @@
+# When user leans on a numericInput arrow, how can we abort intermediate computations & just do the last one?
+
+# Ah this will do it! Joe Cheng strikes again.
+https://groups.google.com/forum/#!search/shiny$20discuss$20googlegroups$20updateButton/shiny-discuss/v2rE8zBqrXA/ZPvNL-dTBAAJ
+https://gist.github.com/jcheng5/6141ea7066e62cafb31c 
+
+#  https://stackoverflow.com/questions/21282228/update-plot-within-observer-loop-in-shiny-application
+#   might point to an answer-- using invalidateLater ??
+#   invalidateLater(millis, session = getDefaultReactiveDomain())
+
+And this: "An example of doing prolonged, iterative computation in Shiny."
+https://gist.github.com/trestletech/8608815

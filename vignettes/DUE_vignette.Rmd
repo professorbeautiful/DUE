@@ -23,42 +23,11 @@ knitr::opts_chunk$set(
 <!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html 
 http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
 -->
-```{r plottingFunctions}
-envHolder = new.env()
-getExampleFile = function(string) {
-  dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
-  filename = paste0(dirString,  rev(grep(value=TRUE, string,
-                                         dir(dirString)))[1]) 
-  if(class(filename) == 'try-error') {
-    cat("file not found ", string, "\n")
-    print(getwd())
-    print(dir())
-  }
-  filename
-}
 
-plotThresholdInVignette= function(string) {
-  filename = getExampleFile(string) 
-  if(class(filename) != 'try-error') {
-    load(filename, envir = envHolder)
-    rt.outcome.colors = envHolder$rt.outcome.colors
-    try({
-      plotThresholdContour(theDUEenv = envHolder$DUEsaving, context='vignette')
-      mtext(side = 3, string, cex=1)
-    })
-  }
-}
-plotEUprobsInVignette= function(string) {
-  filename = getExampleFile(string) 
-  if(class(filename) != 'try-error') {
-    load(filename, envir = envHolder)
-    rt.outcome.colors = envHolder$rt.outcome.colors
-    try({
-      plotProbsAndEU(DUEenv = envHolder$DUEsaving, context='vignette')
-      mtext(side = 3, string, cex=1)
-    })
-  }
-}
+
+```{r plottingFunctionsInclude}
+source("../inst/doc/DUE_vignette_plottingFunctions.R")
+
 ```
 
 ### Introduction
@@ -228,7 +197,7 @@ $This\ group\ \#$
  If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new  
 $Selected\ dose$.
 
-The $Selected\ dose$, whether selected by clikcing or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
+The $Selected\ dose$, whether selected by clicking or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
 * $rt\ \ $:  neither response nor toxicity
 * $rT\ $: only toxicity
@@ -267,8 +236,8 @@ The scale/text pairs on the lower right specify the utility values for these fou
 
  All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0).
 
- The $Simple$ utility assignment values only the 
-$Rt$  outcome, and sets the other three to zero.
+ The $Simple$ utility assignment considers  only the 
+$Rt$  outcome to be valuable, with utility value = 1, and sets the other three utility values to zero.
  It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern unless $R$ is achieved.
 
  The other three utility assignments all penalize the outcome $rT$ with a utility of -1. They differ in the valuation of the $RT$ outcome:
@@ -329,6 +298,22 @@ Clicking the checkbox at the left of the grey band opens an instance of `shinyDe
 In this ideal situation, there is a fairly sharp peak in the expected utility EU, with an optimal dose somewhere between $\mu_{R} = 100$ and $\mu_{T} = 200$. Only the `Aggressive` utility function has substantially different optimal, driving the optimal dose near the top of the dose range. The correlation has essentially no effect. Whether correlation = 0, so that all the variation is pharmacodynamics, or correlation near 1, so that it is nearly all pharmacokinetics, the utility curve is basically unchanged.
 
 Lowering the median value $\mu_{T} = 100$ to equal $\mu_{R}$, then toxicity is highly likely, response less so. In that case, the utility choice has profound effects. Only the `Simple` utility shows a local EU peak at 100. With the `Additive` utility, the EU curve is flat. A 3+3 phase I trial on 7 tiers logarithmically spaced from 50 to 200, would stop at tier 100, with maximum tolerated dose (MTD) = 79.4 with probability 72%. 
+
+## Is  Pr(toxicity) =  33% a good proxy for optimal expected utility?
+
+In this figure, the "T" curve is made visible, for comparison with the EU curve. The optimal dose is roughly the same as the dose at which the probability of toxicity is 33%.
+
+![ . ](EU-is-at-T=0.33-additive.png){ width=50% }
+
+The venerable "3+3" Phase I design is sometimes described as aiming to estimate the dose tier closest to Pr(toxicity) =  33%. To rationalize this in vague terms, lowering the dose might decrease the response probability too much, while raising it would of course increase the risk, and possibly entail "response limiting events" that would mask or make irrelevant an increase in response rate.
+
+The utility function in the figure is "Additive". At the other three default utility functions, here are the comparable curves:
+
+SIMPLE          |                CAUTIOUS                 |           AGGRESSIVE
+----------------|-------------------------------------------|-------------------
+![ . ](EU-is-at-T=0.33-simple.png){ width=90% } | ![ . ](EU-lower-than-T=0.33-cautious.png){ width=90% } | ![ . ](EU-is-above-T=0.33-aggressive.png){ width=90% } 
+
+Changing the utility values to the simple scheme, which credits only the outcome `Rt`, does not change the optimum dose, but enhances its optimality. The cautious assignment lowers the optimal dose somewhat. The aggressive assignment sends it all the way to the maximum dose on the scale.
 
 
 ## Effect of multimodality

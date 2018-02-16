@@ -1,28 +1,25 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
-    cexValue = ifelse(context=='shiny', 2, 1); 
-    DUEenv$sevenprobs <- 
-      sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
-    DUEenv$highestprob..Rt <- max(DUEenv$sevenprobs["Rt",])
-    DUEenv$highest.EU <- max(DUEenv$sevenprobs["EU",])
-    DUEenv$best.dose.p.Rt <- DUEenv$doseValues[DUEenv$sevenprobs["Rt",]==DUEenv$highestprob..Rt]	
-    DUEenv$best.dose.EU <- DUEenv$doseValues[DUEenv$sevenprobs["EU",]==DUEenv$highest.EU] [1]
-    DUEenv$best.dose.p.T <- max(DUEenv$doseValues[(DUEenv$sevenprobs["T",]-DUEenv$MTDtoxicity)<=0])
-    # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
+  cexValue = ifelse(context=='shiny', 2, 1); 
+  eightprobs = calculate.probabilities.allDoses(DUEenv)
+  utilitySummaries = extractUtilitySummaries(eightprobs, doseValues=DUEenv$doseValues, MTDtoxicity=DUEenv$MTDtoxicity)
+  for(us in names(utilitySummaries))
+    assign(us, utilitySummaries[[us]])
+  # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
   convertEU <- function(x, isEU=TRUE) {
     #### Map EU on right axis from [-1, 1] to [0,1] on left axis.
     if(isEU) 
-       (x+1)/2
+      (x+1)/2
     else x
   }
   par(mar =  c(5,4,4,6) + 0.1, xpd=NA )
-  plot(DUEenv$doseValues, DUEenv$sevenprobs[1,],type="l",col=0,lwd=1, 
+  plot(DUEenv$doseValues, eightprobs[1,],type="l",col=0,lwd=1, 
        xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
   )
   
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")
   DUEenv$usrCoords.ProbsAndEU <- par("usr")
-  if(browseIf(message="Just finished plot-- not yet done title-- check sevenprobs[1,]")) browser()
+  if(browseIf(message="Just finished plot-- not yet done title-- check eightprobs[1,]")) browser()
   # plot.title="Probabilities and Expected Utility, E(U)"
   # title(main=plot.title, cex.main=2, col.main="blue")
   axis(side = 1, at = DUEenv$doseTicks)
@@ -51,19 +48,19 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
     shortlist <- c(1, round(DUEenv$nDoses/2), DUEenv$nDoses)
     if(linewidths[i] > 0) {
       outcome.string = rt.outcome.strings(i)
-      lines(DUEenv$doseValues, convertEU(DUEenv$sevenprobs[i,], i==EUindex),
+      lines(DUEenv$doseValues, convertEU(eightprobs[i,], i==EUindex),
             lty=linetypes[i], lwd=linewidths[i], 
             col=rt.outcome.colors(outcome.string))
       text(DUEenv$doseValues[shortlist],
-           convertEU(DUEenv$sevenprobs[i, shortlist], i==EUindex), 
+           convertEU(eightprobs[i, shortlist], i==EUindex), 
            col=rt.outcome.colors(outcome.string),
            label=outcome.string,
            cex=1.2, xpd=NA, adj=c(0, -1))
     }
   }
-  segments(5, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(DUEenv$best.dose.p.T, DUEenv$MTDtoxicity, DUEenv$best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(DUEenv$highest.EU, TRUE), lty=2, lwd=2, 
+  segments(5, DUEenv$MTDtoxicity, best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(best.dose.p.T, DUEenv$MTDtoxicity, best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
            col=rt.outcome.colors("EU"))
   abline(v=DUEenv$selectedDose, col="green")
 }

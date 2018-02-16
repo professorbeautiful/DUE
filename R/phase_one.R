@@ -25,7 +25,7 @@ phase_one_exact = function(PrTox = c(.1,.2,.3,.4), N1=3,N2=3, MaxGo1 = 0, MinSto
     if(level < length(PrTox))
        pr_enter_tier[level+1] = ( pr_Go_1[level] + pr_Go_2[level]) * pr_enter_tier[level];   ## Marginal prob. 
   }
-  result = cbind(pr_enter_tier, pr_Go_1, pr_Term_1, pr_Go_2, pr_stop_at)
+  result = data.frame(pr_enter_tier, pr_Go_1, pr_Term_1, pr_Go_2, pr_stop_at)
   return(result)
 }
 

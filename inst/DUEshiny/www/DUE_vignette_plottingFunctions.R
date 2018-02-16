@@ -1,5 +1,7 @@
 ## @knitr plottingFunctions
-
+##  ```{r ref.label=plottingFunctions}
+##  source()  works! Skip the knitr:read_chunk way.
+ 
 envHolder = new.env()
 getExampleFile = function(string) {
   dirString = ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')

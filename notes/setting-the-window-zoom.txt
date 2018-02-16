@@ -1,0 +1,56 @@
+Setting the window zoom.
+
+=-=-=-=-=-    See windowZoomWarning.js    for a quick fix  =-=-=-=-=-=-=-=-=-=
+
+The problem:  sometimes the browser zoom is set to zoom-in, and the interface is messed up.
+Zooming back out all the way fixes it.—but poor user!
+How can this be handled?
+
+https://stackoverflow.com/questions/1713771/how-to-detect-page-zoom-level-in-all-modern-browsers 
+
+var snap = function (r, snaps, ratios)
+{
+    var i;
+    for (i=0; i < 16; i++) { if ( r < snaps[i] ) return eval(ratios[i]); }
+};
+var w, l, r;
+w = window.outerWidth, l = window.innerWidth;
+snap((w - 16) / l,
+            [ 0.29, 0.42, 0.58, 0.71, 0.83, 0.95, 1.05, 1.18, 1.38, 1.63, 1.88, 2.25, 2.75, 3.5, 4.5, 100 ],
+            [ 0.25, '1/3', 0.5, '2/3', 0.75, 0.9, 1, 1.1, 1.25, 1.5, 1.75, 2, 2.5, 3, 4, 5 ]
+);
+
+The lowest zoom in Safari is "0.5" , between 0.42 and 0.58.
+Track what happens with 
+	[window.outerWidth, window.innerWidth];
+1380,2760 at correct zoom (or 2870)
+ (NOT affected by $('body').css({ width: '200%' }), 
+or by document.body.style.zoom for example)
+1380,1840 zoomed in.
+https://developer.mozilla.org/en-US/docs/Web/API/Window/innerWidth
+For window, innerWidth is an attribute,not a function.  Cannot set it.
+  var w = window.innerWidth     // browser-independent.
+  || document.documentElement.clientWidth
+  || document.body.clientWidth;
+
+In Firefox, the proper setting has window.innerWidth = 2840. But outerWidth is also 2840.
+So maybe we should key off of innerWidth only.
+In chrome, 2880 is   good.
+4320 is too big (must zoom in)
+2160 is too small (must zoom out)
+
+=-=-=-=-=-    See windowZoomWarning.js    for a quick fix  =-=-=-=-=-=-=-=-=-=
+
+window.resizeTo()   does not seem to do anything.
+document.body.style.zoom="80%"   etc
+does affect the look in Safari. No effect in Firefox.
+
+
+Try 
+<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+	
+This does stuff.   $('body').css({ width: '100%' });
+Still only Cmd-minus really fixes the view properly.
+Especially the plots never get smaller.
+
+

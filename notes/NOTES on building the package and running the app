@@ -1,0 +1,73 @@
+NOTES on building the package and running the app.
+
+To run the app, 
+shiny::runApp('inst/DUEshiny', launch.browser = TRUE)
+To build vignettes,
+  devtools::build_vignettes()
+  Building DUE vignettes
+  Warning in as.POSIXlt.POSIXct(Sys.time()) :
+    unknown timezone 'zone/tz/2017c.1.0/zoneinfo/America/Montreal'
+  Moving DUE_vignette.html, DUE_vignette.R, DUE_vignette_plottingFunctions.R to inst/doc/
+  Copying DUE_vignette.Rmd to inst/doc/
+==>>  ln ./inst/doc/DUE_vignette.html ./inst/DUEshiny/www/
+This seems to get the html file into inst/DUEshiny/www OK.
+Does not need to be re-done. Repeating build_vignettes worked.
+File appears when clicking Run App.
+But people who download the package from git may not know to do this.
+
+
+Previous error:
+  FAILS:  devtools::install(build_vignettes = TRUE)
+  Error is 
+    cp: DUE/inst/DUEshiny/www/DUE_vignette.html: No such file or directory
+  Possibly due to the usage of a file link (to save the need to copy).
+I removed the link and did
+   cp inst/doc/DUE_vignette.html inst/DUEshiny/www
+"by hand".
+But now, the link works ok. So still confused, but ok.
+
+Under the Knit dropdown, Knit Directory has to be set to Document Directory,
+or else the example files can't be found.
+
+The html output is at
+   file:///private/var/folders/6v/y_cp6z4d22ggbgrqdk0g73v80000gv/T/Rtmpvk0cV1/preview-289e5856c5fd.dir/DUE_vignette.html
+   
+This web address does bring up the vignette (jan 4, 2017):
+  https://trials.shinyapps.io/DUEshiny/_w_95d74301/DUE_vignette.html
+  
+  
+The dilmemma: use the same rmarkdown body both for the vignette and for the html to show up in the Info window for the app.
+Here we go:
+  system.file(package='DUE', 'doc/DUE_vignette.html')
+For vignette:
+---
+title: "DUE, the Dose Utility Explorer"
+author: "Roger Day, Marie Gerges"
+date: "`r Sys.Date()`"
+# output: html_document
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{"DUE, the Dose Utility Explorer"}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+numbersections: TRUE
+---
+title: "DUE, the Dose Utility Explorer"
+author: "Roger Day, Marie Gerges"
+date: "`r Sys.Date()`"
+output:
+  html_document: default
+  pdf_document: default
+numbersections: yes
+---
+
+
+
+TODO:
+Make sure the screen for the app is set at the proper zoom.
+
+file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www')  might be helpful, probably unnecesary.
+ 
+The multimodality section.
+Support batch calculations.
+

@@ -17,6 +17,10 @@ options(options.saved)
 
 data(DUEinits.default)
 
+optsaved = options(warn=-2)
+try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
+options(optsaved)
+
 make_linethicknessButton = function(labelNum)
   column(1,
          tagAppendAttributes(
@@ -33,6 +37,7 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
+  shiny::includeScript('windowZoomWarning.js'),
   singleton(tags$head(tags$script(src = "pop_patch.js"))),
   uiOutput('JSstopPopups'),
   tags$style(".popover{max-width: 100%; font-size:large}"),
@@ -58,8 +63,19 @@ ui <- fluidPage(
                     #style="font-color:red;",
                   fluidRow(column(8, offset=2, id='popThresholdContour',
                     plotOutput("ThresholdContour", 
-                               click = 'click_threshold',
-                               width="700px", height="700px")
+                               click = 'click_threshold'
+                               #, width="100%", height="100%"  
+                                    #No plot appears.
+                               # , width="35vw", height="35vw"
+                               # Looks ok but too big on zoom out.
+                               # , width="700px", height="700px" 
+                                  # original. Bad on zoom in.
+                               # , height=reactive(ifelse(!is.null(input$innerWidth),
+                               #                        input$innerWidth*3/5,700))
+                               # , width=reactive(ifelse(!is.null(input$innerWidth),
+                               #                        input$innerWidth*3/5,700))
+                               # OK, but belongs in SERVER renderPlot
+                               )
                   )), 
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(id = 'pop_nPops',
@@ -139,18 +155,19 @@ ui <- fluidPage(
                     # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
                     # especially the display:flex solution.
                     a(
-                      #href=system.file("doc", "DUE_vignette.html", package="DUE"), rel="help", target="_blank",
                       href="DUE_vignette.html", rel="help", target="_blank",
+                      ### must be in www.
                       span(
                         strong(em("Click for information:",
-                                  style="color:darkgreen; font-size:200%"))
+                                  style="color:darkgreen; font-size:150%"))
                         ,
                         actionButton(inputId = "Info", label="",
                                      style="background:lightgreen",
                                      icon=tagAppendAttributes(
                                        style="font-size: 3em;",
                                        icon("info-sign", lib="glyphicon"))) )
-                    ),
+                    )
+                    ,
                     br(), br(), br(), 
                     div(id='pop_selectedDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
                         numericInput('selectedDose', 'Selected dose', value=100, min=0)),
@@ -196,9 +213,9 @@ ui <- fluidPage(
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
                              column(8, offset=2, #align='center',
-                                    plotOutput("linePlot",
-                                               height="700px", 
-                                               width="700px") )),
+                                    plotOutput("linePlot"
+                                               #, height="700px", width="700px"
+                                               ) )),
                   div(id = 'popUtilities',
                     br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
@@ -670,7 +687,13 @@ server <- function(input, output, session) {
   })
   
   ####Plotting Threshold Contour####
-  output$ThresholdContour<- renderPlot({
+  output$ThresholdContour<- renderPlot(
+    height=reactive(ifelse(!is.null(input$innerWidth),
+                             input$innerWidth*0.25,700)),
+    width=reactive(ifelse(!is.null(input$innerWidth),
+                            input$innerWidth*0.25,700)),
+    ### See https://stackoverflow.com/questions/40538365/r-shiny-how-to-get-square-plot-to-use-full-width-of-panel/40539526#40539526
+    expr =     {
     input$okWillLoadSelectedFile  ### Attempt to force the plot.
     DUEenv$the.CVs.pop
     DUEenv$the.correlations.pop
@@ -948,38 +971,74 @@ server <- function(input, output, session) {
     DUEenv$phase_one_result
   })
   
+  observeEvent(input$Info, {
+    htmlFile = system.file(package="DUE", "DUEshiny/www/DUE_vignette.html") 
+    htmlFile = 'www/DUE_vignette.html'   ### shinyapps.io can see either file.
+    # system(paste0('open ', htmlFile ))
+    # system('open https://trials.shinyapps.io/DUEshiny/www/DUE_vignette.html' )
+    # no error but doesn't work.
+    browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
+  })
+  
   observeEvent(input$phase1ResultButton, {
     if(input$phase1ResultButton > 0){
-      DUEenv$phase1Doses = DUEenv$doseTicks  ### Temporary for testing
+      DUEenv$phase1Doses = DUEenv$doseTicks 
+      ### Temporary for testing. Later add components to Phase 1 window.
       doses = DUEenv$phase1Doses
       print(doses)
-      toxProbabilities = sapply(log10(doses), 
+      probabilityVectors = sapply(log10(doses), 
                                 calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
-      ) ['T', ]
+      ) 
+      toxProbabilities = probabilityVectors['T', ]
+      EU = probabilityVectors['EU', ]
+      phase_one_summary = phase_one_exact(PrTox = toxProbabilities)
+      
+      #show the expected expected utility across all enrolled patients.
+      # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
+      phase_one_summary$EN_pts = 
+        with(phase_one_summary, 
+             pr_enter_tier * (3 + 3*(1-pr_Term_1-pr_Go_1) ) )
+      DUEenv$expected_total_EU = 
+        sum( phase_one_summary$EN_pts * EU )
+      #show the expected expected utility of the Phase 1 MTD.
+      # for now, stopping at the first tier means there is no MTD.
+      #  and not stopping means MTD = highest tier
+      phase_one_summary$probMTD = 
+        c(phase_one_summary$pr_stop_at[-1],
+          1 - sum(phase_one_summary$pr_stop_at) )
+      DUEenv$expected_EU_at_MTD = sum(phase_one_summary$probMTD * EU)
       DUEenv$phase_one_result = 
         data.frame(doses=doses,
-                   round(digits = 3, phase_one_exact(PrTox = toxProbabilities) )
+                   lapply(phase_one_summary, round, digits = 4 )
         )
       print(DUEenv$phase_one_result )
       ## standard 3+3 design
       showModal(ui = 
-                  modalDialog(easyClose = TRUE, 
-                              size="l", 
-                              h2("Results of Phase 1 trials using the doses"),
-                              textOutput('phase1Doses'),
-                              shiny::hr(),
-                              tagAppendAttributes(style="text-size:larger",
-                                                  tableOutput('phase1Results')),
-                              shiny::hr(),
-                              h2('Probability of stopping ("pr_stop_at"'),
-                              plotOutput('phase1plot'),
-                              footer = tagList(
-                                modalButton(label = "Cancel")
-                              )
+                  modalDialog(
+                    easyClose = TRUE, 
+                    size="l", 
+                    h2("Results of Phase 1 trials using the doses"),
+                    textOutput('phase1Doses'),
+                    shiny::hr(),
+                    tagAppendAttributes(style="text-size:larger",
+                                        tableOutput('phase1Results')),
+                    shiny::hr(),
+                    h2('Probability of stopping ("pr_stop_at")'),
+                    plotOutput('phase1plot'),
+                    h2("Expected EU across all enrolled patients:",
+                       textOutput('ID_expected_total_EU') ),
+                    h2("Expected EU at MTD:",
+                       textOutput('ID_expected_EU_at_MTD') ),
+                    footer = tagList(
+                      modalButton(label = "Cancel")
+                    )
                   )
       ) 
     }
   })
+  output$ID_expected_total_EU = renderText({round(digits=2, DUEenv$expected_total_EU)})
+  output$ID_expected_EU_at_MTD = renderText({round(digits=2, DUEenv$expected_EU_at_MTD)})
+  
   output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
          log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
