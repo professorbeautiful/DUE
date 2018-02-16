@@ -183,13 +183,14 @@ extractUtilitySummaries <- function(eightprobs, doseValues, MTDtoxicity) {
   ))  
 }
 
-calculate.probabilities.<- function(design, DUEenvRow=DUEinits.default, ...) {
+#### TODO:  work needed : save extractUtilitySummaries. ####
+calculate.probabilities <- function(design, DUEenvRow=DUEinits.default, ...) {
   # For each row of the design matrix, place the values in calculate the 
   sapply(1:nrow(design), function(row){
     arglist = design[row, ]
     for(arg in names(arglist))  DUEenv[[arg]] = arglist[[arg]]
     calculate.probabilities (DUEenv, log10dose=2, utility, ...) 
-    
+    ### TODO save extractUtilitySummaries
   })
   DUEenv$eightprobs <- 
     sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
