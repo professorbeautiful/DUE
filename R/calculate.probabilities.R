@@ -198,9 +198,9 @@ calculate.probabilities.design <- function(design, DUEenvRow=DUEinits.default, .
 }
 
 checkcalcs=function(...){
-  p7=calculate.probabilities(DUEenv=denv, 3, ...); 
-  c(sum=sum(p7[3:6]), 
-    Rsum=p7['Rt']+p7['RT']+p7['RLE'],
-    Tsum=p7['RT']+p7['rT'],
-    p7)
+  p8=calculate.probabilities(DUEenv=denv, 3, ...); 
+  c(sum=sum(p8[3:6]), 
+    Rsum=p8['Rt']+p8['RT']+p8['RLE'],
+    Tsum=p8['RT']+p8['rT'],
+    p8)
 }
