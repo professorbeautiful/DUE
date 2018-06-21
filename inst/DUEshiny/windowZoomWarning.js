@@ -21,6 +21,16 @@ $("#popLinePlot{width:100vw !important;}");
 //  # tags$head(tags$style("#popLinePlot{width:100vw !important;}") ), 
 */
 
+/*  This does change the appearance of the plot:  
+$("#ThresholdContour").css("zoom", "50%");
+$("#ThresholdContour").css("zoom", "100%");
+$("#popLinePlot").css("zoom", "100%");
+This does nothing:
+$("#ThresholdContour").css("width", "100vw");
+This moves the plot left (100px) or right (1000px)
+$("#popLinePlot").css("width", "1000px");
+*/
+
 var snap = function (r, snaps, ratios)
 {
   var i;
@@ -37,11 +47,14 @@ var snapThis = function()
 };
 
 // This works when the app is first opened.
+// 2458 looks perfect.
 
+/*
 if(window.innerWidth > 3500) {
   alert('Window zoom is too low. For best appearance, please zoom in (e.g. on OSX, Cmd-plus).');
 }
 
-if(window.innerWidth < 2500) {
+if(window.innerWidth < 2000) {
   alert('Window zoom is too high. For best appearance, please zoom out (e.g. on OSX, Cmd-minus).');
 }
+*/
