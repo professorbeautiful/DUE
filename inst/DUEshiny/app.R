@@ -37,9 +37,7 @@ linethicknessButtons =
 ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
-  #shiny::includeScript("https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"),
-  shiny::includeScript('www/jquery-3.3.1.min.js'),
-  #shiny::includeScript('www/zoom_triggers.js'),
+  shiny::includeScript('www/zoom_triggers.js'),
   #shiny::includeScript('windowZoomWarning.js'),
   singleton(tags$head(tags$script(src = "pop_patch.js"))),
   uiOutput('JSstopPopups'),
