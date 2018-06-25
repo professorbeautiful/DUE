@@ -38,11 +38,15 @@ ui <- fluidPage(
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
   shiny::includeScript('www/zoom_triggers.js'),
+  shiny::includeScript('www/readInnerWindow.js'),
   #shiny::includeScript('windowZoomWarning.js'),
   singleton(tags$head(tags$script(src = "pop_patch.js"))),
   uiOutput('JSstopPopups'),
   tags$style(".popover{max-width: 100%; font-size:large}"),
-  
+  tags$meta(
+    name="viewport", 
+    content="width=device-width, initial-scale=1.0, user-scalable=no"),
+  # user-scalable=no does nothing in Safari.
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
