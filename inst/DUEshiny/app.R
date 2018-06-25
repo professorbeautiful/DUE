@@ -148,10 +148,8 @@ ui <- fluidPage(
            , 
            ####  MIDDLE: Doses and Files ####
            column(1,
-                  includeHTML('www/zoom_triggers.html'),
-                  br(), br(),
-                  br(), br(),
-                  br(), br(),
+                  #includeHTML('www/zoom_triggers.html'),
+                  textOutput('zoomAdvice'),
                   div(style=paste0(
                     "vertical-align:center;",
                     "border-left:1px solid #000;",
@@ -164,7 +162,7 @@ ui <- fluidPage(
                       href="DUE_vignette.html", rel="help", target="_blank",
                       ### must be in www.
                       span(
-                        strong(em("Click for information:",
+                        strong(em("Click for info:",
                                   style="color:darkgreen; font-size:150%"))
                         ,
                         actionButton(inputId = "Info", label="",
@@ -328,6 +326,17 @@ server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput() )
   DUEenv = reactiveValues()
   
+  #### zoomAdvice ####
+  output$zoomAdvice = renderText({
+    text = ""
+    try({
+      if(input$innerWidth > 1800)
+        text = "Suggest zoom in. (Cmd+)"
+      if(input$innerWidth < 1600)
+        text = "Suggest zoom out. (Cmd-)"
+    })
+    paste0(text, '(', input$innerWidth, ')')
+  })
   #### In place of setupProbLines(DUEenv) ####
   probLineWidthChoices <<- c(0, 1, 5)
   probLineWidths <- rep(probLineWidthChoices[1], 8) 
