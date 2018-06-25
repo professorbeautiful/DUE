@@ -45,12 +45,22 @@ window.resizeTo()   does not seem to do anything.
 document.body.style.zoom="80%"   etc
 does affect the look in Safari. No effect in Firefox.
 
+This does stuff.   
+$('body').css({ width: '100%'; height: '100%' });
+But it does not fix the 'wrong innerWidth' problem.
+Still only Cmd-minus really fixes the view properly.
+The plots resize ok because we removed the height and width args to output$ThresholdContour<- renderPlot.
 
 Try 
 <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+https://stackoverflow.com/questions/6397748/whats-the-point-of-meta-viewport-user-scalable-no-in-the-google-maps-api
+
+https://stackoverflow.com/questions/22777734/what-is-initial-scale-user-scalable-minimum-scale-maximum-scale-attribute-in
+
+https://stackoverflow.com/questions/6397748/whats-the-point-of-meta-viewport-user-scalable-no-in-the-google-maps-api/16910559#16910559
+
+http://www.javierusobiaga.com/blog/stop-using-the-viewport-tag-until-you-know-ho/ 
+
 	
-This does stuff.   $('body').css({ width: '100%' });
-Still only Cmd-minus really fixes the view properly.
-Especially the plots never get smaller.
 
 
