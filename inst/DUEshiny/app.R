@@ -687,7 +687,12 @@ server <- function(input, output, session) {
     DUEenv$selectedDose = input$selectedDose
   })
   
-  output$linePlot <- renderPlot({
+  output$linePlot <- renderPlot(
+    height=reactive(ifelse(!is.null(input$innerWidth),
+                           input$innerWidth*0.25,700)),
+    width=reactive(ifelse(!is.null(input$innerWidth),
+                          input$innerWidth*0.25,700)),
+    expr = {
     plotProbsAndEU(DUEenv=DUEenv, context='shiny')
   })
   
