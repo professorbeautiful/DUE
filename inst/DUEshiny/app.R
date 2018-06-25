@@ -51,7 +51,7 @@ ui <- fluidPage(
   fluidRow(style='text-align:center', 
            ####  LEFT SIDE: Contour plots ####
            column(5, id='leftColumn',
-                  h2("Joint Prob Density of Thresholds", br(), 
+                  h2("Joint Prob Density of Thresholds",  
                      style='color:blue'),
                   fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
                            column(4, offset=2, "R = response", br(), "r = non-response"), 
@@ -219,7 +219,6 @@ ui <- fluidPage(
                                                #, height="700px", width="700px"
                                                ) )),
                   div(id = 'popUtilities',
-                    br(), br(), br(),
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
                       fluidRow(id = 'popCustomUtilities',
