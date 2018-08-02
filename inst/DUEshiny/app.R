@@ -1013,15 +1013,18 @@ server <- function(input, output, session) {
       ) 
       toxProbabilities = probabilityVectors['T', ]
       EU = probabilityVectors['EU', ]
-      phase_one_summary = phase_one_exact(PrTox = toxProbabilities)
-      
+      phase_one_summary = as.data.frame(
+        phase_one_exact(PrTox = toxProbabilities) )
+      print(toxProbabilities)
+      print(phase_one_summary)
       #show the expected expected utility across all enrolled patients.
       # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
-      phase_one_summary$EN_pts = 
-        with(phase_one_summary, 
-             pr_enter_tier * (3 + 3*(1-pr_Term_1-pr_Go_1) ) )
+      EN_pts = 
+             phase_one_summary$pr_enter_tier *
+               (3 + 3*(1-phase_one_summary$pr_Term_1
+                       - phase_one_summary$pr_Go_1) ) 
       DUEenv$expected_total_EU = 
-        sum( phase_one_summary$EN_pts * EU )
+        sum( EN_pts * EU )
       #show the expected expected utility of the Phase 1 MTD.
       # for now, stopping at the first tier means there is no MTD.
       #  and not stopping means MTD = highest tier
