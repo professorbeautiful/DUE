@@ -273,42 +273,45 @@ ui <- fluidPage(
                                  
                                )
                                ,
-                               shiny::hr(), br(), 
+                               shiny::hr(), 
+                                h3("or choose a preset option here:", style="color:blue")
+                               ,
+                               br(), 
                                fluidRow(id = 'popPresetUtilities',
-                                 column(4, h3("or choose a preset option here:", style="color:blue")
-                                 ),
-                                 column(4, style=paste0('color:', rt.outcome.colors('RT')),
-                                        #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
-                                          style=paste0('background-color:', rt.outcome.colors('RT'),
-                                                       '; color:white;')),
-                                        #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
-                                          style=paste0('background-color:', rt.outcome.colors('RT'),
-                                                       '; color:white;'))
-                                 ),
-                                 # we could also try transform: rotate(7deg);
-                                 column(1, style=paste0('color:', rt.outcome.colors('rT')),
-                                        # span(style=paste0('color:', rt.outcome.colors('rT')),
-                                        #      '⬅︎') ,
-                                        # # LEFTWARDS ARROW
-                                        # Unicode: U+2190, UTF-8: E2 86 90,
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
-                                          style=paste0('background-color:', rt.outcome.colors('rT'),
-                                                       '; color:white;')
-                                        )
-                                 ),
-                                 column(3, #HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
-                                        tagAppendAttributes(
-                                          bsButton(inputId="Additive",
-                                                   HTML("Additive<br>R=+1, T=-1")),
-                                          style=paste0('background-color:black; color:white;'))
-                                 ),
-                                 br(), br()
+                                        column(3, offset=1, #HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                               tagAppendAttributes(
+                                                 bsButton(inputId="Additive",
+                                                          HTML("Additive<br>R=+1, T=-1")),
+                                                 style=paste0('background-color:black; color:white;'))
+                                        ),
+                                        column(5, style=paste0('color:', rt.outcome.colors('RT')),
+                                               #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
+                                               HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                               tagAppendAttributes(
+                                                 bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
+                                                 style=paste0('background-color:', rt.outcome.colors('RT'),
+                                                              '; color:white;')),
+                                               #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
+                                               tagAppendAttributes(
+                                                 bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                                 style=paste0('background-color:', rt.outcome.colors('RT'),
+                                                              '; color:white;'))
+                                        ),
+                                        # we could also try transform: rotate(7deg);
+                                        column(1, style=paste0('color:', rt.outcome.colors('rT')),
+                                               ""
+                                               # span(style=paste0('color:', rt.outcome.colors('rT')),
+                                               #      '⬅︎') ,
+                                               # # LEFTWARDS ARROW
+                                               # Unicode: U+2190, UTF-8: E2 86 90,
+                                        ),
+                                        column(3,
+                                               tagAppendAttributes(
+                                                 bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
+                                                 style=paste0('background-color:', rt.outcome.colors('rT'),
+                                                              '; color:white;')
+                                               )),
+                                        br(), br()
                                ),
                                br()
                       )
