@@ -328,8 +328,8 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   try(shinyDebuggingPanel::makeDebuggingPanelOutput() )
   DUEenv = reactiveValues()
-  
-  #### zoomAdvice ####
+
+    #### zoomAdvice ####
   output$zoomAdvice = renderText({
     text = ""
     try({
@@ -1002,10 +1002,39 @@ server <- function(input, output, session) {
     browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
   })
   
-  observeEvent(input$phase1ResultButton, {
-    if(input$phase1ResultButton > 0){
-      DUEenv$phase1Doses = DUEenv$doseTicks 
-      ### Temporary for testing. Later add components to Phase 1 window.
+  output$selectPhase1doses = renderUI({
+    if(is.null(DUEenv$phase1Doses)) 
+      DUEenv$phase1Doses =
+        DUEenv$phase_one_result$doses = 
+        DUEenv$doseTicks
+    textInput('phase1Doses', label = 'Phase 1 doses', 
+              value = paste(DUEenv$phase1Doses, collapse=' ')
+    )
+  })
+  
+  #### When phase1Doses changes, save new doses and enable button.
+  observeEvent(input$phase1Doses, {
+    newPhase1Doses = try( {
+      cat('input$phase1Doses changed to ', input$phase1Doses, '\n')
+      cat('DUEenv$phase1Doses changed to ', DUEenv$phase1Doses, '\n')
+      as.numeric(unlist(strsplit(input$phase1Doses, ' ') ) )
+    })
+    if(class(newPhase1Doses) != 'try-error') {
+      DUEenv$phase1Doses = newPhase1Doses[!is.na(newPhase1Doses)]
+      updateButton(session, 'phase1Recalculate', disabled = FALSE)
+    }
+    else
+      updateButton(session, 'phase1Recalculate', disabled = TRUE)
+    
+  })
+  
+  setDoses = function(newdoses) {
+    DUEenv$phase1Doses = newdoses
+  }
+  
+  observeEvent(c(input$phase1Recalculate, input$phase1Button), {
+      if(is.null(DUEenv$phase1Doses))
+         setDoses(DUEenv$doseTicks) 
       doses = DUEenv$phase1Doses
       print(doses)
       probabilityVectors = sapply(log10(doses), 
@@ -1033,17 +1062,26 @@ server <- function(input, output, session) {
           1 - sum(phase_one_summary$pr_stop_at) )
       DUEenv$expected_EU_at_MTD = sum(phase_one_summary$probMTD * EU)
       DUEenv$phase_one_result = 
-        data.frame(doses=doses,
+        data.frame(doses=doses, pr_tox=toxProbabilities,
                    lapply(phase_one_summary, round, digits = 4 )
         )
       print(DUEenv$phase_one_result )
+  })
+  
       ## standard 3+3 design
+  ####  Show Phase1 modal window ####
+  observeEvent(input$phase1ResultButton, {
+    if(input$phase1ResultButton > 0)
       showModal(ui = 
                   modalDialog(
                     easyClose = TRUE, 
                     size="l", 
                     h2("Results of Phase 1 trials using the doses"),
-                    textOutput('phase1Doses'),
+                    uiOutput('selectPhase1doses'),
+                    fluidRow(
+                      column(6, textOutput('phase1Doses')),
+                      column(6, actionButton('phase1Recalculate', 'recalculate', enabled=FALSE))
+                    ),
                     shiny::hr(),
                     tagAppendAttributes(style="text-size:larger",
                                         tableOutput('phase1Results')),
@@ -1059,7 +1097,6 @@ server <- function(input, output, session) {
                     )
                   )
       ) 
-    }
   })
   output$ID_expected_total_EU = renderText({round(digits=2, DUEenv$expected_total_EU)})
   output$ID_expected_EU_at_MTD = renderText({round(digits=2, DUEenv$expected_EU_at_MTD)})
