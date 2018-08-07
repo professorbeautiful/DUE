@@ -82,7 +82,7 @@ Not included are:
  to be gained.
 * Costs of the drug or of dealing with adverse events, not incurred by the
  patient.
-* Multiple degrees of the response and toxicity outcomes.
+* Multiple degrees of the response and toxicity outcomes, for example complete versus partial response, or mild versus severe adverse events.
 
 The inputs are difficult to assign values to. In principle one could estimate the "prior", the joint threshold distribution. But this would require treating many patients at many doses. Each patient's outcome would tell us only which quadrant the patient is in. Therefore this program is best thought of as a platform for thought experiments.
 
@@ -173,10 +173,12 @@ Response-limiting toxicity represents the case where a patient with a low
  Or, a treatment-caused fatality might occur before a response which otherwise
  would have happened can occur.
  This idea is represented by a parameter called 
-$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ gap)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
- It represents the log10 of the ratio between the patient's toxicity threshold
- and the dose at which toxicity is so severe that response cannot happen.
- The assumption is that this ratio is the same for all patients.
+$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ event)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
+This parameter is the gap between log10 of the patient's toxicity threshold
+ and log10 of the dose at which toxicity is so severe that response cannot happen. It appears on the left-hand plot as a vertical distance below the Rt/RT border to the border where the rT region encroaches into RT.
+ 
+ 
+ The assumption is that this gap is the same for all patients.
  (This works similarly to the relationship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
 
 
