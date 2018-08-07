@@ -710,6 +710,13 @@ server <- function(input, output, session) {
     DUEenv$selectedDose = input$selectedDose
   })
   
+  observeEvent(DUEenv$doseTicks, {
+               DUEenv$log10doseValues = seq(log10(min(DUEenv$doseTicks)), 
+                                           log10(max(DUEenv$doseTicks)), 
+                                           length=25)
+               DUEenv$doseValues = 10^DUEenv$log10doseValues 
+  })
+  
   output$linePlot <- renderPlot(
     height=reactive(ifelse(!is.null(input$innerWidth),
                            input$innerWidth*0.25,700)),
@@ -733,8 +740,8 @@ server <- function(input, output, session) {
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     ### must isolate the recalculate, or else infinite loop
-    the.grid = as.matrix(expand.grid(log10(DUEenv$doseTicks),
-                                     log10(DUEenv$doseTicks)))
+    gridPoints = DUEenv$log10doseValues 
+    the.grid = as.matrix(expand.grid(gridPoints, gridPoints) )
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
       #cat("plotThresholdContour: the.medianThresholds.pop[[i]] = ", DUEenv$the.medianThresholds.pop[[i]], "\n")
       return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
@@ -742,9 +749,10 @@ server <- function(input, output, session) {
     })
     the.dmvnorms = array(the.dmvnorms, dim = c(nrow(the.grid),
                                                DUEenv$nPops))
-    contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = length(DUEenv$doseTicks) )
-    contour(DUEenv$doseTicks, DUEenv$doseTicks, contour.values,
-            xlim = range(DUEenv$doseTicks), ylim = range(DUEenv$doseTicks),
+    contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = length(gridPoints) )
+    contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
+            xlim = range(DUEenv$doseValues), 
+            ylim = range(DUEenv$doseValues),
             log = "xy", axes = F, xlab="", ylab="")
     mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2)
     mtext(side=1, line=2.5, "Threshold of Response", cex=2)
@@ -1043,6 +1051,7 @@ server <- function(input, output, session) {
     DUEenv$phase1Doses = newdoses
   }
   
+  ####  observeEvent(input$updateDoses... ####
   observeEvent(input$updateDoses, {
     DUEenv$doseTicks = DUEenv$phase1Doses
     print('DUEenv$phase1Doses =', DUEenv$phase1Doses)
@@ -1054,7 +1063,8 @@ server <- function(input, output, session) {
       doses = DUEenv$phase1Doses
       print(doses)
       probabilityVectors = sapply(log10(doses), 
-                                calculate.probabilities, DUEenv=DUEenv, utility=DUEenv$utility
+                                calculate.probabilities, 
+                                DUEenv=DUEenv, utility=DUEenv$utility
       ) 
       toxProbabilities = probabilityVectors['T', ]
       EU = probabilityVectors['EU', ]

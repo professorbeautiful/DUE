@@ -161,17 +161,17 @@ calculate.probabilities <-
   }
 
 calculate.probabilities.allDoses <- function(DUEenv, ...) {
-    sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv, ... = ...)
+    sapply(DUEenv$log10doseValues, calculate.probabilities, DUEenv=DUEenv, ... = ...)
 }
 
-extractUtilitySummaries <- function(eightprobs, doseValues, MTDtoxicity) {
+extractUtilitySummaries <- function(eightprobs, log10doseValues, MTDtoxicity) {
   highestprob.Rt = max(eightprobs["Rt",])
   highest.EU = max(eightprobs["EU",])
   lowestprob.Rt = min(eightprobs["Rt",])
   lowest.EU = min(eightprobs["EU",])
-  best.dose.p.Rt = doseValues[eightprobs["Rt",]==highestprob.Rt]
-  best.dose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
-  best.dose.p.T = max(doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
+  best.dose.p.Rt = log10doseValues[eightprobs["Rt",]==highestprob.Rt]
+  best.dose.EU = log10doseValues[eightprobs["EU",]==highest.EU] [1]
+  best.dose.p.T = max(log10doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
   return(data.frame(
     highestprob.Rt,
     highest.EU,
@@ -187,14 +187,14 @@ extractUtilitySummaries <- function(eightprobs, doseValues, MTDtoxicity) {
 eachRow = function(row){
   arglist = design[row, ]
   for(arg in names(arglist))  DUEenv[[arg]] = arglist[[arg]]
-  calculate.probabilities (DUEenv, log10dose=2, utility, ...) 
+  calculate.probabilities (DUEenv, log10dose=2, utility) 
   ### TODO save extractUtilitySummaries
 }
 calculate.probabilities.design <- function(design, DUEenvRow=DUEinits.default, ...) {
   # For each row of the design matrix, place the values in calculate the 
   sapply(1:nrow(design), eachRow)
   DUEenv$eightprobs <- 
-    sapply(log10(DUEenv$doseValues), calculate.probabilities, DUEenv=DUEenv)
+    sapply(DUEenv$log10doseValues, calculate.probabilities, DUEenv=DUEenv)
 }
 
 checkcalcs=function(...){

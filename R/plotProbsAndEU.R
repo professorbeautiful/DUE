@@ -1,7 +1,8 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   cexValue = ifelse(context=='shiny', 2, 1); 
   eightprobs = calculate.probabilities.allDoses(DUEenv)
-  utilitySummaries = extractUtilitySummaries(eightprobs, doseValues=DUEenv$doseValues, MTDtoxicity=DUEenv$MTDtoxicity)
+  utilitySummaries = extractUtilitySummaries(eightprobs, 
+                                             log10doseValues=DUEenv$log10doseValues, MTDtoxicity=DUEenv$MTDtoxicity)
   for(us in names(utilitySummaries))
     assign(us, utilitySummaries[[us]])
   # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
@@ -13,7 +14,8 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   }
   par(mar =  c(5,4,4,6) + 0.1, xpd=NA )
   plot(DUEenv$doseValues, eightprobs[1,],type="l",col=0,lwd=1, 
-       xlim=c(DUEenv$minDose, DUEenv$maxDose), ylim=c(0,1),
+       xlim=c(min(DUEenv$doseTicks), max(DUEenv$doseTicks)), 
+              ylim=c(0,1),
        axes=FALSE,  log="x", xlab="", ylab=""
   )
   
@@ -44,8 +46,9 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   } else
     linewidths = c(1, 3, 1, 1, 1, 1, 3, 1)
   EUindex = 7
+  nDoses = length(DUEenv$doseValues)
+  shortlist <- c(1, round(nDoses/2), nDoses)
   for(i in 1:8) {
-    shortlist <- c(1, round(DUEenv$nDoses/2), DUEenv$nDoses)
     if(linewidths[i] > 0) {
       outcome.string = rt.outcome.strings(i)
       lines(DUEenv$doseValues, convertEU(eightprobs[i,], i==EUindex),
