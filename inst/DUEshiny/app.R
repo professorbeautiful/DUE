@@ -733,8 +733,8 @@ server <- function(input, output, session) {
     cexQ = 4; OKfont = c("sans serif", "bold")
     isolate(recalculate.means.and.variances(DUEenv))
     ### must isolate the recalculate, or else infinite loop
-    the.grid = as.matrix(expand.grid(log10(DUEenv$doseValues),
-                                     log10(DUEenv$doseValues)))
+    the.grid = as.matrix(expand.grid(log10(DUEenv$doseTicks),
+                                     log10(DUEenv$doseTicks)))
     the.dmvnorms = apply(as.array(1:DUEenv$nPops), 1, function(i) {
       #cat("plotThresholdContour: the.medianThresholds.pop[[i]] = ", DUEenv$the.medianThresholds.pop[[i]], "\n")
       return(DUEenv$proportions[i] * dmvnorm(the.grid, mean = DUEenv$the.logmedians.pop[[i]]/log(10),
@@ -742,9 +742,9 @@ server <- function(input, output, session) {
     })
     the.dmvnorms = array(the.dmvnorms, dim = c(nrow(the.grid),
                                                DUEenv$nPops))
-    contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = DUEenv$nDoses)
-    contour(DUEenv$doseValues, DUEenv$doseValues, contour.values,
-            xlim = range(DUEenv$doseValues), ylim = range(DUEenv$doseValues),
+    contour.values = matrix(apply(the.dmvnorms, 1, sum), nrow = length(DUEenv$doseTicks) )
+    contour(DUEenv$doseTicks, DUEenv$doseTicks, contour.values,
+            xlim = range(DUEenv$doseTicks), ylim = range(DUEenv$doseTicks),
             log = "xy", axes = F, xlab="", ylab="")
     mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2)
     mtext(side=1, line=2.5, "Threshold of Response", cex=2)
@@ -1043,6 +1043,11 @@ server <- function(input, output, session) {
     DUEenv$phase1Doses = newdoses
   }
   
+  observeEvent(input$updateDoses, {
+    DUEenv$doseTicks = DUEenv$phase1Doses
+    print('DUEenv$phase1Doses =', DUEenv$phase1Doses)
+  })
+  
   observeEvent(c(input$phase1Recalculate, input$phase1Button), {
       if(is.null(DUEenv$phase1Doses))
          setDoses(DUEenv$doseTicks) 
@@ -1091,7 +1096,8 @@ server <- function(input, output, session) {
                     uiOutput('selectPhase1doses'),
                     fluidRow(  # fluidRow doesnt work here.
                       column(6, textOutput('phase1Doses')),
-                      column(6, actionButton('phase1Recalculate', 'recalculate', enabled=FALSE))
+                      column(6, actionButton('phase1Recalculate', 'recalculate', enabled=FALSE)),
+                      column(6, actionButton('updateDoses', 'update doses on main graph', enabled=TRUE))
                     ),
                     shiny::hr(),
                     tagAppendAttributes(style="text-size:larger",
@@ -1162,19 +1168,16 @@ server <- function(input, output, session) {
     }
   )
   
-  #### observe closeAxesModal ####
+  #### observe closeAxesModal - when the modal window for setting the dose axes is closed ####
   observeEvent(
     input$closeAxesModal,
     {
       DUEenv$minDose = input$minDoseNumeric
       DUEenv$maxDose = input$maxDoseNumeric
-      DUEenv$nDoseTicks = input$nIncrements
-      # DUEenv$doseValues [[1]] = input$minDoseNumeric
-      # DUEenv$doseValues [[50]] = input$maxDoseNumeric
-      DUEenv$doseValues = 10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= DUEenv$nDoses)
-      #DUEenv$doseTicks = seq(input$minDoseNumeric, input$maxDoseNumeric, length.out = input$nIncrements)
-      DUEenv$doseTicks = round(10^seq(log10(input$minDoseNumeric), log10(input$maxDoseNumeric), length= input$nIncrements), digits=1)
-      #DUEenv$nDoseTicks = input$nIncrements
+      DUEenv$doseTicks =
+        round(10^seq(log10(input$minDoseNumeric), 
+                                      log10(input$maxDoseNumeric), 
+                                      length= input$nIncrements), digits=1)
       updateButton(session, 'closeAxesModal', style = 'success')
       removeModal()
     }
