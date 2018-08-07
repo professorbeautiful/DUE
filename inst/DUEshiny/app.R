@@ -217,7 +217,8 @@ ui <- fluidPage(
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
                              column(8, offset=2, #align='center',
-                                    plotOutput("linePlot"
+                                    plotOutput("linePlot",
+                                               click = 'click_dose'
                                                #, height="700px", width="700px"
                                                ) )),
                   div(id = 'popUtilities',
@@ -666,6 +667,16 @@ server <- function(input, output, session) {
     DUEenv$Kdeath= input$responseLimitingTox
   })
   
+  observeEvent(input$click_dose, {
+    save_options = options(warn = -1)  #ignore initial warning
+    try({
+      xClick=input$click_dose$x
+      newSelectedDose = xClick
+      updateNumericInput(session, inputId = 'selectedDose', value = newSelectedDose )
+      DUEenv$selectedDose = newSelectedDose
+    })
+  })
+  
   observeEvent(input$click_threshold, {
     save_options = options(warn = -1)  #ignore initial warning
     try({
@@ -1078,7 +1089,7 @@ server <- function(input, output, session) {
                     size="l", 
                     h2("Results of Phase 1 trials using the doses"),
                     uiOutput('selectPhase1doses'),
-                    fluidRow(
+                    fluidRow(  # fluidRow doesnt work here.
                       column(6, textOutput('phase1Doses')),
                       column(6, actionButton('phase1Recalculate', 'recalculate', enabled=FALSE))
                     ),
@@ -1150,6 +1161,8 @@ server <- function(input, output, session) {
     )
     }
   )
+  
+  #### observe closeAxesModal ####
   observeEvent(
     input$closeAxesModal,
     {
@@ -1167,6 +1180,7 @@ server <- function(input, output, session) {
     }
   )
   
+  #### SaveLoadPanel ####
   output$SaveLoadPanel = renderUI( {
     div(style="background:lightGrey",
         checkboxInput(inputId='SaveLoadCheckbox', value=FALSE,
