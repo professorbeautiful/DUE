@@ -196,19 +196,18 @@ On the upper left side of the window is the contour plot for the joint threshold
  If one clicks on the graph close to one of the modes, then the parameter
 $This\ group\ \#$
  should change to refer to the corresponding group
- If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new  
-$Selected\ dose$.
+ If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new $Selected\ dose$.
 
 The $Selected\ dose$, whether selected by clicking or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
-* $rt\ \ $:  neither response nor toxicity
-* $rT\ $: only toxicity
-* $Rt\ $: only response
-* $RT$: both response and toxicity
+* *rt*:  neither response nor toxicity
+* *rT*: only toxicity
+* *Rt*: only response
+* *RT*: both response and toxicity
 
 
 If the 
-$Response-limiting toxicity$ parameter 
+$Response-limiting\ toxicity$ parameter 
 $input\$Kdeath$
 is small enough, then there also appears an incursion of the 
 $rT$ region towards the left at the bottom, invading the 
@@ -282,7 +281,7 @@ The eight boxes at the top of the graph are three-way toggles, which
 
 * A numeric input box allows setting the $Selected\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
 
-* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level. The doses at which the ticks occur are used as the dose tiers in the Phase I trial. This is a place-holder for a bridge to another R shiny application, the $CTDesignExperimenter$, which is in progress.
+* The $Phase\ I$ button brings up a pop-up window with the probabilities of stopping at each dose level. The dose levels are initially set at the doses at which the ticks occur in the graphs. The user can change these doses in the window. 
 
 #### *At the top* 
 
