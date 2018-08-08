@@ -23,6 +23,8 @@ knitr::opts_chunk$set(
 <!-- Check out http://rmarkdown.rstudio.com/authoring_pandoc_markdown.html 
 http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
 -->
+
+
 ```{r plottingFunctionsInclude}
 source("../inst/doc/DUE_vignette_plottingFunctions.R")
 
@@ -80,7 +82,7 @@ Not included are:
  to be gained.
 * Costs of the drug or of dealing with adverse events, not incurred by the
  patient.
-* Multiple degrees of the response and toxicity outcomes.
+* Multiple degrees of the response and toxicity outcomes, for example complete versus partial response, or mild versus severe adverse events.
 
 The inputs are difficult to assign values to. In principle one could estimate the "prior", the joint threshold distribution. But this would require treating many patients at many doses. Each patient's outcome would tell us only which quadrant the patient is in. Therefore this program is best thought of as a platform for thought experiments.
 
@@ -171,10 +173,12 @@ Response-limiting toxicity represents the case where a patient with a low
  Or, a treatment-caused fatality might occur before a response which otherwise
  would have happened can occur.
  This idea is represented by a parameter called 
-$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ gap)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
- It represents the log10 of the ratio between the patient's toxicity threshold
- and the dose at which toxicity is so severe that response cannot happen.
- The assumption is that this ratio is the same for all patients.
+$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ event)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
+This parameter is the gap between log10 of the patient's toxicity threshold
+ and log10 of the dose at which toxicity is so severe that response cannot happen. It appears on the left-hand plot as a vertical distance below the Rt/RT border to the border where the rT region encroaches into RT.
+ 
+ 
+ The assumption is that this gap is the same for all patients.
  (This works similarly to the relationship between thresholds for different grades of toxicity introduced in Richard Simon's paper on accelerated titration designs; thus the letter $K$ is borrowed notation.)
 
 
@@ -192,19 +196,18 @@ On the upper left side of the window is the contour plot for the joint threshold
  If one clicks on the graph close to one of the modes, then the parameter
 $This\ group\ \#$
  should change to refer to the corresponding group
- If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new  
-$Selected\ dose$.
+ If the click closer to the diagonal than any mode, then dose corresponding to the closest diagonal point (the geometric mean) becomes the new $Selected\ dose$.
 
 The $Selected\ dose$, whether selected by clicking or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
-* $rt\ \ $:  neither response nor toxicity
-* $rT\ $: only toxicity
-* $Rt\ $: only response
-* $RT$: both response and toxicity
+* *rt*:  neither response nor toxicity
+* *rT*: only toxicity
+* *Rt*: only response
+* *RT*: both response and toxicity
 
 
 If the 
-$Response-limiting toxicity$ parameter 
+$Response-limiting\ toxicity$ parameter 
 $input\$Kdeath$
 is small enough, then there also appears an incursion of the 
 $rT$ region towards the left at the bottom, invading the 
@@ -278,7 +281,7 @@ The eight boxes at the top of the graph are three-way toggles, which
 
 * A numeric input box allows setting the $Selected\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
 
-* The $Phase\ I$ button brings up a window with the probabilities of stopping at each dose level. The doses at which the ticks occur are used as the dose tiers in the Phase I trial. This is a place-holder for a bridge to another R shiny application, the $CTDesignExperimenter$, which is in progress.
+* The $Phase\ I$ button brings up a pop-up window with the probabilities of stopping at each dose level. The dose levels are initially set at the doses at which the ticks occur in the graphs. The user can change these doses in the window. 
 
 #### *At the top* 
 
