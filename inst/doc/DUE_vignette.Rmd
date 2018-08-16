@@ -26,8 +26,8 @@ http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
 
 
 ```{r plottingFunctionsInclude}
-source("../inst/doc/DUE_vignette_plottingFunctions.R")
-
+#source("../inst/doc/DUE_vignette_plottingFunctions.R")
+#  Moved to R folder.
 ```
 
 ### Introduction
