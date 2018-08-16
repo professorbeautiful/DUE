@@ -26,8 +26,8 @@ http://pandoc.org/MANUAL.html https://yihui.name/knitr/options/
 
 
 ```{r plottingFunctionsInclude}
-source("../inst/doc/DUE_vignette_plottingFunctions.R")
-
+#source("../inst/doc/DUE_vignette_plottingFunctions.R")
+#  Moved to R folder.
 ```
 
 ### Introduction
@@ -122,22 +122,25 @@ The groups in the mixture might differ by differences in pharmacokinetics, affec
 
 ```{r fig.height=4, fig.width=8}
  par(mfrow=c(1, 2) )
-plotThresholdInVignette('Pharmacokinetic-example-two-groups') 
-plotEUprobsInVignette('Pharmacokinetic-example-two-groups') 
+thisExample = 'Pharmacokinetic-example-two-groups'
+envHolder = plotThresholdInVignette(thisExample) 
+plotEUprobsInVignette(thisExample, envHolder) 
 ```
 The groups can also differ in the pharmacodynamics: the effect of the concentration at the affected tissues.
   Pharmacodynamics processes mediate the effects of exposure on the tissues.
 A discrete factor affecting pharmacodynamics of response affects only $\theta_{R}$, so that groups are placed horizontally on the plot. 
 ```{r fig.height=4, fig.width=8}
  par(mfrow=c(1, 2) )
-plotThresholdInVignette('Pharmacodynamics-response-two-groups')
-plotEUprobsInVignette('Pharmacodynamics-response-two-groups')
+thisExample = 'Pharmacodynamics-response-two-groups'
+envHolder = plotThresholdInVignette(thisExample) 
+plotEUprobsInVignette(thisExample, envHolder) 
 ```
 A discrete factor affecting pharmacodynamics of toxicity affects only $\theta_{T}$, and the groups are placed vertically.
 ```{r fig.height=4, fig.width=8}
  par(mfrow=c(1, 2) )
-plotThresholdInVignette('Pharmacodynamics-toxicity-two-groups') 
-plotEUprobsInVignette('Pharmacodynamics-toxicity-two-groups') 
+thisExample = 'Pharmacodynamics-toxicity-two-groups'
+envHolder = plotThresholdInVignette(thisExample) 
+plotEUprobsInVignette(thisExample, envHolder) 
 ```
 
 The number of groups is set in the input box labeled $Number\ of\ groups$ (with value $input\$nPops$ ); if increased or decreased, reasonable adjustments take place elsewhere.
