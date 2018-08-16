@@ -67,5 +67,5 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
            best.dose.p.T, 0, lty=2, lwd=2, col=rt.outcome.colors("T"))
   segments(best.dose.EU, 0, best.dose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
            col=rt.outcome.colors("EU"))
-  abline(v=DUEenv$selectedDose, col="green")
+  segments(x0 = DUEenv$selectedDose, y0 = 0, y1 = 1, col="green", lwd=2)
 }
