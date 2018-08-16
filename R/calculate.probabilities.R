@@ -169,9 +169,14 @@ extractUtilitySummaries <- function(eightprobs, log10doseValues, MTDtoxicity) {
   highest.EU = max(eightprobs["EU",])
   lowestprob.Rt = min(eightprobs["Rt",])
   lowest.EU = min(eightprobs["EU",])
-  best.dose.p.Rt = log10doseValues[eightprobs["Rt",]==highestprob.Rt]
-  best.dose.EU = log10doseValues[eightprobs["EU",]==highest.EU] [1]
-  best.dose.p.T = max(log10doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
+  doseValues = 10^log10doseValues
+  best.dose.p.Rt = doseValues[eightprobs["Rt",]==highestprob.Rt]
+  best.dose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
+  smallestAboveMTDtoxicity = 
+    min(log10doseValues[(eightprobs["T",]-MTDtoxicity)>=0])
+  largestBelowMTDtoxicity = 
+    max(log10doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
+  best.dose.p.T = 10^mean(smallestAboveMTDtoxicity, largestBelowMTDtoxicity)
   return(data.frame(
     highestprob.Rt,
     highest.EU,
