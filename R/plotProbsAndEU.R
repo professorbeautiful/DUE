@@ -61,9 +61,11 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
            cex=1.2, xpd=NA, adj=c(0, -1))
     }
   }
-  segments(5, DUEenv$MTDtoxicity, best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(best.dose.p.T, DUEenv$MTDtoxicity, best.dose.p.T, -0.1, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(DUEenv$best.dose.EU, 0, DUEenv$best.dose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
+  segments(min(DUEenv$doseValues), DUEenv$MTDtoxicity, 
+           best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(best.dose.p.T, DUEenv$MTDtoxicity, 
+           best.dose.p.T, 0, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(best.dose.EU, 0, best.dose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
            col=rt.outcome.colors("EU"))
   abline(v=DUEenv$selectedDose, col="green")
 }
