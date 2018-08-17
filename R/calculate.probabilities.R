@@ -164,27 +164,41 @@ calculate.probabilities.allDoses <- function(DUEenv, ...) {
     sapply(DUEenv$log10doseValues, calculate.probabilities, DUEenv=DUEenv, ... = ...)
 }
 
-extractUtilitySummaries <- function(eightprobs, log10doseValues, MTDtoxicity) {
-  highestprob.Rt = max(eightprobs["Rt",])
+calibrate = function(inputs, outputs, target) {
+  # assumes inputs are sorted.
+  fit = loess(inputs ~ outputs)
+  predict(fit, target)
+} 
+
+extractUtilitySummaries <- function(eightprobs, log10doseValues, 
+                                    MTDtoxicity, thisDUEenv=DUEenv) {
+  highest.Rt = max(eightprobs["Rt",])
   highest.EU = max(eightprobs["EU",])
   lowestprob.Rt = min(eightprobs["Rt",])
   lowest.EU = min(eightprobs["EU",])
   doseValues = 10^log10doseValues
-  best.dose.p.Rt = doseValues[eightprobs["Rt",]==highestprob.Rt]
-  best.dose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
-  smallestAboveMTDtoxicity = 
-    min(log10doseValues[(eightprobs["T",]-MTDtoxicity)>=0])
-  largestBelowMTDtoxicity = 
-    max(log10doseValues[(eightprobs["T",]-MTDtoxicity)<=0])
-  best.dose.p.T = 10^mean(smallestAboveMTDtoxicity, largestBelowMTDtoxicity)
+  best.dose.Rt = doseValues[eightprobs["Rt",]==highest.Rt] [1]
+  OptDose.EU = doseValues[eightprobs["EU",]==highest.EU] [1]
+  
+  # MTDdose = 10^calibrate(log10doseValues, eightprobs['T', ], MTDtoxicity)
+  MTDdoseFind = uniroot(f = function(dose)
+    calculate.probabilities(DUEenv=thisDUEenv, log10(dose))['T'] - MTDtoxicity,
+    interval = range(thisDUEenv$doseValues))
+  MTDdose = MTDdoseFind$root
+  EUatMTDdose = calibrate( eightprobs['EU', ], log10doseValues, log10(MTDdose))
+  TatMTDdose = calculate.probabilities(DUEenv=thisDUEenv, log10(MTDdose))['T']
+  #calibrate( eightprobs['T', ], log10doseValues, log10(MTDdose))
+  # EUatMTDdose = calculate.probabilities(
+  #   DUEenv = DUEenv, logdose = MTDdose )['EU', ]
   return(data.frame(
-    highestprob.Rt,
     highest.EU,
-    lowestprob.Rt,
+    OptDose.EU,
+    EUatMTDdose,
+    MTDdose,
     lowest.EU,
-    best.dose.p.Rt,
-    best.dose.EU,
-    best.dose.p.T
+    highest.Rt,
+    best.dose.Rt,
+    TatMTDdose
   ))  
 }
 

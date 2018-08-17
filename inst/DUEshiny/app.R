@@ -216,11 +216,18 @@ ui <- fluidPage(
                              style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
-                             column(8, offset=2, #align='center',
+                             column(8, offset=0, #align='center',
                                     plotOutput("linePlot",
                                                click = 'click_dose'
                                                #, height="700px", width="700px"
-                                               ) )),
+                                               ) ),
+                             column(4,
+                                    h4('Doses of interest'),
+                                    tableOutput('doseSummaries'),
+                                    br(),
+                                    h4('EU values of interest'),
+                                    tableOutput('utilitySummaries'))
+           ),
                   div(id = 'popUtilities',
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
@@ -726,6 +733,33 @@ server <- function(input, output, session) {
     plotProbsAndEU(DUEenv=DUEenv, context='shiny')
   })
   
+  
+  summarycolumns = strsplit('highest.EU,
+                          OptDose.EU,
+                         EUatMTDdose,
+                         MTDdose,
+                         lowest.EU,
+                         highest.Rt,
+                         best.dose.Rt,
+                            TatMTDdose,
+      ', 
+                         ',([\n \t])*'
+  )[[1]]
+  
+  output$utilitySummaries <- renderTable({
+    EUcolumns = c(1,3,5,6,8)
+    data.frame(summary = names(DUEenv$utilitySummaries)[EUcolumns],
+               value = unlist(DUEenv$utilitySummaries[1,EUcolumns])
+    )
+  })
+  
+  output$doseSummaries <- renderTable({
+     dosecolumns = c(2,4,7)
+    
+    data.frame(summary = names(DUEenv$utilitySummaries)[ dosecolumns],
+               value = unlist(DUEenv$utilitySummaries[1, dosecolumns])
+    )
+  })
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot(
     height=reactive(ifelse(!is.null(input$innerWidth),

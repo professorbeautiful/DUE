@@ -1,8 +1,11 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   cexValue = ifelse(context=='shiny', 2, 1); 
   eightprobs = calculate.probabilities.allDoses(DUEenv)
-  utilitySummaries = extractUtilitySummaries(eightprobs, 
-                                             log10doseValues=DUEenv$log10doseValues, MTDtoxicity=DUEenv$MTDtoxicity)
+  utilitySummaries = DUEenv$utilitySummaries = 
+    extractUtilitySummaries(eightprobs, 
+                            log10doseValues=DUEenv$log10doseValues, 
+                            MTDtoxicity=DUEenv$MTDtoxicity,
+                            thisDUEenv=DUEenv)
   for(us in names(utilitySummaries))
     assign(us, utilitySummaries[[us]])
   # cat("Redrawing ProbsAndEU: utility = ", unlist(DUEenv$utility), "\n")
@@ -62,10 +65,10 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
     }
   }
   segments(min(DUEenv$doseValues), DUEenv$MTDtoxicity, 
-           best.dose.p.T, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(best.dose.p.T, DUEenv$MTDtoxicity, 
-           best.dose.p.T, 0, lty=2, lwd=2, col=rt.outcome.colors("T"))
-  segments(best.dose.EU, 0, best.dose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
+           MTDdose, DUEenv$MTDtoxicity, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(MTDdose, DUEenv$MTDtoxicity, 
+           MTDdose, 0, lty=2, lwd=2, col=rt.outcome.colors("T"))
+  segments(OptDose.EU, 0, OptDose.EU, convertEU(highest.EU, TRUE), lty=2, lwd=2, 
            col=rt.outcome.colors("EU"))
   segments(x0 = DUEenv$selectedDose, y0 = 0, y1 = 1, col="green", lwd=2)
 }
