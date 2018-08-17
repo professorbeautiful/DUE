@@ -238,11 +238,11 @@ The scale/text pairs on the lower right specify the utility values for these fou
  There are also buttons to set the utilities to specific values:
  $Additive, Simple, Cautious,  Aggressive$.
 
- All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0).
+ All four of these utilities set $U_{rt}=0$, since $rt$ is the outcome without any treatment (dose = 0). all four also set $Rt$ equal to 1, so that the optimal result, a dose at which $Pr(Rt) = 1$, has the same utility regardless of any other parameter.
 
  The $Simple$ utility assignment considers  only the 
 $Rt$  outcome to be valuable, with utility value = 1, and sets the other three utility values to zero.
- It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern unless $R$ is achieved.
+ It is commonly used in studies of Phase I and II clinical trial designs. It expresses the idea that only $Rt$ is a worthy outcome. But it equates $rt$ with $rT$, as if toxicity is no concern as long as $R$ is achieved.
 
  The other three utility assignments all penalize the outcome $rT$ with a utility of -1. They differ in the valuation of the $RT$ outcome:
  
@@ -268,11 +268,25 @@ On the upper right side of the window is a graph showing these probabilities
  (left-side scale) and expected utilities (right-side scale).
  The vertical green line corresponds to the 
 $Selected\ dose$ indicated by the green cross in the contour plot.
- The black dotted vertical line picks out the dose maximizing expected utility. The horizontal red line shows the dose corresponding to $Pr(T) = 1/3$.
+ The black dotted vertical line picks out the dose maximizing expected utility, whih we can label $OptDose$ for short. 
+ 
+The horizontal red line shows the dose corresponding to $Pr(T) = 1/3$. This dose we will call the TRUE "$MTD$" (MTD = "maximum tolerated dose"), since in some views this would ideally be the best dose to report forward for further study, if one could somehow identify it without doing an experiment at all. The idea is that a dose should be sufficiently toxic reflecting potential for enough activity to counterbalance the risk, but not so toxic as to be unusable. Below we explore how suitable this rule of thumb is, under what circumstances. The traditional Phase I trial generally produces a MTD intended to estimate the true MTD. 
+ 
+Sometimes the true $MTD$ is very close to $OptDose$, justifying the $Pr(T) = 1/3$ target; and sometimes not. This is discussed further later.
 
 The eight boxes at the top of the graph are three-way toggles, which
  cycle each of the curves through the settings 
-`thick line`, `thin line`, and `invisible`.
+`thick line`, `thin line`, and `invisible`. 
+
+To the right of the plot is a table of quantities of interest for the current plot. They include:
+
+  -highest.EU,
+  -OptDose.EU,
+  -EUatMTDdose,
+  -MTDdose,
+  -lowest.EU,
+  -highest.Rt,
+  -best.dose.Rt,
 
 ### *Other features of the interface*
 
@@ -284,7 +298,7 @@ The eight boxes at the top of the graph are three-way toggles, which
 
 * A numeric input box allows setting the $Selected\ dose$, or selected dose. This only has the effect of moving the green lines in both plots.
 
-* The $Phase\ I$ button brings up a pop-up window with the probabilities of stopping at each dose level. The dose levels are initially set at the doses at which the ticks occur in the graphs. The user can change these doses in the window. 
+* The $Phase\ I$ button brings up a pop-up window with the probabilities of stopping at each dose level. The dose levels are initially set at the doses at which the ticks occur in the graphs. The user can change these doses within the pop-up window. 
 
 #### *At the top* 
 
@@ -299,17 +313,21 @@ Clicking the checkbox at the left of the grey band opens an instance of `shinyDe
 #### *A single population*
 ![ . ](single-population-20.png)
 
-In this ideal situation, there is a fairly sharp peak in the expected utility EU, with an optimal dose somewhere between $\mu_{R} = 100$ and $\mu_{T} = 200$. Only the `Aggressive` utility function has substantially different optimal, driving the optimal dose near the top of the dose range. The correlation has essentially no effect. Whether correlation = 0, so that all the variation is pharmacodynamics, or correlation near 1, so that it is nearly all pharmacokinetics, the utility curve is basically unchanged.
+In this ideal situation, there is a fairly sharp peak in the expected utility EU, with an optimal dose somewhere between $\mu_{R} = 100$ and $\mu_{T} = 200$. Only the `Aggressive` utility function has substantially different optimal, driving the optimal dose near the top of the dose range.
+
+When the correlation equals 0, all the variation is due to independent response pharmacodynamics and toxicity pharmacodynamics. When it equals 1, the variation is thresholds is all pharmacokinetics, so shared between the two thresholds. As the correlation increases from 0 to 1, the utility curve flattens slightly, while the optimal EU dose is unchanged.
 
 Lowering the median value $\mu_{T} = 100$ to equal $\mu_{R}$, then toxicity is highly likely, response less so. In that case, the utility choice has profound effects. Only the `Simple` utility shows a local EU peak at 100. With the `Additive` utility, the EU curve is flat. A 3+3 phase I trial on 7 tiers logarithmically spaced from 50 to 200, would stop at tier 100, with maximum tolerated dose (MTD) = 79.4 with probability 72%. 
 
 ## Is  Pr(toxicity) =  33% a good proxy for optimal expected utility?
 
-In this figure, the "T" curve is made visible, for comparison with the EU curve. The optimal dose is roughly the same as the dose at which the probability of toxicity is 33%.
+In this figure, the "T" curve is made visible, for comparison with the EU curve. The optimal dose is nearly the same as the dose at which the probability of toxicity is 33%.
 
 ![ . ](EU-is-at-T=0.33-additive.png){ width=50% }
 
 The venerable "3+3" Phase I design is sometimes described as aiming to estimate the dose tier closest to Pr(toxicity) =  33%. To rationalize this in vague terms, lowering the dose might decrease the response probability too much, while raising it would of course increase the risk, and possibly entail "response limiting events" that would mask or make irrelevant an increase in response rate.
+
+### Effect of the utility function
 
 The utility function in the figure is "Additive". At the other three default utility functions, here are the comparable curves:
 
@@ -317,8 +335,11 @@ SIMPLE          |                CAUTIOUS                 |           AGGRESSIVE
 ----------------|-------------------------------------------|-------------------
 ![ . ](EU-is-at-T=0.33-simple.png){ width=90% } | ![ . ](EU-lower-than-T=0.33-cautious.png){ width=90% } | ![ . ](EU-is-above-T=0.33-aggressive.png){ width=90% } 
 
-Changing the utility values to the simple scheme, which credits only the outcome `Rt`, does not change the optimum dose, but enhances its optimality. The cautious assignment lowers the optimal dose somewhat. The aggressive assignment sends it all the way to the maximum dose on the scale.
+Changing the utility values to the simple scheme, which credits only the outcome `Rt`, does not change the optimum dose, but enhances its optimality. The cautious assignment lowers the optimal dose somewhat. The aggressive assignment sends it all the way to the maximum dose on the scale. From here on we stick with the additive utility assignment. Certainly a user can explore different values of RT and rT if desired, with reference to the desired outcome $Rt$ assigned utility of 1. A response is no cure, but a toxicity is no fun.
 
+### Effect of the correlation
+
+See the discussion above about interpretation of the correlation between the thresholds $\theta_{R}$ and $\theta_{T}$. As we move the correlation from zero to one, 
 
 ## Effect of multimodality
 
