@@ -120,7 +120,7 @@ The groups in the mixture might differ by differences in pharmacokinetics, affec
 
 
 
-```{r fig.height=4, fig.width=8}
+```{r fig.height=4, fig.width=8, echo=F}
  par(mfrow=c(1, 2) )
 thisExample = 'Pharmacokinetic-example-two-groups'
 envHolder = plotThresholdInVignette(thisExample) 
@@ -129,14 +129,14 @@ plotEUprobsInVignette(thisExample, envHolder)
 The groups can also differ in the pharmacodynamics: the effect of the concentration at the affected tissues.
   Pharmacodynamics processes mediate the effects of exposure on the tissues.
 A discrete factor affecting pharmacodynamics of response affects only $\theta_{R}$, so that groups are placed horizontally on the plot. 
-```{r fig.height=4, fig.width=8}
+```{r fig.height=4, fig.width=8, echo=F}
  par(mfrow=c(1, 2) )
 thisExample = 'Pharmacodynamics-response-two-groups'
 envHolder = plotThresholdInVignette(thisExample) 
 plotEUprobsInVignette(thisExample, envHolder) 
 ```
 A discrete factor affecting pharmacodynamics of toxicity affects only $\theta_{T}$, and the groups are placed vertically.
-```{r fig.height=4, fig.width=8}
+```{r fig.height=4, fig.width=8, echo=F}
  par(mfrow=c(1, 2) )
 thisExample = 'Pharmacodynamics-toxicity-two-groups'
 envHolder = plotThresholdInVignette(thisExample) 
