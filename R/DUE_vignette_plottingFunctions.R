@@ -4,11 +4,11 @@
  
 getExampleFile = function(string) {
   dirString = system('find .. -name DUEshiny', intern = T)
-  print(dirString)
+  #print(dirString)
   # ifelse(basename(getwd()) == "www", '../', '../inst/DUEshiny/')
   filename = paste0(dirString,  '/', rev(grep(value=TRUE, string,
                                          dir(dirString)))[1]) 
-  print(filename)
+  #print(filename)
   filename
 }
 
