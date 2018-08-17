@@ -161,6 +161,8 @@ calculate.probabilities <-
   }
 
 calculate.probabilities.allDoses <- function(DUEenv, ...) {
+    if(is.null(DUEenv$log10doseValues))
+      DUEenv$log10doseValues = log10(DUEenv$doseValues)
     sapply(DUEenv$log10doseValues, calculate.probabilities, DUEenv=DUEenv, ... = ...)
 }
 
