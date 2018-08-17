@@ -40,6 +40,7 @@ ui <- fluidPage(
   shiny::includeScript('www/zoom_triggers.js'),
   shiny::includeScript('www/readInnerWindow.js'),
   #shiny::includeScript('windowZoomWarning.js'),
+  includeScript('www/KeyToToggleDebugging.js'),
   singleton(tags$head(tags$script(src = "pop_patch.js"))),
   uiOutput('JSstopPopups'),
   tags$style(".popover{max-width: 100%; font-size:large}"),
@@ -334,8 +335,13 @@ ui <- fluidPage(
 ####Server starts here####
 
 server <- function(input, output, session) {
-  try(shinyDebuggingPanel::makeDebuggingPanelOutput() )
-  DUEenv = reactiveValues()
+  
+  
+  shinyDebuggingPanel::makeDebuggingPanelOutput(
+    session, toolsInitialState = FALSE, 
+    condition='ctrlDpressed === true')
+
+    DUEenv = reactiveValues()
 
     #### zoomAdvice ####
   output$zoomAdvice = renderText({
@@ -1424,6 +1430,8 @@ server <- function(input, output, session) {
     # $("*[id^='pop']").popover('destroy')
     # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
   })
+  
+  observeEvent(input$ctrlDpressed, {}) # just to flush the ctrl-D press.
   
   session$onSessionEnded(stopApp)
 }
