@@ -167,17 +167,19 @@ ui <- fluidPage(
                                   style="color:darkgreen; font-size:150%"))
                         ,
                         actionButton(inputId = "Info", label="",
-                                     style="background:lightgreen",
+                                     style="background:yellow",
                                      icon=tagAppendAttributes(
                                        style="font-size: 3em;",
                                        icon("info-sign", lib="glyphicon"))) )
                     )
                     ,
                     br(), br(), br(), 
-                    div(id='pop_selectedDose', style='text-align:center; color:white; border-color:darkgreen; background-color:green;',
-                        numericInput('selectedDose', 'Selected dose', value=100, min=0)),
-                    br(), br(),
-                    div(style = "background-color:green;", id='popDoseAxes',
+                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:lightgreen; background-color:lightgreen;',
+                        numericInput('selectedDose', 'Selected dose', value=100, min=0),
+                        uiOutput('showProbs')
+                    ),
+                    hr(), br(),
+                    div(style = "background-color:lightgreen;", id='popDoseAxes',
                              #column(2, 
                              bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
                              #)
@@ -223,11 +225,11 @@ ui <- fluidPage(
                                                #, height="700px", width="700px"
                                                ) ),
                              column(4,
-                                    h4('Doses of interest'),
+                                    #h4('Doses of interest'),
                                     tableOutput('doseSummaries'),
-                                    br(),
-                                    h4('EU values of interest'),
-                                    tableOutput('utilitySummaries'))
+                                    #h4('EU values of interest'),
+                                    tableOutput('utilitySummaries'),
+                                    tableOutput('probSummaries'))
            ),
                   div(id = 'popUtilities',
                     h3("Controller for utility values", style="text-align:center; color:blue"),
@@ -690,6 +692,24 @@ server <- function(input, output, session) {
     })
   })
   
+  output$showProbs = renderUI({
+    probs = calculate.probabilities(
+      DUEenv, log10dose=log10(DUEenv$selectedDose))
+    makeEntry = function(label)
+      column(6, style=paste0(
+        'font-weight: bold; font-style: italic;
+        color:', rt.outcome.colors(label)), 
+             label, stringr::str_pad(width=4, pad='0', side='right',
+               round(digits=2, probs[label])))
+    div(
+      fluidRow(
+        makeEntry('Rt'), makeEntry('rt')
+      ),
+      fluidRow(
+        makeEntry('RT'), makeEntry('rT')
+      )
+    )
+  })
   observeEvent(input$click_threshold, {
     save_options = options(warn = -1)  #ignore initial warning
     try({
@@ -753,16 +773,21 @@ server <- function(input, output, session) {
   )[[1]]
   
   output$utilitySummaries <- renderTable({
-    EUcolumns = c(1,3,5,6,8)
-    data.frame(summary = names(DUEenv$utilitySummaries)[EUcolumns],
+    EUcolumns = c(1,3,5)
+    data.frame(EU = names(DUEenv$utilitySummaries)[EUcolumns],
                value = unlist(DUEenv$utilitySummaries[1,EUcolumns])
     )
   })
   
+  output$probSummaries <- renderTable({
+    dosecolumns = c(6,8)
+    data.frame(prob = names(DUEenv$utilitySummaries)[ dosecolumns],
+               value = unlist(DUEenv$utilitySummaries[1, dosecolumns])
+    )
+  })
   output$doseSummaries <- renderTable({
      dosecolumns = c(2,4,7)
-    
-    data.frame(summary = names(DUEenv$utilitySummaries)[ dosecolumns],
+    data.frame(dose = names(DUEenv$utilitySummaries)[ dosecolumns],
                value = unlist(DUEenv$utilitySummaries[1, dosecolumns])
     )
   })
