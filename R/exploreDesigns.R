@@ -9,21 +9,21 @@
 designParameters = 
   strsplit(
     split = "[ \n]",
-'utilities doseValues  
+'utilities doseValues
 nPops the.CVs.pop the.correlations.pop the.medianThresholds.pop
-refractory Kdeath
+refractory Kdeath proportions
 '  
-)
+)[[1]]
 
 load(paste0('inst/DUEshiny/',
             'DUEsaved##------ 2017-08-19 15:25:20 ------##Pharmacokinetic-example-two-groups .rdata'
 ))
-
 get(env=DUEsaving, 'mu.R')  ## omit
 get(env=DUEsaving, 'log10dose')  ## omit.  just one dose
 get(env=DUEsaving, 'doseValues')  ## omit
-
-get(env=DUEsaving, 'the.variances.pop')
+get(env=DUEsaving, 'the.variances.pop') 
+    ## omit. Diagonals calculated from the.medianThresholds.pop and the.CVs.pop
+  ## Off diagonals from the.correlations.pop and the diagonals.
 get(env=DUEsaving, 'theLognormalParameters')  # omit
 
 eachRow = function(row){
