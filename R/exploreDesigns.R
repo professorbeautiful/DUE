@@ -1,0 +1,40 @@
+
+#### TODO:  work needed : save extractUtilitySummaries. ####
+##  Parameters extracted from 
+# calculate.probabilities() pmvnorm.mixture() 
+# partialCumulative() 
+#  recalculate.offdiagonals() ... when the correlation is changed.
+# recalculate.means.and.variances() ... creates the.variances.pop
+
+designParameters = 
+  strsplit(
+    split = "[ \n]",
+'utilities doseValues  
+nPops the.CVs.pop the.correlations.pop the.medianThresholds.pop
+refractory Kdeath
+'  
+)
+
+load(paste0('inst/DUEshiny/',
+            'DUEsaved##------ 2017-08-19 15:25:20 ------##Pharmacokinetic-example-two-groups .rdata'
+))
+
+get(env=DUEsaving, 'mu.R')  ## omit
+get(env=DUEsaving, 'log10dose')  ## omit.  just one dose
+get(env=DUEsaving, 'doseValues')  ## omit
+
+get(env=DUEsaving, 'the.variances.pop')
+get(env=DUEsaving, 'theLognormalParameters')  # omit
+
+eachRow = function(row){
+  arglist = design[row, ]
+  for(arg in names(arglist))  DUEenv[[arg]] = arglist[[arg]]
+  calculate.probabilities (DUEenv, log10dose=2, utility) 
+  ### TODO save extractUtilitySummaries
+}
+calculate.probabilities.design <- function(design, DUEenvRow=DUEinits.default, ...) {
+  # For each row of the design matrix, place the values in calculate the 
+  sapply(1:nrow(design), eachRow)
+  DUEenv$eightprobs <- 
+    sapply(DUEenv$log10doseValues, calculate.probabilities, DUEenv=DUEenv)
+}
