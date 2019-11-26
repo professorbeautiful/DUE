@@ -323,24 +323,36 @@ Lowering the median value $\mu_{T} = 100$ to equal $\mu_{R}$, then toxicity is h
 
 In this figure, the "T" curve is made visible, for comparison with the EU curve. The optimal dose is nearly the same as the dose at which the probability of toxicity is 33%.
 
-![ . ](EU-is-at-T=0.33-additive.png){ width=50% }
+Additive utility settings | Probabilities and E(U) 
+-- | --
+![ . ](Utility settings- additive.png){ width=95% } | ![ . ](EU-is-at-T=0.33-additive.png){ width=95% }  
+
 
 The venerable "3+3" Phase I design is sometimes described as aiming to estimate the dose tier closest to Pr(toxicity) =  33%. To rationalize this in vague terms, lowering the dose might decrease the response probability too much, while raising it would of course increase the risk, and possibly entail "response limiting events" that would mask or make irrelevant an increase in response rate.
 
 ### Effect of the utility function
 
-The utility function in the figure is "Additive". At the other three default utility functions, here are the comparable curves:
+The utility function in the figure is "Additive": $U_{RT}$=0. At the other three default utility functions, here are the comparable curves:
 
-SIMPLE          |                CAUTIOUS                 |           AGGRESSIVE
-----------------|-------------------------------------------|-------------------
-![ . ](EU-is-at-T=0.33-simple.png){ width=90% } | ![ . ](EU-lower-than-T=0.33-cautious.png){ width=90% } | ![ . ](EU-is-above-T=0.33-aggressive.png){ width=90% } 
+ "Cautious": $U_{RT}$ = -1 | "Aggressive": $U_{RT}$ = +1  |"Simple":   $U_{RT}$ = $U_{Rt}$ = 0             
+--------------------------|--------------------------|--------------------------
+ ![ . ](EU-lower-than-T=0.33-cautious.png){ width=90% } | ![ . ](EU-is-above-T=0.33-aggressive.png){ width=90% }  | ![ . ](EU-is-at-T=0.33-simple.png){ width=90% }
 
-Changing the utility values to the simple scheme, which credits only the outcome `Rt`, does not change the optimum dose, but enhances its optimality. The cautious assignment lowers the optimal dose somewhat. The aggressive assignment sends it all the way to the maximum dose on the scale. From here on we stick with the additive utility assignment. Certainly a user can explore different values of $U_{RT}$ and $U_{rT}$ if desired, with reference to the desired outcome $Rt$ assigned utility of 1. A response is no cure, but a toxicity is no fun.
+ The cautious assignment lowers the optimal dose somewhat. The aggressive assignment sends it all the way to the maximum dose on the scale.  Changing the utility values to the simple scheme, which credits only the outcome `Rt` and does not penalize more for `rT`, does not change the optimum dose, but enhances its optimality (from $E(U)$=0.38 to $E(U)$=0.47).
+ 
+ From here on we stick with the additive utility assignment. Certainly a user can explore different values of $U_{RT}$ and $U_{rT}$ if desired, setting those values with reference to the desired outcome $Rt$ assigned utility of 1. A response is no cure, but a toxicity is no fun. 
 
 ### Effect of the correlation
 
-See the discussion above about interpretation of the correlation between the thresholds $\theta_{R}$ and $\theta_{T}$. As we move the correlation from zero to one,  
-with this model the EU curve does not change.  This is not generally true, only  
+In the foregoing, we set the correlation between the thresholds $\theta_{R}$ and $\theta_{T}$ to zero. Let's investigate what happens as we move the correlation to the other extreme, nearly one (0.99). This could occur if the pharmacodynamics (PD) of toxicity and response are strongly correlated across the population. More likely, the two PD processes are independent, but the  population variation in pharmacokinetics generates the correlation.  
+
+With the "Additive" utility, changing to correlation = 0.99 does not change the $E(U)$ curve at all; th maximum is still 0.38. But switching to "Simple" utility does not enhance the optimal E(U).
+
+Thresholds | Probabilities and E(U)
+--------------------------|--------------------------
+![ . ](Thresholds - corr - 0.99.png){ width=90% } | ![ . ](Probs, core=0.99.png){ width=90% } 
+
+These observation are not generally true. A broad investigation may clarify when the correlation governing PK and PD really matters.
 
 ## Effect of multimodality
 
