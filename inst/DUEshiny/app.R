@@ -136,11 +136,11 @@ ui <- fluidPage(
                                                HTML("<br>Pr(refractory tumor)"), 
                                                value = DUEinits.default$refractory, step = .1, min=0,max=1)
                            ),
-                           column(6, id = 'popRLE',
+                           column(6, id = 'popRLT',
                                   # tagAppendAttributes(
-                                  #   class='RLEtooltip',
+                                  #   class='RLTtooltip',
                                   numericInput(inputId = "responseLimitingTox", 
-                                               HTML("RLE: log10 (response-limiting gap) <br> (RT->rT)"), 
+                                               HTML("RLT: log10 (response-limiting gap) <br> (RT->rT)"), 
                                                value = DUEinits.default$Kdeath, step = 0.5, min=0)
                                   #)
                            )
@@ -425,7 +425,7 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('Rt'))
   observe(linethicknessObserving('RT'))
   observe(linethicknessObserving('EU'))
-  observe(linethicknessObserving('RLE'))
+  observe(linethicknessObserving('RLT'))
   
   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
@@ -1352,10 +1352,10 @@ server <- function(input, output, session) {
                content=paste(sep='<br>',
                              'Accounting for a proportion totally resistant to treatment,',
                              'regardless of which sub-group the patient is in.' ))
-    addPopover(session, 'popRLE', placement = 'top',
-               title='Response-limiting toxicity event (RLE)',
+    addPopover(session, 'popRLT', placement = 'top',
+               title='Response-limiting toxicity event (RLT)',
                content=paste(sep='<br>',
-                             'RLE represents the case where a patient with a low',
+                             'RLT represents the case where a patient with a low',
                              ' threshold for toxicity has enough toxicity to prevent response, even if',
                              'the response threshold is low enough. ',
                              'This parameter is the #orders of magnitude between', 
@@ -1399,7 +1399,7 @@ server <- function(input, output, session) {
                content=paste(sep='<br>',
                              'Dose-probability curves:',
                              '---for R (total response), T (total toxicity),',
-                             '---for the 4 quadrant outcomes and RLE, and ',
+                             '---for the 4 quadrant outcomes and RLT, and ',
                              '---for E(U), the expected utility.' ))
     addPopover(session, 'popUtilities', title="Utility values for each outcome",  placement = 'top',
                content=paste(sep='<br>',

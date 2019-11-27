@@ -50,9 +50,9 @@ partialCumulative =
 #' Rt=p.Rt,        # probability of response and non-toxicity
 #' RT=p.RT,        # probability of response and toxicity
 #' EU=expected.utility,        # 
-#' RLE=p.RLE       # probability of response-limiting toxicity event
+#' RLT=p.RLT       # probability of response-limiting toxicity event
 #'                 #  (a toxicity so severe that R cannot happen, 
-#'                 # or might as well not have;  RLE has occurred.)
+#'                 # or might as well not have;  RLT has occurred.)
 #' )
 #' }
 #'
@@ -91,28 +91,28 @@ calculate.probabilities <-
                             Rrange=c(-Inf, logdose), Trange=c(logdose, Inf))
     p.RT <- pmvnorm.mixture(DUEenv=DUEenv, 
                             Rrange=c(-Inf, logdose), Trange=c(-Inf, logdose))
-    ## Adjustments for response-limiting events (RLE)
-    p.RLE <- pmvnorm.mixture(DUEenv=DUEenv, 
+    ## Adjustments for response-limiting events (RLT)
+    p.RLT <- pmvnorm.mixture(DUEenv=DUEenv, 
                              Rrange=c(-Inf, logdose), 
                              Trange=c(-Inf, logdose - DUEenv$Kdeath/log(10)))
 
     ## Kdeath = 0 means that
     ## People whose tox threshold is below logdose will have toxicity.
     ## People whose tox threshold is below logdose - Kdeath will have 
-    ## toxicity so severe that R cannot happen;  RLE has occurred.
+    ## toxicity so severe that R cannot happen;  RLT has occurred.
     ## Thus Kdeath = 0 means that RT cannot happen.
-    ## But Kdeath = Inf means that RLE never happens.
+    ## But Kdeath = Inf means that RLT never happens.
     
-    #### Adjustments for response-limiting events (RLE) ####
-    p.rT <- p.rT + p.RLE   #RLE converts RT events into rT events.
-    p.RT <- p.RT - p.RLE
+    #### Adjustments for response-limiting events (RLT) ####
+    p.rT <- p.rT + p.RLT   #RLT converts RT events into rT events.
+    p.RT <- p.RT - p.RLT
     
     negativeSanity = -1e-4
     
     #### Sanity tests ####
-    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < negativeSanity))
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLT) < negativeSanity))
       browser(text = 'negative probability problem')
-    if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
+    if( abs(p.RT + p.Rt + p.RLT - p.R.marginal)  >  0.01)
       browser(text = 'p.R problem')
     if( abs(p.RT + p.rT - p.T.marginal)  >  0.01)
       browser(text = 'p.T problem')
@@ -123,13 +123,13 @@ calculate.probabilities <-
     p.RT <- p.RT - DUEenv$refractory*p.RT
     p.rt <- p.rt + DUEenv$refractory*p.Rt
     p.Rt <- p.Rt - DUEenv$refractory*p.Rt
-    p.RLE <- p.RLE - DUEenv$refractory*p.RLE
+    p.RLT <- p.RLT - DUEenv$refractory*p.RLT
     p.R.marginal <- p.R.marginal - DUEenv$refractory*p.R.marginal
 
         #### Sanity tests ####
-    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLE) < negativeSanity))
+    if(any(c(p.RT, p.Rt, p.rT, p.rt, p.RLT) < negativeSanity))
       browser(text = 'negative probability problem')
-    if( abs(p.RT + p.Rt + p.RLE - p.R.marginal)  >  0.01)
+    if( abs(p.RT + p.Rt + p.RLT - p.R.marginal)  >  0.01)
       browser(text = 'p.R problem')
     if( abs(p.RT + p.rT - p.T.marginal)  >  0.01)
       browser(text = 'p.T problem')
@@ -155,7 +155,7 @@ calculate.probabilities <-
       Rt=p.Rt,
       RT=p.RT,
       EU=expected.utility,
-      RLE=p.RLE
+      RLT=p.RLT
     )
     return(probability.vector)
   }
@@ -207,7 +207,7 @@ extractUtilitySummaries <- function(eightprobs, log10doseValues,
 checkcalcs=function(...){
   p8=calculate.probabilities(DUEenv=denv, 3, ...); 
   c(sum=sum(p8[3:6]), 
-    Rsum=p8['Rt']+p8['RT']+p8['RLE'],
+    Rsum=p8['Rt']+p8['RT']+p8['RLT'],
     Tsum=p8['RT']+p8['rT'],
     p8)
 }
