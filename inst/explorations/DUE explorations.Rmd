@@ -11,9 +11,9 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r echo=FALSE}
-load(paste0("inst/DUEshiny/DUEsaved##",
-            "------ 2017-07-26 17:20:29",
-            "------##small_CV_no_refractory.rdata"))
+load(paste0("DUEsaved##",
+            "------ 2017-07-27 09:32:36",
+            " ------##one_population.rdata"))
 #  utilityChoices = 
 ```
 
