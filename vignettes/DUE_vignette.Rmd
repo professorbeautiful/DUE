@@ -47,16 +47,16 @@ This package, with its app, is part of a broader effort to make clinical trials 
 
 * Is the success of a clinical trial plot dependent on assumptions whose truth we do not know?
 * Can a research plan be made more robust against assumptions?
-* When does our valuation of toxicity versus response matter?
+* When does our subjective valuation of toxicity versus response matter?
 * When is the expected utility strongly dependent on dose? When is it multimodal as a function of dose?
-* When is the effect of pharmoacokinetics variation important?
-* How much improvement can we expect if we can stratify on patient subgroup, or limit recruitment to, one of multiple subgroups of patients?
+* When is the effect of pharmacokinetics variation important?
+* How much improvement could we achieve if we could stratify on patient subgroup, or limit recruitment to, one of multiple subgroups of patients?
 
 In addition, there are potential uses for individual patients. One aspect of personalized medicine is personalized dose.
 
 ##### *Contributions and history*
 
-This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for eventual publication by Roger Day. It rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.
+This package stemmed from a chapter of the doctoral dissertation of Meihua Wang. It was developed for eventual publication by Roger Day. Originally, it rested on tck/tk for the graphics, requiring installation of R and the X window system, as well as tck/tk. Therefore its reach was severely limited.
 
 In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio shiny, which provides universal access through a published web page. In addition several new features were added. The tcl/tk version is no longer supported.
 
@@ -64,13 +64,16 @@ In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio s
 
 The factors accounted for are:
 
-* The current “prior” or population joint distribution of thresholds for toxicity
- and for response; the distribution may be multimodal.
-* Response-limiting toxicity, representing the case where a patient with a
+* The current “prior” or population joint distribution of dose thresholds for toxicity ($T$)
+ and for response ($R$). 
+ 
+ (The four possible outcomes are: $RT$, $Rt$, $rT$, and $rt$, where $T$ means toxicity occurs, $t$ means it doesn't, $R$ means toxicity occurs, $r$ means it doesn't. ) 
+* The distribution may be multimodal.
+* Response-limiting toxicity ($RLT$), representing the case where a patient with a
  low threshold for toxicity has enough toxicity to require coming off the
- treatment.
-* Refractoriness.
-* The combined personal utility of the toxicity and response outcome status.
+ treatment before response could be achieved.
+* Refractoriness, representing a portion of tumors entirely unable to respond regardless of the dose.
+* The combined personal utility of the toxicity (T) and response (R) outcome events.
 
 
 Not included are:
@@ -84,7 +87,7 @@ Not included are:
  patient.
 * Multiple degrees of the response and toxicity outcomes, for example complete versus partial response, or mild versus severe adverse events.
 
-The inputs are difficult to assign values to. In principle one could estimate the "prior", the joint threshold distribution. But this would require treating many patients at many doses. Each patient's outcome would tell us only which quadrant the patient is in. Therefore this program is best thought of as a platform for thought experiments.
+The inputs are difficult to assign values to. In principle one could estimate the "prior", the joint threshold distribution. But this would require treating many patients at many doses. Each patient's outcome would tell us only which quadrant the patient's joint threshold is in. Therefore this program is best thought of as a platform for thought experiments.
 
 
 ### Overview of the interface
@@ -176,9 +179,9 @@ Response-limiting toxicity represents the case where a patient with a low
  Or, a treatment-caused fatality might occur before a response which otherwise
  would have happened can occur.
  This idea is represented by a parameter called 
-$Kdeath$ in the code. Its input box is labeled as $RLE:\ log_{10} (response-limiting\ event)\ (RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
+$Kdeath$ in the code. Its input box is labeled as $RLT:\ log_{10}$ (response-limiting toxicity event) for converting $(RT\to rT)$. A response-limiting toxicity is a toxicity so severe that, although the patient would otherwise have responded, death or suspension of the treatment makes that impossible.
 This parameter is the gap between log10 of the patient's toxicity threshold
- and log10 of the dose at which toxicity is so severe that response cannot happen. It appears on the left-hand plot as a vertical distance below the Rt/RT border to the border where the rT region encroaches into RT.
+ and log10 of the dose at which toxicity is so severe that response cannot happen. It appears on the left-hand plot as a vertical distance below the $Rt/RT$ border to the border where the $rT$ region encroaches into $RT$.
  
  
  The assumption is that this gap is the same for all patients.
@@ -203,7 +206,7 @@ $This\ group\ \#$
 
 The $Selected\ dose$, whether selected by clicking or by entering into the $Selected\ dose$ input, will divide the graph into four quadrants, corresponding to four outcomes: 
 
-* *rt*:  neither response nor toxicity
+* *rt*: neither response nor toxicity
 * *rT*: only toxicity
 * *Rt*: only response
 * *RT*: both response and toxicity
