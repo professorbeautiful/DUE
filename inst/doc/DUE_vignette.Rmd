@@ -65,9 +65,7 @@ In 2017, Marie Gerges, working with Day, spearheaded the conversion to RStudio s
 The factors accounted for are:
 
 * The current “prior” or population joint distribution of dose thresholds for toxicity ($T$)
- and for response ($R$). 
- 
- (The four possible outcomes are: $RT$, $Rt$, $rT$, and $rt$, where $T$ means toxicity occurs, $t$ means it doesn't, $R$ means toxicity occurs, $r$ means it doesn't. ) 
+ and for response ($R$).   (The four possible joint outcomes are: $RT$, $Rt$, $rT$, and $rt$, where $T$ means toxicity occurs, $t$ means it doesn't, $R$ means toxicity occurs, $r$ means it doesn't. ) 
 * The distribution may be multimodal.
 * Response-limiting toxicity ($RLT$), representing the case where a patient with a
  low threshold for toxicity has enough toxicity to require coming off the
