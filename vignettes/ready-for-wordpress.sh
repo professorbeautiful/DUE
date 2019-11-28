@@ -3,8 +3,9 @@
 ##  Check the year/month setting that the files were uploaded.
 yearmonth=2019/11/
 ## Unfortunately, if I add more figures next month, this whole system fails!
-
+## AHA!  I turned off the option to organize by month and year.
 ## Next, run DUE_vignette-no-base64.html
+yearmonth=
 
 ## Next, run this file.
 tempfile=`ls -t /private/var/folders/*/*/T/*/*/DUE_vignette-no-base64.html |head -1`
