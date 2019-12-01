@@ -63,13 +63,8 @@ partialCumulative =
 #'   load(paste(DUEshinyHome, aFile, sep='/'))
 #'   calculate.probabilities(DUEsaving, log10dose = 2.3)
 
-calculate.probabilities <-
-  function(DUEenv, log10dose, logdose, utility, ...) {
-    
-    if(missing(utility))
-      utility = DUEenv$utility
-    else if(is.character(utility)) 
-      utility = DUEenv$utilityChoices[utility]
+calculate.probabilities <-  ### We will remove utility & EU from this in the future.
+  function(DUEenv, log10dose, logdose, utility, includeEU = TRUE, ...) {
     
     if(!missing(log10dose))
       logdose = log(10) * log10dose
@@ -135,17 +130,23 @@ calculate.probabilities <-
       browser(text = 'p.T problem')
     
     pQuadrants <- c(p.rt,p.rT,p.Rt,p.RT)
-    #read.Uvalues()  ### copies from the sliders to the vector "utility"
-    expected.utility <- sum(pQuadrants*utility)
+    if(includeEU) {
+      if(missing(utility))
+        utility = DUEenv$utility
+      else if(is.character(utility)) 
+        utility = DUEenv$utilityChoices[utility]
+      #read.Uvalues()  ### copies from the sliders to the vector "utility"
+      expected.utility <- sum(pQuadrants*utility)
+    }
     if(	browseIf(FALSE
                  #exp(logdose) > 950
                  , message="Let's check on utility")) {
       #browser()
       cat("---- ", exp(logdose), " ----\n")
       print(pQuadrants)
-      print(utility)
-      print(DUEenv$utility)
-      print(expected.utility)
+      # print(utility)
+      # print(DUEenv$utility)
+      # print(expected.utility)
     }
     probability.vector <- c(
       R=p.R.marginal,
@@ -158,6 +159,29 @@ calculate.probabilities <-
       RLT=p.RLT
     )
     return(probability.vector)
+  }
+
+calculate.probabilities.and.EU <- 
+  function(DUEenv, log10dose, utility, ...) {
+    sevenprobs = calculate.probabilities(
+      DUEenv, log10dose, utility, includeEU=FALSE,...)
+    pQuadrants <- with(as.data.frame(t(sevenprobs)), c(rt, rT, Rt, RT))
+    if(missing(utility))
+      utility = DUEenv$utility
+    else if(is.character(utility)) 
+      utility = DUEenv$utilityChoices[utility]
+    expected.utility <- sum(pQuadrants*utility)
+    return(c(sevenprobs, EU=expected.utility) )
+  }
+    
+calculate.all.EU <- 
+  function(DUEenv, log10dose) {
+    sevenprobs = calculate.probabilities(
+      DUEenv, log10dose, utility, includeEU=FALSE,...)
+    pQuadrants <- with(as.data.frame(t(sevenprobs)), c(rt, rT, Rt, RT))
+    allEU = sapply(DUEenv$utilityChoices, function(utility)
+     sum(pQuadrants*utility) )
+    return(allEU )
   }
 
 calculate.probabilities.allDoses <- function(DUEenv, ...) {
