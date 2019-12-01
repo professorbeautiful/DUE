@@ -25,21 +25,25 @@ get(env=DUEsaving, 'the.variances.pop')
     ## omit. Diagonals calculated from the.medianThresholds.pop and the.CVs.pop
   ## Off diagonals from the.correlations.pop and the diagonals.
 get(env=DUEsaving, 'theLognormalParameters')  # omit
+get(env=DUEsaving, 'the.medianThresholds.pop')  # omit
 
 lapply(designParameterNames, function(p)
   (get(p, env=DUEsaving)) )
 
 ### Predicated on the value of nPops.
-designParameterNamesExpanded = 
-  c(names(DUEsaving$utility),
-    paste0(
-      paste0('the.CVs.pop[[', 1:DUEsaving$nPops, ']]'),
-      '[', c('R','T'), ']')
+RTindices = 1:2
+DUEsaving$utility[1,'U.rt']
+designParameterNamesExpanded_utilities = 
+  paste0('utility[1,"', names(DUEsaving$utility), '"]')
+designParameterNamesExpanded_pop = 
+  c(apply(expand.grid(
+      paste0('the.variances.pop[[', 1:DUEsaving$nPops, ']]'),
+      paste0('[', RTindices, ']') ), 1, paste0, collapse='')
     ,
-    paste0(
+    apply(expand.grid(
       paste0('the.medianThresholds.pop[[', 1:DUEsaving$nPops, ']]'),
-      '[', c('R','T'), ']')
-    ,
+      paste0('[', RTindices, ']') ), 1, paste0, collapse='')
+    , 
     paste0('the.correlations.pop[', 1:DUEsaving$nPops, ']')
     ,
     
@@ -47,18 +51,28 @@ designParameterNamesExpanded =
     'Kdeath',
     paste0('proportions[', 1:DUEsaving$nPops, ']')
   )
+  # 
+invisible(sapply(designParameterNamesExpanded, function(param) {
+  cat( param, eval(parse(text=param), env=DUEsaving), '\n')
+  (NULL)
+  }))
 
- 
-  
-eachRow = function(row){
-  arglist = design[row, ]
-  for(arg in names(arglist))  DUEsaving[[arg]] = arglist[[arg]]
-  calculate.probabilities (DUEsaving, log10dose=2, utility) 
-  ### TODO save extractUtilitySummaries
+calculate.probabilities.with.changes = function(
+  newValues, log10dose=2){
+  DUEtemp = DUEsaving
+  for(param in names(newValues))  {
+  #textToParse = paste0("assign('", param, "', value = ", newValue, ', envir =DUEtemp)')
+#       eval(parse(text=paste0('assign(', param, ', value = , newValue, ', envir =DUEtemp') )
+    textToParse = paste0("DUEtemp$", param, " = ", newValues[[param]])
+    eval(parse(text=textToParse ))
+    cat(eval(parse(text=paste0('DUEtemp$', param))), '\n')
+    cat( param, eval(parse(text=param), env=DUEtemp), '\n') 
+  }
+  calculate.probabilities(DUEenv = DUEtemp, log10dose = log10dose, includeEU=FALSE)
 }
-calculate.probabilities.design <- function(design, DUEenvRow=DUEinits.default, ...) {
-  # For each row of the design matrix, place the values in calculate the 
-  sapply(1:nrow(design), eachRow)
-  DUEsaving$eightprobs <- 
-    sapply(DUEsaving$log10doseValues, calculate.probabilities, DUEenv=DUEsaving)
-}
+
+calculate.probabilities.with.changes(data.frame(`the.variances.pop[[1]][1]` = 55) )
+
+
+# extractUtilitySummaries(eightprobs, log10doseValues, 
+#                                     MTDtoxicity, thisDUEenv=DUEenv) 
