@@ -65,14 +65,61 @@ calculate.probabilities.with.changes = function(
 #       eval(parse(text=paste0('assign(', param, ', value = , newValue, ', envir =DUEtemp') )
     textToParse = paste0("DUEtemp$", param, " = ", newValues[[param]])
     eval(parse(text=textToParse ))
-    cat(eval(parse(text=paste0('DUEtemp$', param))), '\n')
-    cat( param, eval(parse(text=param), env=DUEtemp), '\n') 
+    #cat(eval(parse(text=paste0('DUEtemp$', param))), '\n')
+    #cat( param, eval(parse(text=param), env=DUEtemp), '\n') 
   }
   calculate.probabilities(DUEenv = DUEtemp, log10dose = log10dose, includeEU=FALSE)
 }
 
-calculate.probabilities.with.changes(data.frame(`the.variances.pop[[1]][1]` = 55) )
+designDF = data.frame(`the.variances.pop[[1]][1]` = 55,)
+calculate.probabilities.with.changes(designDF )
 
+log10doseValues = seq(log10(min(DUEsaving$doseTicks)), 
+                             log10(max(DUEsaving$doseTicks)), 
+                             length=25)
+allProbs = sapply(log10doseValues, function(log10dose)
+  calculate.probabilities.with.changes(designDF, log10dose = log10dose)
+)
+allEU = apply(allProbs, 2, calculate.all.EU, 
+                          utilityChoices=DUEsaving$utilityChoices) 
+summarize_allProbs = function(allProbs, thisDUEenv, MTDtoxicity=1/3,
+                              doseValues = 10^log10doseValues
+) {
+  highest.Rt = max(allProbs["Rt",])
+  lowestprob.Rt = min(allProbs["Rt",])
+  best.dose.Rt = doseValues[allProbs["Rt",]==highest.Rt] [1]
+  # MTDdose = 10^calibrate(log10doseValues, allProbs['T', ], MTDtoxicity)
+  MTDdoseFind = uniroot(f = function(dose)
+    calculate.probabilities(DUEenv=thisDUEenv, log10(dose))['T'] - MTDtoxicity,
+    interval = range(thisDUEenv$doseValues))
+  MTDdose = MTDdoseFind$root
+  TatMTDdose = calculate.probabilities(DUEenv=thisDUEenv, log10(MTDdose))['T']
+  return(data.frame(
+    MTDdose,
+    highest.Rt,
+    best.dose.Rt,
+    TatMTDdose
+  ))  
+}
+summarize_allProbs(allProbs, DUEsaving)
 
-# extractUtilitySummaries(eightprobs, log10doseValues, 
-#                                     MTDtoxicity, thisDUEenv=DUEenv) 
+summarize_allEU <- function(allEU=allEU, allProbs=allProbs,
+                            thisDUEenv=DUEsaving, MTDtoxicity=1/3,
+                            doseValues = 10^log10doseValues
+) {
+  summary_allProbs = summarize_allProbs(allProbs, thisDUEenv)
+  apply(allEU, 1, function(EUrow) {
+    highest.EU = max(EUrow)
+    lowest.EU  = min(EUrow)
+    OptDose.EU = doseValues[EUrow==highest.EU] [1]
+    EUatMTDdose = calibrate( EUrow, log10doseValues, 
+                             log10(summary_allProbs$MTDdose))
+    return(data.frame(
+      highest.EU,
+      OptDose.EU,
+      EUatMTDdose,
+      lowest.EU
+    ))  
+  })
+}
+summarize_allEU (allEU, allProbs )

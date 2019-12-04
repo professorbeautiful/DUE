@@ -155,9 +155,10 @@ calculate.probabilities <-  ### We will remove utility & EU from this in the fut
       rT=p.rT,
       Rt=p.Rt,
       RT=p.RT,
-      EU=expected.utility,
       RLT=p.RLT
     )
+    if(includeEU) 
+      probability.vector = c(probability.vector, EU=expected.utility)
     return(probability.vector)
   }
 
@@ -175,14 +176,13 @@ calculate.probabilities.and.EU <-
   }
     
 calculate.all.EU <- 
-  function(DUEenv, log10dose) {
-    sevenprobs = calculate.probabilities(
-      DUEenv, log10dose, utility, includeEU=FALSE,...)
+  function(sevenprobs, utilityChoices) {
     pQuadrants <- with(as.data.frame(t(sevenprobs)), c(rt, rT, Rt, RT))
-    allEU = sapply(DUEenv$utilityChoices, function(utility)
-     sum(pQuadrants*utility) )
+    allEU = sapply(utilityChoices, function(utility)
+      sum(pQuadrants*utility) )
     return(allEU )
   }
+
 
 calculate.probabilities.allDoses <- function(DUEenv, ...) {
     if(is.null(DUEenv$log10doseValues))
