@@ -4,16 +4,16 @@ To run the app,
 shiny::runApp('inst/DUEshiny', launch.browser = TRUE)
 To build vignettes,
   devtools::build_vignettes()
-  Building DUE vignettes
-  Warning in as.POSIXlt.POSIXct(Sys.time()) :
-    unknown timezone 'zone/tz/2017c.1.0/zoneinfo/America/Montreal'
-  Moving DUE_vignette.html, DUE_vignette.R, DUE_vignette_plottingFunctions.R to inst/doc/
-  Copying DUE_vignette.Rmd to inst/doc/
-==>>  ln ./inst/doc/DUE_vignette.html ./inst/DUEshiny/www/
+Building DUE vignettes
+Moving DUE_vignette-no-base64.html, DUE_vignette-no-base64.R to inst/doc/
+Copying DUE_vignette-no-base64.Rmd to inst/doc/
+
+==>>  ln ./inst/doc/DUE_vignette-no-base64.html ./inst/DUEshiny/www/
 This seems to get the html file into inst/DUEshiny/www OK.
 Does not need to be re-done. Repeating build_vignettes worked.
 File appears when clicking Run App.
 But people who download the package from git may not know to do this.
+
 
 
 Previous error:
