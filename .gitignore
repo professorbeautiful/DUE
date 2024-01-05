@@ -5,3 +5,5 @@
 .Rinstignore
 Rplots.pdf
 man
+packrat/lib*/
+packrat
