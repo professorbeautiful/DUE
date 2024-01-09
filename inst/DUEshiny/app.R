@@ -363,7 +363,9 @@ server <- function(input, output, session) {
   })
   #### In place of setupProbLines(DUEenv) ####
   probLineWidthChoices <<- c(0, 1, 5)
-  probLineWidths <- rep(probLineWidthChoices[1], 8) 
+  # invisible, thin, thick
+  probLineWidths <- rep(probLineWidthChoices[1], 8)
+  ### Set all to invisible at first.
   names(probLineWidths) <- probLineNames()
   probLineWidths["EU"] <- probLineWidthChoices[2] #1
   DUEenv$probLineWidths <- probLineWidths 
@@ -377,15 +379,17 @@ server <- function(input, output, session) {
         "DUEenv$", objname, " <- get('",
         objname, "', DUEinits.default)"
       ))) )
+    DUEenv$probLineWidths = probLineWidths
     DUEenv$probLineWidths =  ### back off by 1 because drawing the boxes jacks them by 1.
       #probLineWidthChoices[(-1 + match(DUEinits.default$probLineWidths, probLineWidthChoices)) %% 4 + 3*()]
-      sapply(DUEinits.default$probLineWidths, function(n) {
+      # NOT DUEinits.default$probLineWidths
+      sapply(probLineWidths, function(n) {
         whichWidth = which(n == probLineWidthChoices)
         whichWidth = whichWidth - 1
         if(whichWidth == 0) whichWidth = length(probLineWidthChoices)
         return (probLineWidthChoices[whichWidth])
-      })      
-  })
+      })
+   })
   #### End of DUEstartShiny ####    
   
   ## isolate({doseParameters(resetToDefaults = TRUE)})
