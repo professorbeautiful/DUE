@@ -36,7 +36,7 @@ linethicknessButtons =
 ####UI starts here####
 ui <- fluidPage(
   tags$style("[type = 'number'] 
-             {font-size:30px;height:30px;}"),
+             {font-size:25px;height:25px;}"),
   
   # tags$style("#myNumericInput 
   #            {font-size:100px;height:100px;}"),
@@ -231,7 +231,9 @@ ui <- fluidPage(
                                                click = 'click_dose'
                                                #, height="700px", width="700px"
                                                ) ),
-                             column(4, style=paste0("background-color:", "#F4FAFA"),
+                             column(4, style=
+                                      paste0("background-color:", "#F4FAFA",
+                                             '; font-size:18px;'),
                                     #h4('Doses of interest'),
                                     tableOutput('doseSummaries'),
                                     #h4('EU values of interest'),
