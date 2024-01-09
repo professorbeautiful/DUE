@@ -90,13 +90,13 @@ ui <- fluidPage(
                   )), 
                   h3("Controller for thresholds", style="text-align:center; color:blue"),
                   fluidRow(id = 'pop_nPops',
-                    column(4, offset=4, div(style='background-color:lightgray; align-items:center; text-align:center',
+                    column(4, offset=4, div(style='background-color:#F4FAFA; align-items:center; text-align:center',
                                             numericInput(inputId = "nPops",  "Number of groups", 
                                                          value = DUEinits.default$nPops, min=1))
                     )
                   ),
                   fluidRow( 
-                           style='background-color:lightgray; vertical-align:center; min-height: 100%;',
+                           style='background-color:#F4FAFA; vertical-align:center; min-height: 100%;',
                            column(4, id='popThisPop',
                                   numericInput(inputId = "thisPop", "This group #", 
                                                value = 1, min = 1, max = DUEinits.default$nPops)),
@@ -110,22 +110,22 @@ ui <- fluidPage(
                   ),
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   fluidRow(id = 'popParamsThisPop', 
-                           style='background-color:lightgray; vertical-align:center; min-height: 100%;',
-                           column(4, style='background-color:lightgray',
+                           style='background-color:#F4FAFA; vertical-align:center; min-height: 100%;',
+                           column(4, style='background-color:#F4FAFA',
                                   numericInput(inputId = "thetaRmedian", "Theta R Median", 
                                                value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
                                   numericInput(inputId = "thetaR.CV", "Theta R CV", 
                                                value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
                            ),
                            column(4, 
-                                  #                             style='background-color:lightgray; min-height: 100%; display: flex;
+                                  #                             style='background-color:#F4FAFA; min-height: 100%; display: flex;
                                   #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
                                   br(style='background-color:white;'),
-                                  div(style='background-color:lightgray;', 
+                                  div(style='background-color:#F4FAFA;', 
                                       numericInput(inputId = "correlation", "Correlation", value = DUEinits.default$the.correlations.pop[1],
                                                    min = -(1-0.01), max = 1-0.01, step = 0.1))
                            ),
-                           column(4, style='background-color:lightgray',
+                           column(4, style='background-color:#F4FAFA',
                                   numericInput(inputId = "thetaTmedian", "Theta T Median", 
                                                value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
                                   
@@ -135,7 +135,7 @@ ui <- fluidPage(
                   ),
                   shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
                   h3("Auxiliary parameters", style='color:blue;'),
-                  fluidRow(style='background-color:lightgray;',
+                  fluidRow(style='background-color:#F4FAFA;',
                            column(6, id = 'popRefractory',
                                   numericInput(inputId = "probRefractory", 
                                                HTML("<br>Pr(refractory tumor)"), 
@@ -199,12 +199,12 @@ ui <- fluidPage(
                         )
                     ),
                     br(),
-                    div(style=paste0("background-color:", "lightgrey"), id='popFileToggle',
+                    div(style=paste0("background-color:", "#F4FAFA"), id='popFileToggle',
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
                     ),
-                    div(style=paste0("background-color:", "lightgrey"), id='popPopoverToggle',
+                    div(style=paste0("background-color:", "#F4FAFA"), id='popPopoverToggle',
                         checkboxInput(inputId = "togglePopovers", 
                                       label = HTML("Show/hide <br> the helpful <br> popovers"),
                                                    value=FALSE)
@@ -221,7 +221,7 @@ ui <- fluidPage(
            column(5, 
                   h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(id = 'popLineThickness', 
-                             style='background-color:lightgrey;', column(2,  HTML("Line thickness controls")), 
+                             style='background-color:#F4FAFA;', column(2,  HTML("Line thickness controls")), 
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
                              column(8, offset=0, #align='center',
@@ -240,7 +240,7 @@ ui <- fluidPage(
                     h3("Controller for utility values", style="text-align:center; color:blue"),
                     div(
                       fluidRow(id = 'popCustomUtilities',
-                               style='background-color:lightgrey;',
+                               style='background-color:#F4FAFA;',
                                fluidRow(
                                  column(4, 
                                         #        style="text-align:center; vertical-align:center;",                                        ,
@@ -254,7 +254,7 @@ ui <- fluidPage(
                                           column(6, h2("r", style="text-align:center;"))
                                         ),
                                         fluidRow(
-                                          #style='background-color:lightgrey;',
+                                          #style='background-color:#F4FAFA;',
                                           column(2, br(), h2("t")),
                                           column(4,
                                                  tagAppendAttributes(
@@ -270,7 +270,7 @@ ui <- fluidPage(
                                                    )))
                                         ),
                                         fluidRow(
-                                          #style='background-color:lightgrey;',
+                                          #style='background-color:#F4FAFA;',
                                           column(2, br(), h2("T")),
                                           column(4,
                                                  tagAppendAttributes(
@@ -1302,7 +1302,7 @@ server <- function(input, output, session) {
                    )
             ),
             column(4, 
-                   div(style="background-color:lightgrey",
+                   div(style="background-color:#F4FAFA",
                        HTML("<span style='font-size: 16; '> README for this selection </span>"),
                        shiny::hr(),
                        tagAppendAttributes(style="font-size: 16; ", textOutput('READMEoutput'))
