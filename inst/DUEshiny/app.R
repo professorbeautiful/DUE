@@ -1091,15 +1091,16 @@ server <- function(input, output, session) {
     DUEenv$phase_one_result
   })
   
-  observeEvent(input$Info, {
-    htmlFile = system.file(package="DUE", "DUEshiny/www/DUE_vignette.html") 
-    htmlFile = 'www/DUE_vignette.html'   ### shinyapps.io can see either file.
-    # system(paste0('open ', htmlFile ))
-    # system('open https://trials.shinyapps.io/DUEshiny/www/DUE_vignette.html' )
-    # no error but doesn't work.
-    #browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
-    # True, but the button is linked to the doc as a URL. So ok.
-  })
+  # NOT NEEDED:
+  # observeEvent(input$Info, {
+  #   htmlFile = system.file(package="DUE", "DUEshiny/www/DUE_vignette.html") 
+  #   htmlFile = 'www/DUE_vignette.html'   ### shinyapps.io can see either file.
+  #   # system(paste0('open ', htmlFile ))
+  #   # system('open https://trials.shinyapps.io/DUEshiny/www/DUE_vignette.html' )
+  #   # no error but doesn't work.
+  #   #browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
+  #   # True, but the button is linked to the doc as a URL. So ok.
+  # })
   
   output$selectPhase1doses = renderUI({
     if(is.null(DUEenv$phase1Doses)) 
