@@ -71,7 +71,7 @@ ui <- fluidPage(
                     # style="margin-left: 50%;
                     #   margin-right: -50%;
                     #   transform: translate(50%, 0%);",
-                    #style="font-color:red;",
+                    #style="font-color:Peru;",
                   fluidRow(column(8, offset=2, id='popThresholdContour',
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold'
@@ -179,12 +179,12 @@ ui <- fluidPage(
                     )
                     ,
                     br(), br(), br(), 
-                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:lightgreen; background-color:lightgreen;',
+                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
                         numericInput('selectedDose', 'Selected dose', value=100, min=0),
                         uiOutput('showProbs')
                     ),
                     hr(), br(),
-                    div(style = "background-color:lightgreen;", id='popDoseAxes',
+                    div(style = "background-color:honeydew;", id='popDoseAxes',
                              #column(2, 
                              bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
                              #)
@@ -193,7 +193,7 @@ ui <- fluidPage(
                     br(),
                     br(),
                     ####phase1resultbutton####
-                    div(style=paste0("background-color:", "red"), 
+                    div(style=paste0("background-color:", "Peru"), 
                         id='popPhaseI',
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
@@ -1074,7 +1074,7 @@ server <- function(input, output, session) {
           ),
           column(3,
                  verbatimTextOutput('oneThirdDoseValue'))
-          #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted red line and EU line)
+          #output$oneThirdDoseValue<-renderPrint(the point of intersection between dotted Peru line and EU line)
         )
       )
     )
