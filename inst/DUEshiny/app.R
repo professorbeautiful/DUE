@@ -171,6 +171,7 @@ ui <- fluidPage(
                         strong(em("Click for info:",
                                   style="color:darkgreen; font-size:150%"))
                         ,
+                        #  the action isn't used, only the URL href above.
                         actionButton(inputId = "Info", label="",
                                      style="background:yellow",
                                      icon=tagAppendAttributes(
@@ -1096,7 +1097,8 @@ server <- function(input, output, session) {
     # system(paste0('open ', htmlFile ))
     # system('open https://trials.shinyapps.io/DUEshiny/www/DUE_vignette.html' )
     # no error but doesn't work.
-    browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
+    #browseURL( htmlFile ) #### Works at home, fails at shinyapps.io  (disabled)
+    # True, but the button is linked to the doc as a URL. So ok.
   })
   
   output$selectPhase1doses = renderUI({
