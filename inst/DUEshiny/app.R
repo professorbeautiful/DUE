@@ -1156,8 +1156,8 @@ server <- function(input, output, session) {
              phase_one_summary$pr_enter_tier *
                (3 + 3*(1-phase_one_summary$pr_Term_1
                        - phase_one_summary$pr_Go_1) ) 
-      DUEenv$expected_total_EU = 
-        sum( EN_pts * EU )
+      DUEenv$expected_total_EU = sum( EN_pts * EU )
+      DUEenv$expected_average_EU = sum( EN_pts * EU )/sum(EN_pts)
       #show the expected expected utility of the Phase 1 MTD.
       # for now, stopping at the first tier means there is no MTD.
       #  and not stopping means MTD = highest tier
@@ -1193,9 +1193,11 @@ server <- function(input, output, session) {
                     shiny::hr(),
                     h2('Probability of stopping ("pr_stop_at")'),
                     plotOutput('phase1plot'),
-                    h2("Expected EU across all enrolled patients:",
+                    h2("Expected total EU across all enrolled patients:",
                        textOutput('ID_expected_total_EU') ),
-                    h2("Expected EU at MTD:",
+                    h2("Expected average EU across all enrolled patients:",
+                       textOutput('ID_expected_average_EU') ),
+                    h2("Expected EU for one patient at MTD:",
                        textOutput('ID_expected_EU_at_MTD') ),
                     footer = tagList(
                       modalButton(label = "Cancel")
@@ -1203,7 +1205,12 @@ server <- function(input, output, session) {
                   )
       ) 
   })
-  output$ID_expected_total_EU = renderText({round(digits=2, DUEenv$expected_total_EU)})
+  
+  output$ID_expected_total_EU = 
+    renderText({round(digits=2, DUEenv$expected_total_EU)})
+  output$ID_expected_average_EU = 
+    renderText({round(digits=2, DUEenv$expected_average_EU)})
+  
   output$ID_expected_EU_at_MTD = renderText({round(digits=2, DUEenv$expected_EU_at_MTD)})
   
   output$phase1plot = renderPlot({
