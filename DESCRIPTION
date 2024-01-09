@@ -22,4 +22,4 @@ Copyright: Roger Day, Marie Gerges, Meihua Wang
 LazyLoad: yes
 VignetteBuilder: knitr
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.0.1
+RoxygenNote: 7.2.3

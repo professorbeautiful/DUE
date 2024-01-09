@@ -144,9 +144,9 @@ calculate.probabilities <-  ### We will remove utility & EU from this in the fut
       #browser()
       cat("---- ", exp(logdose), " ----\n")
       print(pQuadrants)
-      # print(utility)
-      # print(DUEenv$utility)
-      # print(expected.utility)
+      print(utility)
+      print(DUEenv$utility)
+      print(expected.utility)
     }
     probability.vector <- c(
       R=p.R.marginal,
@@ -171,13 +171,24 @@ calculate.probabilities.and.EU <-
       utility = DUEenv$utility
     else if(is.character(utility)) 
       utility = DUEenv$utilityChoices[utility]
-    expected.utility <- sum(pQuadrants*utility)
+#    expected.utility <- sum(pQuadrants*utility)
+    cat('str(pQuadrants)', '\n')
+    print(str(pQuadrants))
+    expected.utility <- apply(
+      pQuadrants,
+      1, function(pQ) sum(pQ*utility)
+    )
+    cat('str(expected.utility)', '\n')
+    print(str(expected.utility))
+    browser()
     return(c(sevenprobs, EU=expected.utility) )
   }
     
 calculate.all.EU <- 
   function(sevenprobs, utilityChoices) {
-    pQuadrants <- with(as.data.frame(t(sevenprobs)), c(rt, rT, Rt, RT))
+    pQuadrants <- with(as.data.frame(t(sevenprobs)), 
+                       c(rt, rT, Rt, RT))
+    browser()
     allEU = sapply(utilityChoices, function(utility)
       sum(pQuadrants*utility) )
     return(allEU )

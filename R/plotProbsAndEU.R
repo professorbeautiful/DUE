@@ -1,6 +1,8 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   cexValue = ifelse(context=='shiny', 2, 1); 
   eightprobs = calculate.probabilities.allDoses(DUEenv)
+  cat('eightprobs ranges:\n')
+  for(i in 1:8) print(range(eightprobs[i,]))
   utilitySummaries = DUEenv$utilitySummaries = 
     extractUtilitySummaries(eightprobs, 
                             log10doseValues=DUEenv$log10doseValues, 
@@ -24,7 +26,8 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   
   DUEenv$parPlotSize.ProbsAndEU <- par("plt")
   DUEenv$usrCoords.ProbsAndEU <- par("usr")
-  if(browseIf(message="Just finished plot-- not yet done title-- check eightprobs[1,]")) browser()
+  #if(browseUs(TRUE, message="Just finished plot-- not yet done title-- check eightprobs[1,]")) 
+  #  browser()  
   # plot.title="Probabilities and Expected Utility, E(U)"
   # title(main=plot.title, cex.main=2, col.main="blue")
   axis(side = 1, at = DUEenv$doseTicks)
@@ -47,10 +50,11 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   if(!is.null(DUEenv$probLineWidths)) {
     linewidths = DUEenv$probLineWidths
   } else
-    linewidths = c(1, 3, 1, 1, 1, 1, 3, 1)
-  EUindex = 7
+    linewidths = c(1, 3, 1, 1, 1, 1, 1, 3)
+  EUindex = 8
   nDoses = length(DUEenv$doseValues)
   shortlist <- c(1, round(nDoses/2), nDoses)
+  print(str(eightprobs))
   for(i in 1:8) {
     if(linewidths[i] > 0) {
       outcome.string = rt.outcome.strings(i)

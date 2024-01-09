@@ -429,8 +429,8 @@ server <- function(input, output, session) {
   observe(linethicknessObserving('rT'))
   observe(linethicknessObserving('Rt'))
   observe(linethicknessObserving('RT'))
-  observe(linethicknessObserving('EU'))
   observe(linethicknessObserving('RLT'))
+  observe(linethicknessObserving('EU'))
   
   observe({
     updateNumericInput(session=session, 'U.rt', value=DUEenv$U.rt)
