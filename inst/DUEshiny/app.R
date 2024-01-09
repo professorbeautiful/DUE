@@ -35,6 +35,11 @@ linethicknessButtons =
 
 ####UI starts here####
 ui <- fluidPage(
+  tags$style("[type = 'number'] 
+             {font-size:30px;height:30px;}"),
+  
+  # tags$style("#myNumericInput 
+  #            {font-size:100px;height:100px;}"),
   title = "Dose Utility Explorer",
   includeCSS('DUE.css'),
   shiny::includeScript('www/zoom_triggers.js'),
