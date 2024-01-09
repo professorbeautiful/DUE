@@ -181,6 +181,7 @@ ui <- fluidPage(
                     br(), br(), br(), 
                     div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
                         numericInput('selectedDose', 'Selected dose', value=100, min=0),
+                        "Probabilities",
                         uiOutput('showProbs')
                     ),
                     hr(), br(),
@@ -221,7 +222,8 @@ ui <- fluidPage(
            column(5, 
                   h2("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(id = 'popLineThickness', 
-                             style='background-color:#F4FAFA;', column(2,  HTML("Line thickness controls")), 
+                             style='background-color:#F4FAFA;', 
+                             column(2,  HTML("<b>Line thickness controls</b>")), 
                              linethicknessButtons)
                   , fluidRow(id = 'popLinePlot',
                              column(8, offset=0, #align='center',
@@ -229,7 +231,7 @@ ui <- fluidPage(
                                                click = 'click_dose'
                                                #, height="700px", width="700px"
                                                ) ),
-                             column(4,
+                             column(4, style=paste0("background-color:", "#F4FAFA"),
                                     #h4('Doses of interest'),
                                     tableOutput('doseSummaries'),
                                     #h4('EU values of interest'),
@@ -1397,14 +1399,26 @@ server <- function(input, output, session) {
                              "full of help") )
     
     #### popOvers for right side ####
-    addPopover(session, 'popLineThickness', title="Line thckness buttons",  
+    #h4('EU values of interest'),
+    #tableOutput('utilitySummaries'),
+    
+    addPopover(session, 'utilitySummaries', 
+               title="Utility summaries", 
+               content='Expected utilities of interest') 
+    addPopover(session, 'doseSummaries', 
+               title="Dose summaries", 
+               content='Info about doses of interest') 
+    addPopover(session, 'probSummaries', 
+               title="Probability summaries", 
+               content='Probabilities of interest') 
+    addPopover(session, 'popLineThickness', title="Line thickness buttons",  
                content=paste(sep='<br>',
                              'Each button is a three-way toggle for a plot line. ',
                              'Invisible (small box, line name in parentheses).',
                              'Thin line (small box, no parentheses)',
                              'Thick line (large box)',
                              'Click box to cycle through these 3 choices.' ))
-    addPopover(session, 'popLinePlot', title="Plot of outcomes and E(U).",  
+    addPopover(session, 'linePlot', title="Plot of outcomes and E(U).",  
                content=paste(sep='<br>',
                              'Dose-probability curves:',
                              '---for R (total response), T (total toxicity),',
