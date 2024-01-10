@@ -1,8 +1,8 @@
 plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   cexValue = ifelse(context=='shiny', 2, 1); 
   eightprobs = calculate.probabilities.allDoses(DUEenv)
-  cat('eightprobs ranges:\n')
-  for(i in 1:8) print(range(eightprobs[i,]))
+  #cat('eightprobs ranges:\n')
+  #for(i in 1:8) print(range(eightprobs[i,]))
   utilitySummaries = DUEenv$utilitySummaries = 
     extractUtilitySummaries(eightprobs, 
                             log10doseValues=DUEenv$log10doseValues, 
