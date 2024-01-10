@@ -947,7 +947,10 @@ server <- function(input, output, session) {
                  for (n in names(DUEenv))
                    DUEenv[[n]] = DUEsaving[[n]]
                  misMatches = character(0)
-                 setLineBoxes(DUEsaving$probLineWidths)
+                 if(names(DUEsaving$probLineWidths)[7]=='EU')
+                   DUEsaving$probLineWidths = DUEsaving$probLineWidths[c(1:6,8,7)]
+                 names(DUEsaving$probLineWidths) = probLineNames()
+                 #  Because old files use RLE instead of RLT.
                  for(inputName in strsplit(
                    "selectedDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
                    , split=" ")[[1]] ) {
