@@ -1233,11 +1233,21 @@ server <- function(input, output, session) {
     {
       try(silent = TRUE,
           {updateCheckboxInput(session, 'SaveLoadCheckbox', 
-                          value = ! input$SaveLoadCheckbox)
+                          value = input$SaveLoadMainToggle)
       })
     }
   )
   
+  ### watch for race condition
+  observeEvent(
+    input$SaveLoadCheckbox, 
+    {
+      try(silent = TRUE,
+          {updateCheckboxInput(session, 'SaveLoadMainToggle', 
+                               value = input$SaveLoadCheckbox)
+          })
+    }
+  )
   
   ####Changing axes#####
   observeEvent(
