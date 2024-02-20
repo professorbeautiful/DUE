@@ -3,15 +3,21 @@ library(shinyDebuggingPanel)
 library(shinyBS)
 library(DUE)
 
+desc <- packageDescription('DUE')
+extraTitle = span(style='font-size:50%',
+     desc$Date, "  version = ", 
+     desc$Version)
 # Let's try installExprFunction(), to aid debugging with breakpoints.
 legendStyle = 'text-align:left; 
            text-color:blue; font-size:150%;'
 defaultBackgroundColor = 'background-color:#F4FAFA;'
 #defaultBackgroundColor = 'background-color:white;'
 phase1backgroundcolor = defaultBackgroundColor
-source('quadrants.R', local = TRUE)
+source('quadrant_personalUtilities.R', local = TRUE)
+source('quadrant_probGraph.R', local = TRUE)
+source('quadrant_popThresholdContour.R', local = TRUE)
+source('quadrant_popThresholdController.R', local = TRUE)
 browseUs = 'calculate.probabilities'
-desc <- packageDescription('DUE')
 
 options.saved = options(warn=-2)
 try(rm(DUEenv))
@@ -25,16 +31,6 @@ optsaved = options(warn=-2)
 try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
 options(optsaved)
 
-make_linethicknessButton = function(labelNum)
-  column(1,
-         tagAppendAttributes(
-           bsButton(paste0('linethickness_', 
-                           label<-probLineNames(labelNum)), label=label),
-           style=paste0('color:', rt.outcome.colors(label), ';',
-                        'border-color:', rt.outcome.colors(label), ';') ) 
-  )
-linethicknessButtons = 
-  lapply(probLineNames(), make_linethicknessButton)   
 
 
 ####UI starts here####
@@ -60,10 +56,8 @@ ui <- fluidPage(
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
-                  "Dose Utility Explorer ",
-                        span(style='font-size:50%',
-                             desc$Date, "  version = ", 
-                             desc$Version))),
+                  "Dose Utility Explorer ", extraTitle
+  )),
   fluidRow(column(4, ""),
            column(2, style=legendStyle, 
                   "R = response", br(),
@@ -72,201 +66,94 @@ ui <- fluidPage(
                   "T = toxicity", br(),
                   "t = non-toxicity")
   ),
+  ####  Skinny column: Doses and Files ####
+  fluidRow(
+    column(1, 
+         #includeHTML('www/zoom_triggers.html'),
+         div(style=paste0(
+           "vertical-align:center;",
+           "horizontal-align:center;",
+           "text-align:center;",
+           "border-left:1px solid #000;",
+           "border-bottom:1px solid #000;",
+           "border-top:1px solid #000;",
+           "border-right:1px solid #000;"),  ### height:1500px;
+           # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
+           # especially the display:flex solution.
+           textOutput('zoomAdvice'),
+           a(
+             href="DUE_vignette.html", rel="help", target="_blank",
+             ### must be in www.
+             span(
+               strong(em("Click for info:",
+                         style="color:darkgreen; font-size:150%"))
+               ,
+               #  the action isn't used, only the URL href above.
+               actionButton(inputId = "Info", label="",
+                            style="background:yellow",
+                            icon=tagAppendAttributes(
+                              style="font-size: 3em;",
+                              icon("info-sign", lib="glyphicon"))) )
+           ),
+           div(style=defaultBackgroundColor, id='popPopoverToggle',
+               checkboxInput(inputId = "togglePopovers", 
+                             label = HTML("Show/hide <br> the helpful <br> popovers"),
+                             value=FALSE)
+           ),
+           br(), br(), br(), 
+           div(style = "background-color:honeydew;", id='popDoseAxes',
+               #column(2, 
+               bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
+               #)
+           ),
+           br(),
+           br(),
+           div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
+               numericInput('selectedDose', 'Selected dose', value=100, min=0),
+               "Probabilities",
+               uiOutput('showProbs')
+           ),
+           hr(), br(), br(),
+           ####phase1resultbutton###
+           div(style=phase1backgroundcolor, 
+               id='popPhaseI',
+               bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
+               )
+           ),
+           hr(),br(), br(),
+           div(style=defaultBackgroundColor, id='popFileToggle',
+               checkboxInput(inputId = "SaveLoadMainToggle", 
+                             label = HTML("Toggle <br> file <br> panel")
+               )
+           )
+           # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
+           # fluidRow(style =  "font-size:large",
+           #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
+           # ),
+         )#,
+         # uiOutput(outputId = 'lastFileLoaded')
+  ),
+  #### Four quadrants ####
   fluidRow(style='text-align:center', 
-           ####  LEFT SIDE: 
-           #### Probabilities and Expected Utility ####
-           column(5,
-                  quadrant_popUtilities,
+           #### Utilities column ####
+           column(4, id='utilityProbabilityColumn',
+                  ####  personalUtilities: 
+                  quadrant_personalUtilities,
                   hr(),
-                  h3("Probabilities and Expected Utility, E(U)", style="color:blue")
-                  , fluidRow(id = 'popLineThickness', 
-                             style=defaultBackgroundColor, 
-                             column(2,  HTML("<b>Line thickness controls</b>")), 
-                             linethicknessButtons)
-                  , fluidRow(id = 'popLinePlot',
-                             column(8, offset=0, #align='center',
-                                    plotOutput("linePlot",
-                                               click = 'click_dose'
-                                               #, height="700px", width="700px"
-                                    ) ),
-                             column(4, style=
-                                      paste0("background-color:", "#F4FAFA",
-                                             '; font-size:18px;'),
-                                    #h4('Doses of interest'),
-                                    tableOutput('doseSummaries'),
-                                    #h4('EU values of interest'),
-                                    tableOutput('utilitySummaries'),
-                                    tableOutput('probSummaries'))
-                  )
-                  
-           ),
-  
-           ####  MIDDLE: Doses and Files ####
-           column(1,
-                  #includeHTML('www/zoom_triggers.html'),
-                  textOutput('zoomAdvice'),
-                  div(style=paste0(
-                    "vertical-align:center;",
-                    "border-left:1px solid #000;",
-                    "border-bottom:1px solid #000;",
-                    "border-top:1px solid #000;",
-                    "border-right:1px solid #000;"),  ### height:1500px;
-                    # See also https://stackoverflow.com/questions/571900/is-there-a-vr-vertical-rule-in-html
-                    # especially the display:flex solution.
-                    a(
-                      href="DUE_vignette.html", rel="help", target="_blank",
-                      ### must be in www.
-                      span(
-                        strong(em("Click for info:",
-                                  style="color:darkgreen; font-size:150%"))
-                        ,
-                        #  the action isn't used, only the URL href above.
-                        actionButton(inputId = "Info", label="",
-                                     style="background:yellow",
-                                     icon=tagAppendAttributes(
-                                       style="font-size: 3em;",
-                                       icon("info-sign", lib="glyphicon"))) )
-                    ),
-                    div(style=defaultBackgroundColor, id='popPopoverToggle',
-                        checkboxInput(inputId = "togglePopovers", 
-                                      label = HTML("Show/hide <br> the helpful <br> popovers"),
-                                      value=FALSE)
-                    ),
-                    br(), br(), br(), 
-                    div(style = "background-color:honeydew;", id='popDoseAxes',
-                             #column(2, 
-                             bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
-                             #)
-                    ),
-                    br(),
-                    br(),
-                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-                        numericInput('selectedDose', 'Selected dose', value=100, min=0),
-                        "Probabilities",
-                        uiOutput('showProbs')
-                    ),
-                    hr(), br(), br(),
-                    ####phase1resultbutton####
-                    div(style=phase1backgroundcolor, 
-                        id='popPhaseI',
-                        bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
-                        )
-                    ),
-                    hr(),br(), br(),
-                    div(style=defaultBackgroundColor, id='popFileToggle',
-                        checkboxInput(inputId = "SaveLoadMainToggle", 
-                                      label = HTML("Toggle <br> file <br> panel")
-                        )
-                    )
-                    # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
-                    # fluidRow(style =  "font-size:large",
-                    #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
-                    # ),
-                  )#,
-                 # uiOutput(outputId = 'lastFileLoaded')
-           ),
-           ####  RIGHT SIDE: 
-           ####Contour plots ####
-           column(5, id='leftColumn',
-                  #style=defaultBackgroundColor,
-                  h3("Thresholds: Joint Probability Density",  
-                     style='color:blue'),
-                  
-                  #tagAppendAttributes(
-                  # style="margin-left: 50%;
-                  #   margin-right: -50%;
-                  #   transform: translate(50%, 0%);",
-                  #style="font-color:Peru;",
-                  fluidRow(column(12, id='popThresholdContour',
-                                  style=defaultBackgroundColor,
-                                  plotOutput("ThresholdContour", 
-                                             click = 'click_threshold'
-                                             #, width="100%", height="100%"  
-                                             #No plot appears.
-                                             # , width="35vw", height="35vw"
-                                             # Looks ok but too big on zoom out.
-                                             # , width="700px", height="700px" 
-                                             # original. Bad on zoom in.
-                                             # , height=reactive(ifelse(!is.null(input$innerWidth),
-                                             #                        input$innerWidth*3/5,700))
-                                             # , width=reactive(ifelse(!is.null(input$innerWidth),
-                                             #                        input$innerWidth*3/5,700))
-                                             # OK, but belongs in SERVER renderPlot
-                                  )
-                  )), 
-                  hr(),
+                  #### Probabilities and Expected Utility: 
+                  quadrant_probGraph),
+           #### Thresholds ####
+           column(5, id='thresholdSide',
+                  ####Contour plots ####
+                  quadrant_popThresholdContour, 
                   br(),
-                  h3("Controller for thresholds", style="text-align:center; color:blue"),
-                  fluidRow(id = 'pop_nPops',
-                           column(4, offset=4, div(
-                             style=paste(defaultBackgroundColor, '; align-items:center; text-align:center'),
-                             numericInput(inputId = "nPops",  "Number of groups", 
-                                          value = DUEinits.default$nPops, min=1))
-                           )
-                  ),
-                  br(),
-                  fluidRow( 
-                    style=paste(defaultBackgroundColor, 
-                                '; vertical-align:center; min-height: 100%;'),
-                    column(4, id='popThisPop',
-                           numericInput(inputId = "thisPop", "This group #", 
-                                        value = 1, min = 1, max = DUEinits.default$nPops)),
-                    column(4, id='popThisPopFraction',
-                           numericInput(inputId = "thisPopFraction", "This group's proportion", 
-                                        value = DUEinits.default$proportions[DUEinits.default$thisPop],
-                                        min=0, max=1, step=0.1)),
-                    column(4, id = 'popWhichFollows',
-                           numericInput(inputId = "whichFollows", 
-                                        HTML("Dependent group #"), value = 2))
-                  ),
-                  shiny::hr(style='margin-top:1em; margin-bottom:1em; border-color:white'),
-                  br(),
-                  fluidRow(id = 'popParamsThisPop', 
-                           style=paste(defaultBackgroundColor, '; vertical-align:center; min-height: 100%;'),
-                           column(4, style=defaultBackgroundColor,
-                                  numericInput(inputId = "thetaRmedian", "Theta R Median", 
-                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
-                                  numericInput(inputId = "thetaR.CV", "Theta R CV", 
-                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
-                           ),
-                           column(4, 
-                                  #                             style='background-color:#F4FAFA; min-height: 100%; display: flex;
-                                  #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
-                                  br(style='background-color:white;'),
-                                  div(style=defaultBackgroundColor, 
-                                      numericInput(inputId = "correlation", "Correlation", value = DUEinits.default$the.correlations.pop[1],
-                                                   min = -(1-0.01), max = 1-0.01, step = 0.1))
-                           ),
-                           column(4, style=defaultBackgroundColor,
-                                  numericInput(inputId = "thetaTmedian", "Theta T Median", 
-                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
-                                  
-                                  numericInput(inputId = "thetaT.CV", "Theta T CV", 
-                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][2])
-                           )
-                  ),
-                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
-                  h3("Auxiliary parameters", style='color:blue;'),
-                  fluidRow(style=defaultBackgroundColor,
-                           column(6, id = 'popRefractory',
-                                  numericInput(inputId = "probRefractory", 
-                                               HTML("<br>Pr(refractory tumor)"), 
-                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)
-                           ),
-                           column(6, id = 'popRLT',
-                                  # tagAppendAttributes(
-                                  #   class='RLTtooltip',
-                                  numericInput(inputId = "responseLimitingTox", 
-                                               HTML("RLT: log10 (response-limiting gap) <br> (RT->rT)"), 
-                                               value = DUEinits.default$Kdeath, step = 0.5, min=0)
-                                  #)
-                           )
-                  )
+                  quadrant_popThresholdController
+           )
            )
            ,
   shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   div(id = 'popDebugging', shinyDebuggingPanel::withDebuggingPanel() )
-))
+) )
 
 ####Server starts here####
 
@@ -767,7 +654,7 @@ server <- function(input, output, session) {
     ### for axis, cex.lab  and font.lab do NOT affect the labels 
     ###  This system stinks & is so poorly documented!
     axis(1, at = DUEenv$doseTicks,
-         cex.axis=1.0) #, cex.lab=3)
+         cex.axis=1.0) #, cex.lab=3
     #font.axis=2, font.lab=2, family="Arial")
     axis(2, at = DUEenv$doseTicks,
          cex.axis=1.0) # cex.lab=3)
@@ -1266,7 +1153,7 @@ server <- function(input, output, session) {
   } )  ### end SaveLoadPanel
   
   #   https://getbootstrap.com/javascript/#popovers-options
-  # addPopover(session, 'leftColumn', title="Left side", 
+  # addPopover(session, 'thresholdSide', title="Threshold side", 
   #            content="Joint distribution of thresholds for response and toxicity", placement = 'top')
   
   addAllPopovers = function() {

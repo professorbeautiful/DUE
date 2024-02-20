@@ -1,18 +1,19 @@
 #  quadrants
-quadrant_popUtilities.f = function() {
-  div(id = 'popUtilities',
+quadrant_personalUtilities.f = function() {
+  div(id = 'personalUtilities',
       h3("Controller for utility values", style="text-align:center; color:blue"),
       div(
         fluidRow(id = 'popCustomUtilities',
                  style=defaultBackgroundColor,
                  fluidRow(
-                   column(4, 
+                   column(2, 
                           #        style="text-align:center; vertical-align:center;",                                        ,
-                          br(),br(),br(),br(),
-                          h3("Enter custom values here:", style="vertical-align:center;
+                          br(),br(),br(),br(),br(),br(),
+                          h4(HTML("Enter <br>custom values <br>here:"), 
+                             style="vertical-align:center;
                                             color:blue")),
                    #column(2, HTML("&nbsp;")),
-                   column(6,
+                   column(5,
                           fluidRow(
                             column(offset=1, 5, h2("R", style="text-align:center;")),
                             column(6, h2("r", style="text-align:center;"))
@@ -50,11 +51,10 @@ quadrant_popUtilities.f = function() {
                                      )))
                           )
                    )
-                   
                  )
                  ,
                  shiny::hr(), 
-                 h3("or choose a preset option here:", style="color:blue")
+                 h4("or choose a preset option here:", style="color:blue")
                  ,
                  br(), 
                  fluidRow(id = 'popPresetUtilities',
@@ -90,12 +90,10 @@ quadrant_popUtilities.f = function() {
                                    bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
                                    style=paste0('background-color:', rt.outcome.colors('rT'),
                                                 '; color:white;')
-                                 )),
-                          br(), br()
-                 ),
-                 br()
+                                 ))
+                 )
         )
       )
   )
 }
-quadrant_popUtilities = quadrant_popUtilities.f()
+quadrant_personalUtilities = quadrant_personalUtilities.f()
