@@ -73,104 +73,34 @@ ui <- fluidPage(
                   "t = non-toxicity")
   ),
   fluidRow(style='text-align:center', 
-           ####  LEFT SIDE: Contour plots ####
-           column(5, id='leftColumn',
-                  #style=defaultBackgroundColor,
-                  h3("Thresholds: Joint Probability Density",  
-                     style='color:blue'),
-                  
-                  #tagAppendAttributes(
-                    # style="margin-left: 50%;
-                    #   margin-right: -50%;
-                    #   transform: translate(50%, 0%);",
-                    #style="font-color:Peru;",
-                  fluidRow(column(12, id='popThresholdContour',
-                                  style=defaultBackgroundColor,
-                    plotOutput("ThresholdContour", 
-                               click = 'click_threshold'
-                               #, width="100%", height="100%"  
-                                    #No plot appears.
-                               # , width="35vw", height="35vw"
-                               # Looks ok but too big on zoom out.
-                               # , width="700px", height="700px" 
-                                  # original. Bad on zoom in.
-                               # , height=reactive(ifelse(!is.null(input$innerWidth),
-                               #                        input$innerWidth*3/5,700))
-                               # , width=reactive(ifelse(!is.null(input$innerWidth),
-                               #                        input$innerWidth*3/5,700))
-                               # OK, but belongs in SERVER renderPlot
-                               )
-                  )), 
+           ####  LEFT SIDE: 
+           #### Probabilities and Expected Utility ####
+           column(5,
+                  quadrant_popUtilities,
                   hr(),
-                  br(),
-                  h3("Controller for thresholds", style="text-align:center; color:blue"),
-                  fluidRow(id = 'pop_nPops',
-                    column(4, offset=4, div(
-                      style=paste(defaultBackgroundColor, '; align-items:center; text-align:center'),
-                                            numericInput(inputId = "nPops",  "Number of groups", 
-                                                         value = DUEinits.default$nPops, min=1))
-                    )
-                  ),
-                  br(),
-                  fluidRow( 
-                           style=paste(defaultBackgroundColor, 
-                                       '; vertical-align:center; min-height: 100%;'),
-                           column(4, id='popThisPop',
-                                  numericInput(inputId = "thisPop", "This group #", 
-                                               value = 1, min = 1, max = DUEinits.default$nPops)),
-                           column(4, id='popThisPopFraction',
-                                  numericInput(inputId = "thisPopFraction", "This group's proportion", 
-                                               value = DUEinits.default$proportions[DUEinits.default$thisPop],
-                                               min=0, max=1, step=0.1)),
-                           column(4, id = 'popWhichFollows',
-                                  numericInput(inputId = "whichFollows", 
-                                               HTML("Dependent group #"), value = 2))
-                  ),
-                  shiny::hr(style='margin-top:1em; margin-bottom:1em; border-color:white'),
-                  br(),
-                  fluidRow(id = 'popParamsThisPop', 
-                           style=paste(defaultBackgroundColor, '; vertical-align:center; min-height: 100%;'),
-                           column(4, style=defaultBackgroundColor,
-                                  numericInput(inputId = "thetaRmedian", "Theta R Median", 
-                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
-                                  numericInput(inputId = "thetaR.CV", "Theta R CV", 
-                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
-                           ),
-                           column(4, 
-                                  #                             style='background-color:#F4FAFA; min-height: 100%; display: flex;
-                                  #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
-                                  br(style='background-color:white;'),
-                                  div(style=defaultBackgroundColor, 
-                                      numericInput(inputId = "correlation", "Correlation", value = DUEinits.default$the.correlations.pop[1],
-                                                   min = -(1-0.01), max = 1-0.01, step = 0.1))
-                           ),
-                           column(4, style=defaultBackgroundColor,
-                                  numericInput(inputId = "thetaTmedian", "Theta T Median", 
-                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
-                                  
-                                  numericInput(inputId = "thetaT.CV", "Theta T CV", 
-                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][2])
-                           )
-                  ),
-                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
-                  h3("Auxiliary parameters", style='color:blue;'),
-                  fluidRow(style=defaultBackgroundColor,
-                           column(6, id = 'popRefractory',
-                                  numericInput(inputId = "probRefractory", 
-                                               HTML("<br>Pr(refractory tumor)"), 
-                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)
-                           ),
-                           column(6, id = 'popRLT',
-                                  # tagAppendAttributes(
-                                  #   class='RLTtooltip',
-                                  numericInput(inputId = "responseLimitingTox", 
-                                               HTML("RLT: log10 (response-limiting gap) <br> (RT->rT)"), 
-                                               value = DUEinits.default$Kdeath, step = 0.5, min=0)
-                                  #)
-                           )
+                  h3("Probabilities and Expected Utility, E(U)", style="color:blue")
+                  , fluidRow(id = 'popLineThickness', 
+                             style=defaultBackgroundColor, 
+                             column(2,  HTML("<b>Line thickness controls</b>")), 
+                             linethicknessButtons)
+                  , fluidRow(id = 'popLinePlot',
+                             column(8, offset=0, #align='center',
+                                    plotOutput("linePlot",
+                                               click = 'click_dose'
+                                               #, height="700px", width="700px"
+                                    ) ),
+                             column(4, style=
+                                      paste0("background-color:", "#F4FAFA",
+                                             '; font-size:18px;'),
+                                    #h4('Doses of interest'),
+                                    tableOutput('doseSummaries'),
+                                    #h4('EU values of interest'),
+                                    tableOutput('utilitySummaries'),
+                                    tableOutput('probSummaries'))
                   )
-           )
-           , 
+                  
+           ),
+  
            ####  MIDDLE: Doses and Files ####
            column(1,
                   #includeHTML('www/zoom_triggers.html'),
@@ -235,36 +165,108 @@ ui <- fluidPage(
                   )#,
                  # uiOutput(outputId = 'lastFileLoaded')
            ),
-           ####  RIGHT SIDE: Probabilities and Expected Utility ####
-           column(5,
-                  quadrant_popUtilities,
-                  hr(),
-                  h3("Probabilities and Expected Utility, E(U)", style="color:blue")
-                  , fluidRow(id = 'popLineThickness', 
-                             style=defaultBackgroundColor, 
-                             column(2,  HTML("<b>Line thickness controls</b>")), 
-                             linethicknessButtons)
-                  , fluidRow(id = 'popLinePlot',
-                             column(8, offset=0, #align='center',
-                                    plotOutput("linePlot",
-                                               click = 'click_dose'
-                                               #, height="700px", width="700px"
-                                               ) ),
-                             column(4, style=
-                                      paste0("background-color:", "#F4FAFA",
-                                             '; font-size:18px;'),
-                                    #h4('Doses of interest'),
-                                    tableOutput('doseSummaries'),
-                                    #h4('EU values of interest'),
-                                    tableOutput('utilitySummaries'),
-                                    tableOutput('probSummaries'))
-                  )
+           ####  RIGHT SIDE: 
+           ####Contour plots ####
+           column(5, id='leftColumn',
+                  #style=defaultBackgroundColor,
+                  h3("Thresholds: Joint Probability Density",  
+                     style='color:blue'),
                   
+                  #tagAppendAttributes(
+                  # style="margin-left: 50%;
+                  #   margin-right: -50%;
+                  #   transform: translate(50%, 0%);",
+                  #style="font-color:Peru;",
+                  fluidRow(column(12, id='popThresholdContour',
+                                  style=defaultBackgroundColor,
+                                  plotOutput("ThresholdContour", 
+                                             click = 'click_threshold'
+                                             #, width="100%", height="100%"  
+                                             #No plot appears.
+                                             # , width="35vw", height="35vw"
+                                             # Looks ok but too big on zoom out.
+                                             # , width="700px", height="700px" 
+                                             # original. Bad on zoom in.
+                                             # , height=reactive(ifelse(!is.null(input$innerWidth),
+                                             #                        input$innerWidth*3/5,700))
+                                             # , width=reactive(ifelse(!is.null(input$innerWidth),
+                                             #                        input$innerWidth*3/5,700))
+                                             # OK, but belongs in SERVER renderPlot
+                                  )
+                  )), 
+                  hr(),
+                  br(),
+                  h3("Controller for thresholds", style="text-align:center; color:blue"),
+                  fluidRow(id = 'pop_nPops',
+                           column(4, offset=4, div(
+                             style=paste(defaultBackgroundColor, '; align-items:center; text-align:center'),
+                             numericInput(inputId = "nPops",  "Number of groups", 
+                                          value = DUEinits.default$nPops, min=1))
+                           )
+                  ),
+                  br(),
+                  fluidRow( 
+                    style=paste(defaultBackgroundColor, 
+                                '; vertical-align:center; min-height: 100%;'),
+                    column(4, id='popThisPop',
+                           numericInput(inputId = "thisPop", "This group #", 
+                                        value = 1, min = 1, max = DUEinits.default$nPops)),
+                    column(4, id='popThisPopFraction',
+                           numericInput(inputId = "thisPopFraction", "This group's proportion", 
+                                        value = DUEinits.default$proportions[DUEinits.default$thisPop],
+                                        min=0, max=1, step=0.1)),
+                    column(4, id = 'popWhichFollows',
+                           numericInput(inputId = "whichFollows", 
+                                        HTML("Dependent group #"), value = 2))
+                  ),
+                  shiny::hr(style='margin-top:1em; margin-bottom:1em; border-color:white'),
+                  br(),
+                  fluidRow(id = 'popParamsThisPop', 
+                           style=paste(defaultBackgroundColor, '; vertical-align:center; min-height: 100%;'),
+                           column(4, style=defaultBackgroundColor,
+                                  numericInput(inputId = "thetaRmedian", "Theta R Median", 
+                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][1]),
+                                  numericInput(inputId = "thetaR.CV", "Theta R CV", 
+                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][1])
+                           ),
+                           column(4, 
+                                  #                             style='background-color:#F4FAFA; min-height: 100%; display: flex;
+                                  #    align-items: center; vertical-align:center;display:inline-block;vertical-align:middle;',  ### none of this works!
+                                  br(style='background-color:white;'),
+                                  div(style=defaultBackgroundColor, 
+                                      numericInput(inputId = "correlation", "Correlation", value = DUEinits.default$the.correlations.pop[1],
+                                                   min = -(1-0.01), max = 1-0.01, step = 0.1))
+                           ),
+                           column(4, style=defaultBackgroundColor,
+                                  numericInput(inputId = "thetaTmedian", "Theta T Median", 
+                                               value=DUEinits.default$the.medianThresholds.pop[[DUEinits.default$thisPop]][2]),
+                                  
+                                  numericInput(inputId = "thetaT.CV", "Theta T CV", 
+                                               value=DUEinits.default$the.CVs.pop[[DUEinits.default$thisPop]][2])
+                           )
+                  ),
+                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+                  h3("Auxiliary parameters", style='color:blue;'),
+                  fluidRow(style=defaultBackgroundColor,
+                           column(6, id = 'popRefractory',
+                                  numericInput(inputId = "probRefractory", 
+                                               HTML("<br>Pr(refractory tumor)"), 
+                                               value = DUEinits.default$refractory, step = .1, min=0,max=1)
+                           ),
+                           column(6, id = 'popRLT',
+                                  # tagAppendAttributes(
+                                  #   class='RLTtooltip',
+                                  numericInput(inputId = "responseLimitingTox", 
+                                               HTML("RLT: log10 (response-limiting gap) <br> (RT->rT)"), 
+                                               value = DUEinits.default$Kdeath, step = 0.5, min=0)
+                                  #)
+                           )
+                  )
            )
-  ),
+           ,
   shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   div(id = 'popDebugging', shinyDebuggingPanel::withDebuggingPanel() )
-)
+))
 
 ####Server starts here####
 
