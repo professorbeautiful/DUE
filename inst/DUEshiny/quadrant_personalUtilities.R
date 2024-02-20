@@ -13,7 +13,7 @@ quadrant_personalUtilities.f = function() {
                              style="vertical-align:center;
                                             color:blue")),
                    #column(2, HTML("&nbsp;")),
-                   column(5,
+                   column(8,
                           fluidRow(
                             column(offset=1, 5, h2("R", style="text-align:center;")),
                             column(6, h2("r", style="text-align:center;"))
