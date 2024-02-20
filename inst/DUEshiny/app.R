@@ -13,6 +13,7 @@ legendStyle = 'text-align:left;
 defaultBackgroundColor = 'background-color:#F4FAFA;'
 #defaultBackgroundColor = 'background-color:white;'
 phase1backgroundcolor = defaultBackgroundColor
+data(DUEinits.default)
 source('quadrant_personalUtilities.R', local = TRUE)
 source('quadrant_probGraph.R', local = TRUE)
 source('quadrant_popThresholdContour.R', local = TRUE)
@@ -24,8 +25,6 @@ try(rm(DUEenv))
 try(rm(DUEenvironmentDefault))
 try(rm(DUEsaving))
 options(options.saved)
-
-data(DUEinits.default)
 
 optsaved = options(warn=-2)
 try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
