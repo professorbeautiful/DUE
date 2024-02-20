@@ -4,7 +4,7 @@ quadrant_popUtilities.f = function() {
       h3("Controller for utility values", style="text-align:center; color:blue"),
       div(
         fluidRow(id = 'popCustomUtilities',
-                 style='background-color:#F4FAFA;',
+                 style=defaultBackgroundColor,
                  fluidRow(
                    column(4, 
                           #        style="text-align:center; vertical-align:center;",                                        ,
