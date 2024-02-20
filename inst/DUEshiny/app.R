@@ -8,6 +8,7 @@ legendStyle = 'text-align:left;
            text-color:blue; font-size:150%;'
 defaultBackgroundColor = 'background-color:#F4FAFA;'
 #defaultBackgroundColor = 'background-color:white;'
+phase1backgroundcolor = defaultBackgroundColor
 source('quadrants.R', local = TRUE)
 browseUs = 'calculate.probabilities'
 desc <- packageDescription('DUE')
@@ -210,16 +211,15 @@ ui <- fluidPage(
                         "Probabilities",
                         uiOutput('showProbs')
                     ),
-                    hr(), br(),
-                    br(),
+                    hr(), br(), br(),
                     ####phase1resultbutton####
-                    div(style=paste0("background-color:", "Peru"), 
+                    div(style=phase1backgroundcolor, 
                         id='popPhaseI',
                         bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
                         )
                     ),
-                    br(),
-                    div(style=paste0("background-color:", "#F4FAFA"), id='popFileToggle',
+                    hr(),br(), br(),
+                    div(style=defaultBackgroundColor, id='popFileToggle',
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
