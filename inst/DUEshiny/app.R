@@ -72,6 +72,7 @@ ui <- fluidPage(
   fluidRow(style='text-align:center', 
            ####  LEFT SIDE: Contour plots ####
            column(5, id='leftColumn',
+                  #style=defaultBackgroundColor,
                   h3("Thresholds: Joint Probability Density",  
                      style='color:blue'),
                   
@@ -80,7 +81,7 @@ ui <- fluidPage(
                     #   margin-right: -50%;
                     #   transform: translate(50%, 0%);",
                     #style="font-color:Peru;",
-                  fluidRow(column(8, offset=2, id='popThresholdContour',
+                  fluidRow(column(12, id='popThresholdContour',
                                   style=defaultBackgroundColor,
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold'
@@ -190,15 +191,13 @@ ui <- fluidPage(
                                      icon=tagAppendAttributes(
                                        style="font-size: 3em;",
                                        icon("info-sign", lib="glyphicon"))) )
-                    )
-                    ,
-                    br(), br(), br(), 
-                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-                        numericInput('selectedDose', 'Selected dose', value=100, min=0),
-                        "Probabilities",
-                        uiOutput('showProbs')
                     ),
-                    hr(), br(),
+                    div(style=defaultBackgroundColor, id='popPopoverToggle',
+                        checkboxInput(inputId = "togglePopovers", 
+                                      label = HTML("Show/hide <br> the helpful <br> popovers"),
+                                      value=FALSE)
+                    ),
+                    br(), br(), br(), 
                     div(style = "background-color:honeydew;", id='popDoseAxes',
                              #column(2, 
                              bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
@@ -206,6 +205,12 @@ ui <- fluidPage(
                     ),
                     br(),
                     br(),
+                    div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
+                        numericInput('selectedDose', 'Selected dose', value=100, min=0),
+                        "Probabilities",
+                        uiOutput('showProbs')
+                    ),
+                    hr(), br(),
                     br(),
                     ####phase1resultbutton####
                     div(style=paste0("background-color:", "Peru"), 
@@ -218,13 +223,7 @@ ui <- fluidPage(
                         checkboxInput(inputId = "SaveLoadMainToggle", 
                                       label = HTML("Toggle <br> file <br> panel")
                         )
-                    ),
-                    div(style=paste0("background-color:", "#F4FAFA"), id='popPopoverToggle',
-                        checkboxInput(inputId = "togglePopovers", 
-                                      label = HTML("Show/hide <br> the helpful <br> popovers"),
-                                                   value=FALSE)
                     )
-                    
                     # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')
                     # fluidRow(style =  "font-size:large",
                     #          bsButton(inputId = "load", label = HTML("Load saved <br> parameters<br>(new window)"), size = 'medium')
@@ -232,11 +231,10 @@ ui <- fluidPage(
                   )#,
                  # uiOutput(outputId = 'lastFileLoaded')
            ),
-           hr(),
-           
            ####  RIGHT SIDE: Probabilities and Expected Utility ####
            column(5,
                   quadrant_popUtilities,
+                  hr(),
                   h3("Probabilities and Expected Utility, E(U)", style="color:blue")
                   , fluidRow(id = 'popLineThickness', 
                              style=defaultBackgroundColor, 
@@ -346,7 +344,7 @@ server <- function(input, output, session) {
         whichWidth = 1
       DUEenv$probLineWidths[label] <- probLineWidthChoices[whichWidth]
       updateButton(session, inputId, 
-                   label=switch(whichWidth, `1`=paste0('(',label,')'),
+                   label=switch(whichWidth, `1`=HTML(paste0('<del>-',label,'-</del>')),
                                 `2`=label, `3`=HTML(paste0('<b>',label,'</b>'))),
                    size = switch(whichWidth, `1`='small',
                                  `2`='', `3`='large'))
