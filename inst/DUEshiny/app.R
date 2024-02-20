@@ -13,7 +13,7 @@ legendStyle = 'text-align:left;
 defaultBackgroundColor = 'background-color:#F4FAFA;'
 #defaultBackgroundColor = 'background-color:white;'
 phase1backgroundcolor = defaultBackgroundColor
-data(DUEinits.default)
+data('DUEinits.default', package='DUE')
 source('quadrant_personalUtilities.R', local = TRUE)
 source('quadrant_probGraph.R', local = TRUE)
 source('quadrant_popThresholdContour.R', local = TRUE)
