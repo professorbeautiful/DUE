@@ -60,7 +60,7 @@ ui <- fluidPage(
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
-                  paste("DUE Shiny app: date = ",
+                  paste("Dose Utility Explorer: date = ",
                         desc$Date, "  Version = ", desc$Version))),
   fluidRow(column(4, ""),
            column(2, style=legendStyle, 
