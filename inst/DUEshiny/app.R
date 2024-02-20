@@ -60,8 +60,10 @@ ui <- fluidPage(
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(div( style='text-align:center; color:blue;', 
-                  paste("Dose Utility Explorer: date = ",
-                        desc$Date, "  Version = ", desc$Version))),
+                  "Dose Utility Explorer ",
+                        span(style='font-size:50%',
+                             desc$Date, "  version = ", 
+                             desc$Version))),
   fluidRow(column(4, ""),
            column(2, style=legendStyle, 
                   "R = response", br(),
@@ -109,6 +111,7 @@ ui <- fluidPage(
                                                          value = DUEinits.default$nPops, min=1))
                     )
                   ),
+                  br(),
                   fluidRow( 
                            style=paste(defaultBackgroundColor, 
                                        '; vertical-align:center; min-height: 100%;'),
@@ -123,7 +126,8 @@ ui <- fluidPage(
                                   numericInput(inputId = "whichFollows", 
                                                HTML("Dependent group #"), value = 2))
                   ),
-                  shiny::hr(style='margin-top:0em; margin-bottom:0em; border-color:white'),
+                  shiny::hr(style='margin-top:1em; margin-bottom:1em; border-color:white'),
+                  br(),
                   fluidRow(id = 'popParamsThisPop', 
                            style=paste(defaultBackgroundColor, '; vertical-align:center; min-height: 100%;'),
                            column(4, style=defaultBackgroundColor,
