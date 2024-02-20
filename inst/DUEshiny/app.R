@@ -109,6 +109,12 @@ ui <- fluidPage(
                                         value=FALSE)
                       ),
                       br(), br(), br(), 
+
+                      div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
+                          numericInput('selectedDose', 'Selected dose', value=100, min=0),
+                          "Probabilities",
+                          uiOutput('showProbs')
+                      ),
                       div(style = "background-color:honeydew;", id='popDoseAxes',
                           #column(2, 
                           bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
@@ -116,11 +122,6 @@ ui <- fluidPage(
                       ),
                       br(),
                       br(),
-                      div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-                          numericInput('selectedDose', 'Selected dose', value=100, min=0),
-                          "Probabilities",
-                          uiOutput('showProbs')
-                      ),
                       hr(), br(), br(),
                       ####phase1resultbutton###
                       div(style=phase1backgroundcolor, 
