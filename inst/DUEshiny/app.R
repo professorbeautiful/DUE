@@ -5,6 +5,9 @@ library(DUE)
 
 # Let's try installExprFunction(), to aid debugging with breakpoints.
 source('quadrants.R')
+legendStyle = 'text-align:left; 
+           text-color:blue; font-size:150%;'
+
 browseUs = 'calculate.probabilities'
 desc <- packageDescription('DUE')
 
@@ -57,9 +60,13 @@ ui <- fluidPage(
   titlePanel(div( style='text-align:center; color:blue;', 
                   paste("DUE Shiny app: date = ",
                         desc$Date, "  Version = ", desc$Version))),
-  fluidRow(style='text-align:center; text-color:blue;color:blue; font-size:150%;', 
-           column(4, offset=2, "R = response", br(), "r = non-response"), 
-           column(4, "T = toxicity", br(), "t = non-toxicity")
+  fluidRow(column(4, ""),
+           column(2, style=legendStyle, 
+                  "R = response", br(),
+                  "r = non-response"),
+           column(2, style=legendStyle, 
+                  "T = toxicity", br(),
+                  "t = non-toxicity")
   ),
   fluidRow(style='text-align:center', 
            ####  LEFT SIDE: Contour plots ####
