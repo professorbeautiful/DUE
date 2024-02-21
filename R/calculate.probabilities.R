@@ -162,6 +162,7 @@ calculate.probabilities <-  ### We will remove utility & EU from this in the fut
     return(probability.vector)
   }
 
+# calculate.probabilities.and.EU is never used.
 calculate.probabilities.and.EU <- 
   function(DUEenv, log10dose, utility, ...) {
     sevenprobs = calculate.probabilities(

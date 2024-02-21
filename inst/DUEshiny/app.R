@@ -187,7 +187,7 @@ server <- function(input, output, session) {
   
   logdose<<-1
   require("mvtnorm")
-  data(DUEinits.default)
+  data('DUEinits.default', package='DUE')
   isolate({
     for(objname in names(DUEinits.default))
       eval(parse(text=(paste0(
