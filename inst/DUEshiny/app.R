@@ -952,7 +952,8 @@ server <- function(input, output, session) {
     print('DUEenv$phase1Doses =', DUEenv$phase1Doses)
   })
   
-  observeEvent(c(input$phase1Recalculate, input$phase1Button), {
+  observeEvent(
+    c(input$phase1Recalculate, input$phase1Button, DUEenv$utility), {
       if(is.null(DUEenv$phase1Doses))
          setDoses(DUEenv$doseTicks) 
       doses = DUEenv$phase1Doses
@@ -969,7 +970,7 @@ server <- function(input, output, session) {
       print(phase_one_summary)
       #show the expected expected utility across all enrolled patients.
       # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
-      EN_pts = 
+      DUEenv$EN_pts = EN_pts = 
              phase_one_summary$pr_enter_tier *
                (3 + 3*(1-phase_one_summary$pr_Term_1
                        - phase_one_summary$pr_Go_1) ) 
@@ -1023,11 +1024,20 @@ server <- function(input, output, session) {
       ) 
   })
   
+  ### phase 1
+  # observeEvent(list(doseValues, utilities),
+  #              {
+  #                #result = data.frame(pr_enter_tier, pr_Go_1, pr_Term_1, pr_Go_2, pr_stop_at)
+  #               sapply()
+  #                DUEenv$expected_total_EU
+  #                DUEenv$expected_average_EU
+  #                DUEenv$expected_EU_at_MTD
+  #              })
+  # 
   output$ID_expected_total_EU = 
     renderText({round(digits=2, DUEenv$expected_total_EU)})
   output$ID_expected_average_EU = 
     renderText({round(digits=2, DUEenv$expected_average_EU)})
-  
   output$ID_expected_EU_at_MTD = renderText({round(digits=2, DUEenv$expected_EU_at_MTD)})
   
   output$phase1plot = renderPlot({
