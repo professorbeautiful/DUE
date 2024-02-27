@@ -164,7 +164,9 @@ server <- function(input, output, session) {
     condition='ctrlDpressed === true')
 
     DUEenv = reactiveValues()
-
+    DUEenv$showRed33 = FALSE
+    addProbsToQuadrants = FALSE
+    
     #### zoomAdvice ####
   output$zoomAdvice = renderText({
     text = ""
