@@ -110,9 +110,8 @@ ui <- fluidPage(
                       br(), br(), br(), 
 
                       div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-                          numericInput('selectedDose', 'Selected dose', value=100, min=0),
-                          "Probabilities",
-                          uiOutput('showProbs')
+                          numericInput('selectedDose', 'Selected dose', value=100, min=0)
+                          # , "Probabilities", uiOutput('showProbs')  # redundant now.
                       ),
                       div(style = "background-color:honeydew;", id='popDoseAxes',
                           #column(2, 
@@ -520,6 +519,7 @@ server <- function(input, output, session) {
   })
   
   output$showProbs = renderUI({
+    if(DUEenv$addProbsToQuadrants == FALSE) {
     probs = calculate.probabilities(
       DUEenv, log10dose=log10(DUEenv$selectedDose))
     makeEntry = function(label)
@@ -529,6 +529,8 @@ server <- function(input, output, session) {
              label, stringr::str_pad(width=4, pad='0', side='right',
                round(digits=2, probs[label])))
     div(
+      "Probabilities",
+      
       fluidRow(
         makeEntry('Rt'), makeEntry('rt')
       ),
@@ -536,6 +538,7 @@ server <- function(input, output, session) {
         makeEntry('RT'), makeEntry('rT')
       )
     )
+    } else ""
   })
   observeEvent(input$click_threshold, {
     save_options = options(warn = -1)  #ignore initial warning
