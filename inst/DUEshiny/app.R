@@ -165,8 +165,9 @@ server <- function(input, output, session) {
 
     DUEenv = reactiveValues()
     DUEenv$showRed33 = FALSE
-    addProbsToQuadrants = FALSE
-    
+    DUEenv$addProbsToQuadrants = TRUE
+    DUEenv$xpos = 0.5
+    DUEenv$ypos = 2.2
     #### zoomAdvice ####
   output$zoomAdvice = renderText({
     text = ""
