@@ -1,7 +1,7 @@
 #  quadrants
 quadrant_personalUtilities.f = function() {
   div(id = 'personalUtilities',
-      h3("Controller for utility values", style="text-align:center; color:blue"),
+      h3("Personal utility values", style="text-align:center; color:blue"),
       div(
         fluidRow(id = 'popCustomUtilities',
                  style=defaultBackgroundColor,
