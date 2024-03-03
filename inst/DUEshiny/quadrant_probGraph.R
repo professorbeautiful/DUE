@@ -14,8 +14,10 @@ quadrant_probGraph.f = function() {
   h3("Probabilities and Expected Utility, E(U)", style="color:blue")
   , fluidRow(id = 'popLineThickness', 
              style=defaultBackgroundColor, 
-             column(2,  HTML("<b>Line thickness controls</b>")), 
-             linethicknessButtons)
+             linethicknessButtons,
+             column(4,  HTML("<b>Line thickness controls</b>")
+                    )),
+  hr()
   , fluidRow(id = 'popLinePlot',
              column(8, offset=0, #align='center',
                     plotOutput("linePlot",
