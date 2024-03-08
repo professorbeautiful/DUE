@@ -33,7 +33,7 @@ skinnyColumn.f = function() {
       br(), br(), br(), 
       
       div(id='pop_selectedDose', style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-          numericInput('selectedDose', 'Selected dose', value=100, min=0)
+          numericInput('selectedDose', 'Selected dose', value=100, min=0, step=10)
           # , "Probabilities", uiOutput('showProbs')  # redundant now.
       ),
       div(style = "background-color:honeydew;", id='popDoseAxes',

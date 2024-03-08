@@ -456,7 +456,8 @@ server <- function(input, output, session) {
     try({
       xClick=input$click_dose$x
       newSelectedDose = xClick
-      updateNumericInput(session, inputId = 'selectedDose', value = newSelectedDose )
+      updateNumericInput(session, inputId = 'selectedDose', 
+                         value = newSelectedDose, step = DUEenv$doseDelta )
       DUEenv$selectedDose = newSelectedDose
     })
   })
