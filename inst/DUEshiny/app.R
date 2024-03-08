@@ -102,11 +102,14 @@ server <- function(input, output, session) {
     session, toolsInitialState = FALSE, 
     condition='ctrlDpressed === true')
 
-    DUEenv = reactiveValues()
-    DUEenv$showRed33 = FALSE
-    DUEenv$addProbsToQuadrants = TRUE
-    DUEenv$xpos = 0.5
-    DUEenv$ypos = 2.2
+  DUEenv = reactiveValues()
+  showRed33 = DUEenv$showRed33 = FALSE
+  addProbsToQuadrants = DUEenv$addProbsToQuadrants = TRUE
+  DUEenv$xpos = 0.5 ##  for location of probabilities in threshold quadrant
+  DUEenv$ypos = 2.2 ##  for location of probabilities in threshold quadrant
+  doseDelta = DUEenv$doseDelta = 10  # for numericInput
+  
+    
     #### zoomAdvice ####
   output$zoomAdvice = renderText({
     text = ""
@@ -698,15 +701,21 @@ server <- function(input, output, session) {
   
   loadMyfile = reactive({ 
                  #try({
-                 load(input$selectingAFile)   #### Will pull in DUEsaving and README ####
+                 load(input$selectingAFile)   
+    #### Will pull in DUEsaving and README ####
                  DUEsaving[['thisPop']] = 1   # input$thisPop
                  DUEsaving[['whichFollows']] = 2
-                 for (n in names(DUEenv))
-                   DUEenv[[n]] = DUEsaving[[n]]
+                 DUEsaving$showRed33 = FALSE
+                 DUEsaving$addProbsToQuadrants = TRUE
+                 DUEsaving$xpos = 0.5 ##  for location of probabilities in threshold quadrant
+                 DUEsaving$ypos = 2.2 ##  for location of probabilities in threshold quadrant
+                 DUEsaving$doseDelta = 10  # for numericInput
                  misMatches = character(0)
                  if(names(DUEsaving$probLineWidths)[7]=='EU')
                    DUEsaving$probLineWidths = DUEsaving$probLineWidths[c(1:6,8,7)]
                  names(DUEsaving$probLineWidths) = probLineNames()
+                 for (n in names(DUEsaving))
+                   DUEenv[[n]] = DUEsaving[[n]]
                  #  Because old files use RLE instead of RLT.
                  for(inputName in strsplit(
                    "selectedDose nPops thisPop thisPopFraction whichFollows probRefractory responseLimitingTox correlation thetaR.CV thetaRmedian thetaT.CV thetaTmedian U.rt U.rT U.Rt U.RT"
