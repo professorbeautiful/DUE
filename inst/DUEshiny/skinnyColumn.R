@@ -20,18 +20,24 @@ skinnyColumn.f = function() {
           numericInput('selectedDose', 'Selected dose', value=100, min=0, step=10)
           # , "Probabilities", uiOutput('showProbs')  # redundant now.
       ),
+      br(),
+      actionButton(inputId = 'gotoOptDose', 
+                   label = HTML('Go to <br>Optimal<br>Dose'), 
+                   style='background-color:honeydew;'),
+      br(),br(),
       div(style = "background-color:honeydew;", id='popDoseAxes',
           #column(2, 
           bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
           #)
       ),
-      br(),br(),br(),br(),br(),br(),
+      br(),br(),
+      
       ####phase1resultbutton###
       #column(2, 
-             div(style=phase1backgroundcolor, 
-                    id='popPhaseI',
-                    bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
-                    )
+      div(style=phase1backgroundcolor, 
+          id='popPhaseI',
+          bsButton(inputId = "phase1ResultButton", label = HTML("Phase I <br> Results")
+          )
       #)
       )
       # hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px')

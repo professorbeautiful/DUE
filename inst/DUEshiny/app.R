@@ -708,6 +708,12 @@ server <- function(input, output, session) {
     }
   }
   
+  observeEvent(input$gotoOptDose, {
+    OptDose.EU = round(DUEenv$utilitySummaries['T', 'OptDose.EU'])
+    updateNumericInput(session, inputId = 'selectedDose', 
+                       value = OptDose.EU, step = DUEenv$doseDelta )
+    DUEenv$selectedDose = OptDose.EU
+  })
   loadMyfile = reactive({ 
                  #try({
                  load(input$selectingAFile)   
