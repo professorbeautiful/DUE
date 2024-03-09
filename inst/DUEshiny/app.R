@@ -32,6 +32,8 @@ optsaved = options(warn=-2)
 try(file.symlink(system.file("doc", "DUE_vignette.html", package="DUE"), 'www'), silent = TRUE)
 options(optsaved)
 
+spaces = function(n)
+  HTML(paste0(collapse="", rep('&nbsp;', n)))
 
 
 ####UI starts here####
