@@ -2,8 +2,8 @@ quadrant_popThresholdContour.f = function() {
   div(
     h3("Thresholds: Joint Probability Density",  
        style='color:blue'),
-    fluidRow(column(12, id='popThresholdContour',
-                    #style=defaultBackgroundColor,
+    wellPanel( id='popThresholdContour',
+                    style=defaultBackgroundColor,
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold'
                                #, width="150%", height="150%"  
@@ -18,10 +18,9 @@ quadrant_popThresholdContour.f = function() {
                                #                        input$innerWidth*3/5,700))
                                # OK, but belongs in SERVER renderPlot
                     )
-    ), 
-    br()
-    ),
-    br()
+               ,br(),
+               br()
     )
+  )
 }
 quadrant_popThresholdContour = quadrant_popThresholdContour.f()
