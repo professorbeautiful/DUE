@@ -3,10 +3,10 @@ quadrant_popThresholdContour.f = function() {
     h3("Thresholds: Joint Probability Density",  
        style='color:blue'),
     fluidRow(column(12, id='popThresholdContour',
-                    style=defaultBackgroundColor,
+                    #style=defaultBackgroundColor,
                     plotOutput("ThresholdContour", 
                                click = 'click_threshold'
-                               #, width="100%", height="100%"  
+                               #, width="150%", height="150%"  
                                #No plot appears.
                                # , width="35vw", height="35vw"
                                # Looks ok but too big on zoom out.
@@ -18,6 +18,10 @@ quadrant_popThresholdContour.f = function() {
                                #                        input$innerWidth*3/5,700))
                                # OK, but belongs in SERVER renderPlot
                     )
-    )))
+    ), 
+    br()
+    ),
+    br()
+    )
 }
 quadrant_popThresholdContour = quadrant_popThresholdContour.f()

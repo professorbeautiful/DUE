@@ -19,6 +19,7 @@ source('quadrant_probGraph.R', local = TRUE)
 source('quadrant_popThresholdContour.R', local = TRUE)
 source('quadrant_popThresholdController.R', local = TRUE)
 source('skinnyColumn.R', local = TRUE)
+source('controlRow.R', local = TRUE)
 browseUs = 'calculate.probabilities'
 
 options.saved = options(warn=-2)
@@ -71,24 +72,31 @@ ui <- fluidPage(
            #### Utilities column ####
            column(5, id='utilityProbabilityColumn',
                   ####  personalUtilities: 
-                  quadrant_personalUtilities,
-                  hr(),
+                  quadrant_probGraph
+                  #,hr(),
                   #### Probabilities and Expected Utility: 
-                  quadrant_probGraph),
+                  ),
            ####  Skinny column: Doses and Files ####
            column(1, id='skinnyColumn',
-                    #includeHTML('www/zoom_triggers.html'),
                   skinnyColumn)
                   ,
            #### Thresholds ####
            column(5, id='thresholdSide',
                   ####Contour plots ####
-                  quadrant_popThresholdContour, 
                   br(),
-                  quadrant_popThresholdController
+                  quadrant_popThresholdContour 
+                  # ,br(), br(),
+                  # br(), br()
            )
+  ), 
+  shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
+  fluidRow(
+             column(5, quadrant_personalUtilities),
+             column(1, ""),
+             column(5, quadrant_popThresholdController)
            )
-           ,
+  ,
+  controlRow,
   shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   div(id = 'popDebugging', shinyDebuggingPanel::withDebuggingPanel() )
 ) 
@@ -568,9 +576,9 @@ server <- function(input, output, session) {
   ####Plotting Threshold Contour####
   output$ThresholdContour<- renderPlot(
     height=reactive(ifelse(!is.null(input$innerWidth),
-                             input$innerWidth*0.25,700)),
+                             input$innerWidth*0.28,500)),
     width=reactive(ifelse(!is.null(input$innerWidth),
-                            input$innerWidth*0.25,700)),
+                            input$innerWidth*0.28,500)),
     ### See https://stackoverflow.com/questions/40538365/r-shiny-how-to-get-square-plot-to-use-full-width-of-panel/40539526#40539526
     expr =     {
     input$okWillLoadSelectedFile  ### Attempt to force the plot.
