@@ -56,16 +56,19 @@ ui <- fluidPage(
   # user-scalable=no does nothing in Safari.
   div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
-  titlePanel(div( style='text-align:center; color:blue;', 
-                  "Dose Utility Explorer ", extraTitle
+  titlePanel(fluidRow( style='text-align:center; color:blue;', 
+                       column(4, ""),
+                  column(3, "Dose Utility Explorer "), 
+                  column(2, ""),
+                  column(2, extraTitle)
   )),
   fluidRow(column(4, ""),
            column(2, style=legendStyle, 
                   "R = response", br(),
-                  "r = non-response"),
+                  "r = no response"),
            column(2, style=legendStyle, 
                   "T = toxicity", br(),
-                  "t = non-toxicity")
+                  "t = no toxicity")
   ),
   #### Four quadrants ####
   fluidRow(style='text-align:center', 
