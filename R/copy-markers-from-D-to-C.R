@@ -1,11 +1,41 @@
-##   copy-markers-from-D-to-C
+#'   copy-markers-from-D-to-C
+#'   For copying Markers from Descript to Camtasia.
 
-#  Step 1:  export transcript from D as markdown.
-#  Step 2: run this function to extract the marker info.
-#      copy_markers_from_D_to_C()
+#'  Step 1:  export transcript from D as markdown.
+#'  Step 2: Make sure that the cmproj project is closed.
+#'  Step 3: run  copy_markers_from_D_to_C() to extract the marker info.
+#'      This will save a BACKUP inside cmproj, AND copy newFile over the
+#'      previous tscproj
+#'  Step 4:  reopen the project.
+#'  
+#'  This should work whether there were previously markers or not.
+#'  If there were, they will be overwritten, which is what we want.
+
+#      
+
+transcriptPath = paste0(
+                        'DUE tour video/DUE tour video, in progress',
+                        '/DUE tour video, in progress.md')
+
+hasAnyMarkers = function(tscprojPath=tscprojPath){
+  0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
+} 
+tscprojPath =   ###confirms test for hasAnyMarkers
+  'DUE tour video/screenshots for DUE/2 groups threshold movie.cmproj/project.tscproj'
+hasAnyMarkers(tscprojPath)
+tscprojPath = 
+  'DUE tour video/DUE tour video, in progress.cmproj/project.tscproj'
+hasAnyMarkers(tscprojPath)
 
 copy_markers_from_D_to_C =  function()  {
-  transcript = readLines('DUE tour video/DUE tour intro transcript.md')
+  # make a BACKUP just in case
+  system(paste0('cp "', tscprojPath, '" "', tscprojPath, '".BACKUP'))
+  # Does the tscprojPath already have any markers?
+  tscprojFile = readLines(tscprojPath)
+  if(! identical(length(grep('"toc"', tscprojFile))>0,  
+                 hasAnyMarkers(tscprojPath)  ) )
+    warning('failed toc test')
+  transcript = readLines(transcriptPath)
   markers = grep('^##', transcript, v=T)
   head(markers)
   markerStrings = gsub('.*] ', '', markers)
@@ -49,24 +79,37 @@ copy_markers_from_D_to_C =  function()  {
       ),
       'markerString', markerStrings[ind])
   )
-  data.frame(DtoC_toc_times,markerTimes, markerMinutes, markerSeconds)
+  #data.frame(DtoC_toc_times,markerTimes, markerMinutes, markerSeconds)
   markerTemplateSubstituted = paste(markerTemplateSubstituted, collapse=',\n')
   # cat(markerTemplateSubstituted, '\n')
   # writeLines(markerTemplateSubstituted,
   #            'DUE tour video/markers-from-D-to-C.txt')
   
-  # make a new txt file here in Rstudio.
-  # --- or better, set it to JSON!  Collapse sections at will.
-  tscprojPath = 'DUE tour video/DUE tour video- IN PROGRESS.cmproj/project.tscproj'
-  system(paste0('cat "', tscprojPath, '" | pbcopy'))
-  # paste into the new txt file.
-  #'  save as  for example
-  #'  project-with-many-markers.tscproj
-  writeLines(markerTemplateSubstituted,
-             pipe('pbcopy'))
-  # Search for toc , and paste the copied markerTemplateSubstituted
-  # CLOSE the C project.
-  system(paste('cp project-with-many-markers.tscproj', tscprojPath))
+  postMarkerSection = tscprojFile[
+    grep('"captionAttributes"', tscprojFile):length(tscprojFile)
+  ]
+  if(hasAnyMarkers(tscprojPath)) {  ##
+    preMarkerSection = tscprojFile[
+      1:(grep('"toc"', tscprojFile) - 2)
+    ] 
+  } else {
+    preMarkerSection = tscprojFile[
+      1: (grep('"captionAttributes"', tscprojFile) - 1)
+    ]
+  }
+  newFile <<- c(preMarkerSection, 
+'    "parameters" : {
+      "toc" : {
+        "type" : "string",
+        "keyframes" : [',
+              markerTemplateSubstituted,
+'       ]
+      }
+    },', postMarkerSection
+)
+  writeLines(newFile, 'newFile.tscproj')
+
+  system(paste0('cp newFile.tscproj "', tscprojPath, '"'))
   # Now you can reopen the C project.
   #'  
   #'  OK this works. I pasted the tscproj into a new txt file here, 
@@ -77,3 +120,4 @@ copy_markers_from_D_to_C =  function()  {
   #'  Using vi was not successful.
   #'   
 }
+copy_markers_from_D_to_C()
