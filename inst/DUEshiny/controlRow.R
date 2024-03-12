@@ -25,8 +25,10 @@ controlRow.f = function() {
                          icon("info-sign", lib="glyphicon"))) )
       )),
       column(1, span('zoom in/out?', textOutput('zoomAdvice'))),
-
-      column(4, ""),
+      column(2, checkboxInput(inputId='SaveLoadCheckbox', value=FALSE,
+                    label=em(strong("Save & load parameter files")))
+             ),
+      column(3, ""),
       column(2, div(style=defaultBackgroundColor, id='popPopoverToggle',
                     checkboxInput(inputId = "togglePopovers", 
                                   label = HTML("<=Show/hide the helpful popovers"),

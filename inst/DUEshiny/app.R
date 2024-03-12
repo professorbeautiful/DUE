@@ -56,7 +56,6 @@ ui <- fluidPage(
     name="viewport", 
     content="width=device-width, initial-scale=1.0, user-scalable=no"),
   # user-scalable=no does nothing in Safari.
-  div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   uiOutput('JSprimping'),
   titlePanel(fluidRow( style='text-align:center; color:blue;', 
                        column(4, ""),
@@ -102,6 +101,7 @@ ui <- fluidPage(
            )
   ,
   controlRow,
+  div(id = 'popFilePanel', uiOutput('SaveLoadPanel') ),
   shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   div(id = 'popDebugging', shinyDebuggingPanel::withDebuggingPanel() )
 ) 
@@ -1093,8 +1093,6 @@ server <- function(input, output, session) {
   #### SaveLoadPanel ####
   output$SaveLoadPanel = renderUI( {
     div(style="background:lightGrey",
-        checkboxInput(inputId='SaveLoadCheckbox', value=FALSE,
-                      label=em(strong("Save & load parameter files"))),
         conditionalPanel(
           'input.SaveLoadCheckbox',
           fluidRow(
