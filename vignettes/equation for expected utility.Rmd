@@ -1,0 +1,11 @@
+$$
+EU = Expected \hspace{1mm}Utility
+\\
+\hspace{29mm}= \color{green}{Utility(Rt) \hspace{2mm}\times Probability(Rt)} 
+\\
+\hspace{30mm}\color{#7367D4}{ + Utility(RT) \times Probability(RT)}
+\\
+\hspace{27mm}\color{olive}{+ Utility(rt) \hspace{3mm}\times Probability(rt) }
+\\
+\hspace{28mm}\color{purple}{+ Utility(rT)  \hspace{2mm}\times Probability(rT)}
+$$
