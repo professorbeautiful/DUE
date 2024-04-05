@@ -2,6 +2,9 @@
 #'   For copying Markers from Descript to Camtasia.
 
 #'  Step 1:  export transcript from D as markdown.
+#'      Publish->Export->Transcript
+#'      Toggle on Include markers
+#'      Under Timecodes, toggle on Markers.
 #'  Step 2: Make sure that the cmproj project is closed.
 #'  Step 3: run  copy_markers_from_D_to_C() to extract the marker info.
 #'      This will save a BACKUP inside cmproj, AND copy newFile over the
@@ -13,18 +16,17 @@
 
 #      
 
-transcriptPath = paste0(
-                        'DUE tour video/DUE tour video, in progress',
-                        '/DUE tour video, in progress.md')
-
+cmProjLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
+cmProjName = 'DUE tour video, in progress'
+cmProjPath = paste0(cmProjLocation, cmProjName, '.cmproj/')
+transcriptPath = paste0(cmProjLocation,
+                        'DUE tour video, in progress.md')
+file.exists(transcriptPath)
 hasAnyMarkers = function(tscprojPath=tscprojPath){
   0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
 } 
-tscprojPath =   ###confirms test for hasAnyMarkers
-  'DUE tour video/screenshots for DUE/2 groups threshold movie.cmproj/project.tscproj'
-hasAnyMarkers(tscprojPath)
-tscprojPath = 
-  'DUE tour video/DUE tour video, in progress.cmproj/project.tscproj'
+tscprojPath = paste0(cmProjPath,  'project.tscproj')
+file.exists(tscprojPath)
 hasAnyMarkers(tscprojPath)
 
 copy_markers_from_D_to_C =  function()  {
