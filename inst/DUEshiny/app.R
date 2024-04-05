@@ -299,16 +299,17 @@ server <- function(input, output, session) {
   
   observe({
     TheseUvalues = data.frame(U.rt = input$U.rt , U.rT = input$U.rT, U.Rt = input$U.Rt, U.RT = input$U.RT)
-    DUEenv$utility = TheseUvalues
-    updateUtilities(TheseUvalues)
-    
-    for(button in DUEenv$utilityChoiceNames) {
-      if (all(TheseUvalues == DUEenv$utilityChoices[[button]]))
-        updateButton(session, button, style='success')
-      else
-        updateButton(session, button, style='default')
+    if(all(sapply(TheseUvalues, is.numeric))){
+      DUEenv$utility = TheseUvalues
+      updateUtilities(TheseUvalues)
+      
+      for(button in DUEenv$utilityChoiceNames) {
+        if (all(TheseUvalues == DUEenv$utilityChoices[[button]]))
+          updateButton(session, button, style='success')
+        else
+          updateButton(session, button, style='default')
+      }
     }
-    
   })
   ####thisPopFraction input#####
   #### When changing proportions (fractions), one has to be dependent.
@@ -424,44 +425,56 @@ server <- function(input, output, session) {
   })
   observeEvent(
     input$thetaRmedian,
-    {DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
-    }
+    isolate({
+      if(is.numeric(input$thetaRmedian))
+        DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [1] = input$thetaRmedian
+    })
   )
   
-  observe({
-    input$thetaTmedian
+  observeEvent(
+    input$thetaTmedian,
     isolate({
-      DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= input$thetaTmedian
+      if(is.numeric(input$thetaTmedian))
+        DUEenv$the.medianThresholds.pop[[DUEenv$thisPop]] [2]= 
+          input$thetaTmedian
     })
-  })
+  )
   
   observe({
     input$thetaR.CV
     isolate({
-      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = input$thetaR.CV
+      if(is.numeric(input$thetaR.CV))
+        DUEenv$the.CVs.pop[[DUEenv$thisPop]] [1] = 
+          input$thetaR.CV
     })
   })
   
   observe({
     input$thetaT.CV
     isolate({
-      DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= input$thetaT.CV
+      if(is.numeric(input$thetaT.CV))
+        DUEenv$the.CVs.pop[[DUEenv$thisPop]] [2]= 
+          input$thetaT.CV
     })
   })
   
   observe({
     input$correlation
     isolate({
-      DUEenv$the.correlations.pop[DUEenv$thisPop] = input$correlation
+      if(is.numeric(input$correlation))
+        DUEenv$the.correlations.pop[DUEenv$thisPop] = 
+          input$correlation
     })
   })
   
   observe({
-    DUEenv$refractory= input$probRefractory
+    if(is.numeric(input$probRefractory))
+      DUEenv$refractory= input$probRefractory
   })
   
   observe({
-    DUEenv$Kdeath= input$responseLimitingTox
+    if(is.numeric(input$responseLimitingTox))
+      DUEenv$Kdeath= input$responseLimitingTox
   })
   
   observeEvent(input$click_dose, {
@@ -527,7 +540,8 @@ server <- function(input, output, session) {
   })
   
   observe({
-    DUEenv$selectedDose = input$selectedDose
+    if(is.numeric(input$selectedDose))
+      DUEenv$selectedDose = input$selectedDose
   })
   
   observeEvent(DUEenv$doseTicks, {
