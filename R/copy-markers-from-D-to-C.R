@@ -1,4 +1,4 @@
-#'   copy-markers-from-D-to-C
+#'   copy-markers-from-D-to-C()
 #'   For copying Markers from Descript to Camtasia.
 
 #'  Step 1:  export transcript from D as markdown.
@@ -17,19 +17,20 @@
 #      
 
 cmProjLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
-cmProjName = 'DUE tour video, in progress'
-cmProjPath = paste0(cmProjLocation, cmProjName, '.cmproj/')
-transcriptPath = paste0(cmProjLocation,
-                        'DUE tour video, in progress.md')
-file.exists(transcriptPath)
-hasAnyMarkers = function(tscprojPath=tscprojPath){
-  0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
-} 
-tscprojPath = paste0(cmProjPath,  'project.tscproj')
-file.exists(tscprojPath)
-hasAnyMarkers(tscprojPath)
 
 copy_markers_from_D_to_C =  function()  {
+  cmProjName = 'DUE tour video, in progress'
+  cmProjPath = paste0(cmProjLocation, cmProjName, '.cmproj/')
+  transcriptPath = paste0(cmProjLocation,
+                          'DUE tour video, in progress.md')
+  file.exists(transcriptPath)
+  hasAnyMarkers = function(tscprojPath=tscprojPath){
+    0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
+  } 
+  tscprojPath = paste0(cmProjPath,  'project.tscproj')
+  file.exists(tscprojPath)
+  hasAnyMarkers(tscprojPath)
+  
   # make a BACKUP just in case
   system(paste0('cp "', tscprojPath, '" "', tscprojPath, '".BACKUP'))
   # Does the tscprojPath already have any markers?
@@ -122,4 +123,3 @@ copy_markers_from_D_to_C =  function()  {
   #'  Using vi was not successful.
   #'   
 }
-copy_markers_from_D_to_C()
