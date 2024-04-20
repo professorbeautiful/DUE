@@ -1,5 +1,7 @@
 #'   copy-markers-from-D-to-C()
 #'   For copying Markers from Descript to Camtasia.
+#'   Only copies into C main timeline.
+#'   To keep any current C marker, move it onto a clip in a track 
 
 #'  Step 1:  export transcript from D as markdown.
 #'      Publish->Export->Transcript
@@ -18,25 +20,27 @@
 
 cmProjLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
 
-copy_markers_from_D_to_C =  function()  {
-  cmProjName = 'DUE tour video, in progress'
+copy_markers_from_D_to_C =  function(  
+    cmProjName = 'DUE tour video, in progress'
+)  {
   cmProjPath = paste0(cmProjLocation, cmProjName, '.cmproj/')
   transcriptPath = paste0(cmProjLocation,
                           'DUE tour video, in progress.md')
   file.exists(transcriptPath)
-  hasAnyMarkers = function(tscprojPath=tscprojPath){
-    0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
-  } 
   tscprojPath = paste0(cmProjPath,  'project.tscproj')
   file.exists(tscprojPath)
-  hasAnyMarkers(tscprojPath)
+  hasAnyMarkers = function(){
+    0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
+  } 
+  hasAnyMarkers()
   
   # make a BACKUP just in case
-  system(paste0('cp "', tscprojPath, '" "', tscprojPath, '".BACKUP'))
+  system(paste0('cp "', tscprojPath, '" "', tscprojPath, '".BACKUP.',
+                gsub("[: ]", "-", date()) ))
   # Does the tscprojPath already have any markers?
   tscprojFile = readLines(tscprojPath)
   if(! identical(length(grep('"toc"', tscprojFile))>0,  
-                 hasAnyMarkers(tscprojPath)  ) )
+                 hasAnyMarkers()  ) )
     warning('failed toc test')
   transcript = readLines(transcriptPath)
   markers = grep('^##', transcript, v=T)
@@ -88,13 +92,27 @@ copy_markers_from_D_to_C =  function()  {
   # writeLines(markerTemplateSubstituted,
   #            'DUE tour video/markers-from-D-to-C.txt')
   
+  line_captionAttributes = grep('"captionAttributes"', tscprojFile)
+  if(length(line_captionAttributes) !=1)
+    warning("# if line_captionAttributes sis not ONE")
+  # We ASSUME that the current markers are just before this
   postMarkerSection = tscprojFile[
     grep('"captionAttributes"', tscprojFile):length(tscprojFile)
   ]
-  if(hasAnyMarkers(tscprojPath)) {  ##
+  lines_toc = grep('"toc"', tscprojFile)
+  #' Testing with quadrant\ info\ flow.cmproj/project.tscproj
+  #' With no markers, no toc, and captionAttributes is there.
+  #' With markers on main line and an object,
+  #' the main line ones appear at the last toc section,
+  #' without regard to temporal order.
+  #' So we can safely (?) select the last toc.
+  #' 
+
+    
+  if(hasAnyMarkers()) {  ##
     preMarkerSection = tscprojFile[
-      1:(grep('"toc"', tscprojFile) - 2)
-    ] 
+      1:max(grep('"toc"', tscprojFile) - 2)
+    ]    # skip "parameters" line;  added below.
   } else {
     preMarkerSection = tscprojFile[
       1: (grep('"captionAttributes"', tscprojFile) - 1)
@@ -111,9 +129,9 @@ copy_markers_from_D_to_C =  function()  {
     },', postMarkerSection
 )
   writeLines(newFile, 'newFile.tscproj')
-
-  system(paste0('cp newFile.tscproj "', tscprojPath, '"'))
-  # Now you can reopen the C project.
+  writeLines(newFile, tscprojPath)
+    # Now you can reopen the C project.
+  system(paste('open "' , cmProjPath, '"'))
   #'  
   #'  OK this works. I pasted the tscproj into a new txt file here, 
   #'  Then used writeLines to put markerTemplateSubstituted into pbcopy
@@ -123,3 +141,4 @@ copy_markers_from_D_to_C =  function()  {
   #'  Using vi was not successful.
   #'   
 }
+
