@@ -131,7 +131,7 @@ copy_markers_from_D_to_C =  function(
   writeLines(newFile, 'newFile.tscproj')
   writeLines(newFile, tscprojPath)
     # Now you can reopen the C project.
-  system(paste('open "' , cmProjPath, '"'))
+  system(paste0('open "' , cmProjPath, '"'))
   #'  
   #'  OK this works. I pasted the tscproj into a new txt file here, 
   #'  Then used writeLines to put markerTemplateSubstituted into pbcopy
