@@ -2,6 +2,7 @@ library(shiny)
 library(shinyDebuggingPanel)
 library(shinyBS)
 library(DUE)
+library(shinyjs)
 
 desc <- packageDescription('DUE')
 extraTitle = span(style='font-size:50%',
@@ -38,6 +39,7 @@ spaces = function(n)
 
 ####UI starts here####
 ui <- fluidPage(
+  useShinyjs(),
   tags$style("[type = 'number'] 
              {font-size:25px;height:25px;}"),
   
@@ -551,6 +553,39 @@ server <- function(input, output, session) {
                DUEenv$doseValues = 10^DUEenv$log10doseValues 
   })
   
+  write.probs.4 = function(P) {
+    P = as.character(round(digits=2, P))
+    if(P=='0') P = '0.00'
+    if(nchar(P)==3) P=paste0(P, '0')
+    P
+  }
+  ####output$skinny4probs####
+  output$skinny4probs <- renderUI({
+    bold_italic = 4
+    probs = calculate.probabilities(
+      DUEenv, log10dose=log10(DUEenv$selectedDose))
+    div(
+      div(
+        style=paste('float: left; color:', rt.outcome.colors("Rt")),
+        HTML('&nbsp;Rt'),
+        write.probs.4(probs["Rt"])) ,
+      div(
+        style=paste('float: right; color:', rt.outcome.colors("rt")),
+        'rt',
+        write.probs.4(probs["rt"]), 
+        HTML('&nbsp;')  ),
+      br(),
+      div(
+        style=paste('float: left; color:', rt.outcome.colors("RT")),
+        HTML('&nbsp;RT'),
+        write.probs.4(probs["RT"]) ),
+      div(
+        style=paste('float: right; color:', rt.outcome.colors("rT")),
+        'rT',
+        write.probs.4(probs["rT"]), 
+       HTML('&nbsp;') )
+      )
+  })
   output$linePlot <- renderPlot(
     height=reactive(ifelse(!is.null(input$innerWidth),
                            input$innerWidth*0.25,700)),
