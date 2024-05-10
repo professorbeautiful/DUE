@@ -3,7 +3,11 @@
 #'   Only copies into C main timeline.
 #'   To keep any current C marker, move it onto a clip in a track 
 
-#'  Step 1:  export transcript from D as markdown.
+#'  Step 0:
+#'      Set variables:
+projectLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
+cmProjName = 'DUE tour video, in progress'
+#'  Step 1:  In Descript, export transcript as markdown.
 #'      Publish->Export->Transcript
 #'      Toggle on Include markers
 #'      Under Timecodes, toggle on Markers.
@@ -18,21 +22,22 @@
 
 #      
 
-cmProjLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
-
-copy_markers_from_D_to_C =  function(  
-    cmProjName = 'DUE tour video, in progress'
-)  {
-  cmProjPath = paste0(cmProjLocation, cmProjName, '.cmproj/')
-  transcriptPath = paste0(cmProjLocation,
-                          'DUE tour video, in progress.md')
-  file.exists(transcriptPath)
+copy_markers_from_D_to_C =  function(  )  {
+  cmProjPath = paste0(projectLocation, cmProjName, '.cmproj/')
+  transcriptPath = paste0(projectLocation, cmProjName, '.md')
+  if( ! file.exists(transcriptPath))
+    stop('Transcript file not found')
   tscprojPath = paste0(cmProjPath,  'project.tscproj')
-  file.exists(tscprojPath)
+  if( ! file.exists(tscprojPath))
+    stop('TSC file not found')
   hasAnyMarkers = function(){
     0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
   } 
-  hasAnyMarkers()
+  if(hasAnyMarkers()) {
+    answer = readline("Current timeline markers will be replaced. Abort? [Y; Default=no]")
+    if(toupper(substr(answer, 1, 1) == 'Y')) 
+      stop ("OK, aborting\n"); 
+  }
   
   # make a BACKUP just in case
   system(paste0('cp "', tscprojPath, '" "', tscprojPath, '".BACKUP.',
@@ -86,11 +91,7 @@ copy_markers_from_D_to_C =  function(
       ),
       'markerString', markerStrings[ind])
   )
-  #data.frame(DtoC_toc_times,markerTimes, markerMinutes, markerSeconds)
   markerTemplateSubstituted = paste(markerTemplateSubstituted, collapse=',\n')
-  # cat(markerTemplateSubstituted, '\n')
-  # writeLines(markerTemplateSubstituted,
-  #            'DUE tour video/markers-from-D-to-C.txt')
   
   line_captionAttributes = grep('"captionAttributes"', tscprojFile)
   if(length(line_captionAttributes) !=1)
@@ -107,8 +108,7 @@ copy_markers_from_D_to_C =  function(
   #' without regard to temporal order.
   #' So we can safely (?) select the last toc.
   #' 
-
-    
+  
   if(hasAnyMarkers()) {  ##
     preMarkerSection = tscprojFile[
       1:max(grep('"toc"', tscprojFile) - 2)
@@ -119,26 +119,25 @@ copy_markers_from_D_to_C =  function(
     ]
   }
   newFile <<- c(preMarkerSection, 
-'    "parameters" : {
+                '    "parameters" : {
       "toc" : {
         "type" : "string",
         "keyframes" : [',
-              markerTemplateSubstituted,
-'       ]
+                markerTemplateSubstituted,
+                '       ]
       }
     },', postMarkerSection
-)
+  )
   writeLines(newFile, 'newFile.tscproj')
   writeLines(newFile, tscprojPath)
-    # Now you can reopen the C project.
+  # Now you can reopen the C project.
   system(paste0('open "' , cmProjPath, '"'))
-  #'  
-  #'  OK this works. I pasted the tscproj into a new txt file here, 
-  #'  Then used writeLines to put markerTemplateSubstituted into pbcopy
-  #'  Then pasted into appropriate place (search "toc")
-  #'  Checked the boundaries.
-  #'  And the project opened with all the markers.
-  #'  Using vi was not successful.
-  #'   
 }
 
+#'  
+#'  OK this works. I pasted the tscproj into a new txt file here, 
+#'  Then used writeLines to put markerTemplateSubstituted into pbcopy
+#'  Then pasted into appropriate place (search "toc")
+#'  Checked the boundaries.
+#'  And the project opened with all the markers.
+#'   
