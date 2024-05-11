@@ -2,7 +2,7 @@ Package: DUE
 Type: Package
 Title: Dose Utility Explorer
 Version: 1.03
-Date: 2024-05-011
+Date: 2024-05-11
 Author: Roger Day, Meihua Wang, Marie Gerges
 Maintainer: Roger Day <day01@pitt.edu>
 Description: Interactive environment for exploring relationships between priors,
