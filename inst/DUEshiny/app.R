@@ -924,10 +924,6 @@ server <- function(input, output, session) {
     }
   )
   
-  #### phase1Results ####
-  output$phase1Results = renderTable({
-    DUEenv$phase_one_result
-  })
   
   # NOT NEEDED:
   # observeEvent(input$Info, {
@@ -940,6 +936,12 @@ server <- function(input, output, session) {
   #   # True, but the button is linked to the doc as a URL. So ok.
   # })
   
+  #### phase1Results ####
+  output$phase1Results = renderTable({
+    cat('renderTable DUEenv$phase_one_result\n')
+    DUEenv$phase_one_result
+  })
+  #### selectPhase1doses ####
   output$selectPhase1doses = renderUI({
     if(is.null(DUEenv$phase1Doses)) 
       DUEenv$phase1Doses =
@@ -950,7 +952,7 @@ server <- function(input, output, session) {
     )
   })
   
-  #### When phase1Doses changes, save new doses and enable button.
+  #### When phase1Doses changes, save new doses and enable button.####
   observeEvent(input$phase1Doses, {
     newPhase1Doses = try( {
       cat('input$phase1Doses changed to ', input$phase1Doses, '\n')
@@ -961,8 +963,8 @@ server <- function(input, output, session) {
       DUEenv$phase1Doses = newPhase1Doses[!is.na(newPhase1Doses)]
       updateButton(session, 'phase1Recalculate', disabled = FALSE)
     }
-    else
-      updateButton(session, 'phase1Recalculate', disabled = TRUE)
+    # else
+    #   updateButton(session, 'phase1Recalculate', disabled = TRUE)
     
   })
   
@@ -976,48 +978,48 @@ server <- function(input, output, session) {
     print('DUEenv$phase1Doses =', DUEenv$phase1Doses)
   })
   
-  observeEvent(
-    c(input$phase1Recalculate, input$phase1Button, DUEenv$utility), {
-      if(is.null(DUEenv$phase1Doses))
-         setDoses(DUEenv$doseTicks) 
-      doses = DUEenv$phase1Doses
-      print(doses)
-      probabilityVectors = sapply(log10(doses), 
+  updatePhase1 = reactive({
+    if(is.null(DUEenv$phase1Doses))
+      setDoses(DUEenv$doseTicks) 
+    doses = DUEenv$phase1Doses
+    #print(doses)
+    probabilityVectors = sapply(log10(doses), 
                                 calculate.probabilities, 
                                 DUEenv=DUEenv, utility=DUEenv$utility
-      ) 
-      toxProbabilities = probabilityVectors['T', ]
-      EU = probabilityVectors['EU', ]
-      phase_one_summary = as.data.frame(
-        phase_one_exact(PrTox = toxProbabilities) )
-      print(toxProbabilities)
-      print(phase_one_summary)
-      #show the expected expected utility across all enrolled patients.
-      # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
-      DUEenv$EN_pts = EN_pts = 
-             phase_one_summary$pr_enter_tier *
-               (3 + 3*(1-phase_one_summary$pr_Term_1
-                       - phase_one_summary$pr_Go_1) ) 
-      DUEenv$expected_total_EU = sum( EN_pts * EU )
-      DUEenv$expected_average_EU = sum( EN_pts * EU )/sum(EN_pts)
-      #show the expected expected utility of the Phase 1 MTD.
-      # for now, stopping at the first tier means there is no MTD.
-      #  and not stopping means MTD = highest tier
-      phase_one_summary$probMTD = 
-        c(phase_one_summary$pr_stop_at[-1],
-          1 - sum(phase_one_summary$pr_stop_at) )
-      DUEenv$expected_EU_at_MTD = sum(phase_one_summary$probMTD * EU)
-      DUEenv$phase_one_result = 
-        data.frame(doses=doses, pr_tox=toxProbabilities,
-                   lapply(phase_one_summary, round, digits = 4 )
-        )
-      print(DUEenv$phase_one_result )
+    ) 
+    toxProbabilities = probabilityVectors['T', ]
+    EU = probabilityVectors['EU', ]
+    phase_one_summary = as.data.frame(
+      phase_one_exact(PrTox = toxProbabilities) )
+    print(toxProbabilities)
+    #print(phase_one_summary)
+    #show the expected expected utility across all enrolled patients.
+    # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.
+    DUEenv$EN_pts = EN_pts = 
+      phase_one_summary$pr_enter_tier *
+      (3 + 3*(1-phase_one_summary$pr_Term_1
+              - phase_one_summary$pr_Go_1) ) 
+    DUEenv$expected_total_EU = sum( EN_pts * EU )
+    DUEenv$expected_average_EU = sum( EN_pts * EU )/sum(EN_pts)
+    #show the expected expected utility of the Phase 1 MTD.
+    # for now, stopping at the first tier means there is no MTD.
+    #  and not stopping means MTD = highest tier
+    phase_one_summary$probMTD = 
+      c(phase_one_summary$pr_stop_at[-1],
+        1 - sum(phase_one_summary$pr_stop_at) )
+    DUEenv$expected_EU_at_MTD = sum(phase_one_summary$probMTD * EU)
+    DUEenv$phase_one_result = 
+      data.frame(doses=doses, pr_tox=toxProbabilities,
+                 lapply(phase_one_summary, round, digits = 4 )
+      )
   })
+  
   
       ## standard 3+3 design
   ####  Show Phase1 modal window ####
   observeEvent(input$phase1ResultButton, {
-    if(input$phase1ResultButton > 0)
+    updatePhase1() # this solved the problem.
+    if(input$phase1ResultButton > 0) {
       showModal(ui = 
                   modalDialog(
                     easyClose = TRUE, 
@@ -1045,7 +1047,7 @@ server <- function(input, output, session) {
                       modalButton(label = "Cancel")
                     )
                   )
-      ) 
+      )} 
   })
   
   ### phase 1
@@ -1071,6 +1073,10 @@ server <- function(input, output, session) {
     mtext('Dose at which trial stops', side = 1, line = 3, cex = 2)
     axis(side = 2, lwd = 2)
     mtext('Probability', side = 2, cex = 2, line=3)
+    lines(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
+          col='blue', lwd=3)
+    mtext('MTD (blue)', side = 4, line = 3, cex = 2)
+    
   })
   
   observeEvent(
