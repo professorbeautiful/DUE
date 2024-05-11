@@ -114,9 +114,9 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   
   
-  shinyDebuggingPanel::makeDebuggingPanelOutput(
-    session, toolsInitialState = FALSE, 
-    condition='ctrlDpressed === true')
+  # shinyDebuggingPanel::makeDebuggingPanelOutput(
+  #   session, toolsInitialState = FALSE, 
+  #   condition='ctrlDpressed === true')
 
   DUEenv = reactiveValues()
   showRed33 = DUEenv$showRed33 = FALSE
