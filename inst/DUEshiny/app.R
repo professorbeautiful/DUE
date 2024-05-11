@@ -86,6 +86,7 @@ ui <- fluidPage(
            column(1, id='skinnyColumn',
                   skinnyColumn)
                   ,
+           #  if desired, shinyjs::hide('skinnyColumn')
            #### Thresholds ####
            column(5, id='thresholdSide',
                   ####Contour plots ####
