@@ -1340,6 +1340,22 @@ server <- function(input, output, session) {
     } )
   }
   
+  #### enable the relevant pop boxes only when Npops > 1 ####
+  observeEvent(input$nPops, {
+    try({
+      if(input$nPops > 1){
+        shinyjs::enable(id='thisPop')
+        shinyjs::enable(id='thisPopFraction')
+        shinyjs::enable(id='whichFollows')
+      }
+      if(input$nPops == 1){
+        shinyjs::disable(id='thisPop')
+        shinyjs::disable(id='thisPopFraction')
+        shinyjs::disable(id='whichFollows')
+      }
+    })
+  })
+  
   observeEvent(input$togglePopovers, {
     cat('input$togglePopovers ', input$togglePopovers, '\n')
     #stopAllPopovers()
