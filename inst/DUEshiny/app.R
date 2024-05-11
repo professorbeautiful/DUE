@@ -117,6 +117,16 @@ server <- function(input, output, session) {
     session, toolsInitialState = FALSE,
     condition='ctrlDpressed === true')
 
+  #### input$debugToolsCheckbox works to open R box ####
+  observeEvent(input$debugToolsCheckbox,
+                 try({
+                   if(input$debugToolsCheckbox){
+                     updateRadioButtons(
+                       inputId='id_languageChoice', selected = 'R'
+                     )
+                   }
+               })
+  )
   DUEenv = reactiveValues()
   showRed33 = DUEenv$showRed33 = FALSE
   addProbsToQuadrants = DUEenv$addProbsToQuadrants = TRUE
@@ -1369,7 +1379,12 @@ server <- function(input, output, session) {
     # https://stackoverflow.com/questions/20283308/want-to-enable-popover-bootstrap-after-disabled-it
   })
   
-  observeEvent(input$ctrlDpressed, {}) # just to flush the ctrl-D press.
+  observeEvent(input$ctrlDpressed, {
+    try({
+      if(input$ctrlDpressed)
+        updateCheckboxInput(inputId = 'debugToolsCheckbox', value = TRUE)
+    })
+  }) # Seems to work to set checkbox. Also had to flush the ctrl-D press.
   
   session$onSessionEnded(stopApp)
 }
