@@ -389,6 +389,21 @@ server <- function(input, output, session) {
         #source('shiny.entrybox.nPops.f.R', local = TRUE)
         updateNumericInput(session = session, 'nPops', value = DUEenv$nPops)
         updateNumericInput(session = session, 'thisPop', value = 1, min = 1, max=DUEenv$nPops)
+        
+        #### enable the relevant pop boxes only when Npops > 1 ####
+
+          try({
+            if(input$nPops > 1){
+              shinyjs::enable(id='thisPop')
+              shinyjs::enable(id='thisPopFraction')
+              shinyjs::enable(id='whichFollows')
+            }
+            else if(input$nPops == 1){
+              shinyjs::disable(id='thisPop')
+              shinyjs::disable(id='thisPopFraction')
+              shinyjs::disable(id='whichFollows')
+            }
+          })
       })
   })
   
@@ -1340,21 +1355,6 @@ server <- function(input, output, session) {
     } )
   }
   
-  #### enable the relevant pop boxes only when Npops > 1 ####
-  observeEvent(input$nPops, {
-    try({
-      if(input$nPops > 1){
-        shinyjs::enable(id='thisPop')
-        shinyjs::enable(id='thisPopFraction')
-        shinyjs::enable(id='whichFollows')
-      }
-      if(input$nPops == 1){
-        shinyjs::disable(id='thisPop')
-        shinyjs::disable(id='thisPopFraction')
-        shinyjs::disable(id='whichFollows')
-      }
-    })
-  })
   
   observeEvent(input$togglePopovers, {
     cat('input$togglePopovers ', input$togglePopovers, '\n')
