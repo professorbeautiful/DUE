@@ -115,7 +115,7 @@ server <- function(input, output, session) {
   
   
   shinyDebuggingPanel::makeDebuggingPanelOutput(
-    session, toolsInitialState = FALSE, 
+    session, toolsInitialState = TRUE, 
     condition='ctrlDpressed === true')
 
   DUEenv = reactiveValues()
