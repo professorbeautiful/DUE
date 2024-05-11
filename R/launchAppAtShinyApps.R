@@ -10,10 +10,10 @@ launchAppLocally = function(){
 launchAppAtShinyApps = function(
   app = 'DUEshiny', account='trials',
   browser=getOption('browser')
-)
+) {
   browseURL(paste0('https://',
                    account, '.shinyapps.io/',
                    app),
             browser = browser)
-
-launchAppAtShinyApps()
+}
+#launchAppAtShinyApps()
