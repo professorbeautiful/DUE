@@ -1095,13 +1095,16 @@ server <- function(input, output, session) {
   
   output$phase1plot = renderPlot({
     plot(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
-         log='x', cex=3, lwd=2, type='b', axes=F, xlab='', ylab='')
+         log='x', lwd=2, lty=3, type='b', axes=F, xlab='', ylab='')
     axis(side = 1, at = DUEenv$phase_one_result$doses, lwd = 2)
-    mtext('Dose at which trial stops', side = 1, line = 3, cex = 2)
+    mtext('Dose', side = 1, line = 3, cex = 2)
     axis(side = 2, lwd = 2)
-    mtext('Probability', side = 2, cex = 2, line=3)
-    lines(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$pr_stop_at,
-          col='blue', lwd=3)
+    mtext('Probability', side = 2, cex = 2, line=2.5)
+    lines(DUEenv$phase_one_result$doses, DUEenv$phase_one_result$probMTD,
+          col='red', lwd=3, type='b')
+    legend('topleft', legend = c('Dose at which trial stops', 'maximum tolerated dose'),
+           col=c('gray', 'red'), lty=c(3,1), lwd=c(5,5)
+          )
     mtext('MTD (blue)', side = 4, line = 3, cex = 2)
     
   })
