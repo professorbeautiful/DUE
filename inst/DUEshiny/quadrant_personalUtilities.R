@@ -60,22 +60,26 @@ quadrant_personalUtilities.f = function() {
                         ,
                         br(), 
                         fluidRow(id = 'popPresetUtilities',
-                                 column(3, offset=1, #HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                 column(2, offset=0, #HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Additive",
                                                    HTML("Additive<br>R=+1, T=-1")),
                                           style=paste0('background-color:black; color:white;'))
                                  ),
-                                 column(5, style=paste0('color:', rt.outcome.colors('RT')),
+                                 column(7, style=paste0('color:', rt.outcome.colors('RT')),
                                         #span( '⬋', style="font-size:200%;") ,   #SOUTH WEST BLACK ARROW Unicode: U+2B0B, UTF-8: E2 AC 8B)
-                                        HTML("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"),
+                                        HTML("&nbsp;&nbsp;&nbsp;"),
                                         tagAppendAttributes(
                                           bsButton(inputId="Cautious", HTML("Cautious<br>U.RT=-1")),
                                           style=paste0('background-color:', rt.outcome.colors('RT'),
                                                        '; color:white;')),
                                         #                                    span('⬉', style="font-size:200%;") ,  #NORTH WEST BLACK ARROW  Unicode: U+2B09, UTF-8: E2 AC 89
                                         tagAppendAttributes(
-                                          bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1")),
+                                          bsButton(inputId="Aggressive", HTML("Aggressive<br>U.RT=+1/2")),
+                                          style=paste0('background-color:', rt.outcome.colors('RT'),
+                                                       '; color:white;')),
+                                        tagAppendAttributes(
+                                          bsButton(inputId="Crazy", HTML("Crazy<br>U.RT=+1")),
                                           style=paste0('background-color:', rt.outcome.colors('RT'),
                                                        '; color:white;'))
                                  ),
@@ -87,7 +91,7 @@ quadrant_personalUtilities.f = function() {
                                         # # LEFTWARDS ARROW
                                         # Unicode: U+2190, UTF-8: E2 86 90,
                                  ),
-                                 column(3,
+                                 column(2,
                                         tagAppendAttributes(
                                           bsButton(inputId="Simple", HTML("Simple<br>U.rT=0")),
                                           style=paste0('background-color:', rt.outcome.colors('rT'),

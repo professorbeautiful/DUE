@@ -188,7 +188,8 @@ server <- function(input, output, session) {
       "Additive"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT= 0),
       "Simple"     = data.frame(U.rt=0, U.rT= 0,  U.Rt=1, U.RT= 0),
       "Cautious"   = data.frame(U.rt=0, U.rT=-1,  U.Rt=1, U.RT=-1),
-      "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
+      "Aggressive" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 0.5),
+      "Crazy" = data.frame(U.rt=0, U.rT= -1,  U.Rt=1, U.RT= 1)
     )
     DUEenv$utilityChoiceNames <- names(DUEenv$utilityChoices)
   })
@@ -308,6 +309,13 @@ server <- function(input, output, session) {
     resetButtonStyles('Aggressive')
     DUEenv$utility = TheseUvalues = 
       DUEenv$utilityChoices$Aggressive
+    updateUtilities(TheseUvalues)
+  })
+  observe({
+    input$Crazy
+    resetButtonStyles('Crazy')
+    DUEenv$utility = TheseUvalues = 
+      DUEenv$utilityChoices$Crazy
     updateUtilities(TheseUvalues)
   })
   
@@ -1341,9 +1349,10 @@ server <- function(input, output, session) {
     addPopover(session, 'popPresetUtilities', title="Preset Utility Assignments",  placement = 'top',
                content=paste(sep='<br>',
                              'Additive: +1 for Response, -1 for Toxicity',
-                             'Simple:  +1 for Rt',
-                             'Aggressive: U(RT) = +1  (toxicity doesn\'t matter)',
-                             'Cautious: U(RT) = -1  (response doesn\'t matter)' ))
+                             'Cautious: U(RT) = -1  (response doesn\'t matter)', 
+                             'Aggressive: U(RT) = +0.5  (toxicity doesn\'t matter much)',
+                             'Crazy: U(RT) = +1  (toxicity? HAH!)',
+                             'Simple:  +1 for Rt'))
     addPopover(session, 'popDebugging', title="Debugging panel",  placement = 'top',
                content=paste(sep='<br>',
                              'Click toggle checkbox, left side of grey bar, to open debugging panel.',
