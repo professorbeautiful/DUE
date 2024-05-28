@@ -282,9 +282,11 @@ server <- function(input, output, session) {
     input$Additive
     resetButtonStyles('Additive')
     isolate ({
-      DUEenv$utility = TheseUvalues = 
-        DUEenv$utilityChoices$Additive
-      updateUtilities(TheseUvalues)
+      DUEenv$utility$U.RT = 
+        DUEenv$utility$U.Rt + DUEenv$utility$U.rT
+      #= TheseUvalues = 
+        # DUEenv$utilityChoices$Additive
+      updateUtilities(DUEenv$utility)
     })
   })
   observe({
