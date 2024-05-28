@@ -1,4 +1,4 @@
-#'   copy-markers-from-D-to-C()
+#'   copy_markers_from_D_to_C()
 #'   For copying Markers from Descript to Camtasia.
 #'   Only copies into C main timeline.
 #'   To keep any current C marker, move it onto a clip in a track 
