@@ -34,8 +34,10 @@ copy_markers_from_D_to_C =  function(  )  {
     0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
   } 
   if(hasAnyMarkers()) {
-    answer = readline("Current timeline markers will be replaced. Abort? [Y; Default=no]")
-    if(toupper(substr(answer, 1, 1) == 'Y')) 
+    answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
+    answer = print(ifelse( (answer !='') & (toupper(substr(answer, 1, 1)) != 'Y'),
+                     'Abort',  'OK') )
+    if(answer=='Abort')
       stop ("OK, aborting\n"); 
   }
   
