@@ -36,12 +36,13 @@ drawQuadrants <-
          font=bold_italic, cex = cexQ)
     text(700, 700, ("rt"), col = rt.outcome.colors("rt"), 
          font=bold_italic, cex = cexQ)
+    abline(h = selectedDose, lty = 1, col = "red", lwd = 3)
+#  Kdeath line adjustment
     RTlowerbound = selectedDose/10^Kdeath
     lines(c(selectedDose, selectedDose), c(RTlowerbound, 1000), 
           lty = 1, col = "green", lwd = 3)
     lines(c(10^(par()$usr)[1], selectedDose), 
           c(RTlowerbound, RTlowerbound), lty = 1, 
-          col = rt.outcome.colors('RT'), lwd = 3)
-    abline(h = selectedDose, lty = 1, col = "#00FF00", lwd = 3)
+          lwd = 3, col='red') #  col = rt.outcome.colors('RT'), )
   }
 

@@ -55,7 +55,6 @@ quadrant_personalUtilities.f = function() {
                           )
                         )
                         ,
-                        shiny::hr(), 
                         h4("or choose a preset option here:", style="color:blue")
                         ,
                         br(), 

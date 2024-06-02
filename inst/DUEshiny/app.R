@@ -83,7 +83,7 @@ ui <- fluidPage(
                   #### Probabilities and Expected Utility: 
                   ),
            ####  Skinny column: Doses and Files ####
-           column(1, id='skinnyColumn',
+           column(2, id='skinnyColumn',
                   skinnyColumn)
                   ,
            #  if desired, shinyjs::hide('skinnyColumn')
@@ -96,7 +96,7 @@ ui <- fluidPage(
                   # br(), br()
            )
   ), 
-  shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
+  #shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
   fluidRow(
              column(5, quadrant_personalUtilities),
              column(1, ""),
@@ -690,8 +690,8 @@ server <- function(input, output, session) {
             xlim = range(DUEenv$doseValues), 
             ylim = range(DUEenv$doseValues),
             log = "xy", axes = F, xlab="", ylab="")
-    mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2)
-    mtext(side=1, line=2.5, "Threshold of Response", cex=2)
+    mtext(side=2, line=2.5, "Threshold of Toxicity", cex=2, col='red')
+    mtext(side=1, line=2.5, "Threshold of Response", cex=2, col='green')
     DUEenv$parPlotSize.contour <- par("plt")
     DUEenv$usrCoords.contour <- par("usr")
     ### vfont works for text but not for axis or title. (ERROR)
