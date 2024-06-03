@@ -599,7 +599,7 @@ server <- function(input, output, session) {
     bold_italic = 4
     probs = calculate.probabilities(
       DUEenv, log10dose=log10(DUEenv$selectedDose))
-    div(
+    div(style='font-size:18px',
       div(
         style=paste('float: left; color:', rt.outcome.colors("Rt")),
         HTML('&nbsp;Rt'),

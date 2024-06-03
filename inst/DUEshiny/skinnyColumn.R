@@ -16,19 +16,21 @@ skinnyColumn.f = function() {
       # especially the display:flex solution.
       div(id='pop_selectedDose', 
           style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
-          numericInput('selectedDose', 'Selected dose', value=100, min=0, step=10)
+          shinyWidgets::autonumericInput(inputId = 'selectedDose', label = 'Selected dose', value=100, decimalPlaces = 0, style = 'font-size:18px',
+                                         align = 'center', min=0, step=10)
+      #    numericInput('selectedDose', 'Selected dose', value=100, min=0, step=10)
           # , "Probabilities", uiOutput('showProbs')  # redundant now.
       ),
+      actionButton(inputId = 'gotoOptDose', 
+                   label = HTML('Go to OptimalDose'), 
+                   style='background-color:honeydew;'),
+      br(),br(),
       div(style='text-align:center; color:black; border-color:honeydew; background-color:honeydew;',
           'Probabilities'),
       div(id='4probs',
           uiOutput('skinny4probs')),
       br(), 
       shiny::hr(style = 'margin-top: 0.5em; margin-bottom: 0.5em; border-style:inset; border-width: 2px'),
-      actionButton(inputId = 'gotoOptDose', 
-                   label = HTML('Go to <br>Optimal<br>Dose'), 
-                   style='background-color:honeydew;'),
-      br(),br(),
       div(style = "background-color:honeydew;", id='popDoseAxes',
           #column(2, 
           bsButton("changeAxes", HTML("Change <br> dose<br>axes"))
