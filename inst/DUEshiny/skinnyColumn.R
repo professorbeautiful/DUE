@@ -19,7 +19,6 @@ skinnyColumn.f = function() {
           shinyWidgets::autonumericInput(inputId = 'selectedDose', label = 'Selected dose', value=100, decimalPlaces = 0, style = 'font-size:18px',
                                          align = 'center', min=0, step=10)
       #    numericInput('selectedDose', 'Selected dose', value=100, min=0, step=10)
-          # , "Probabilities", uiOutput('showProbs')  # redundant now.
       ),
       actionButton(inputId = 'gotoOptDose', 
                    label = HTML('Go to OptimalDose'), 
