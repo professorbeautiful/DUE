@@ -565,7 +565,7 @@ server <- function(input, output, session) {
       minDistance = min(... = distances)
       whichMinDistance = which(minDistance == distances)[1]
       if(whichMinDistance == DUEenv$nPops+1) { ## new dose
-        newSelectedDose = 10^(logMean)
+        newSelectedDose = round(10^(logMean))
         if (!is.na(newSelectedDose)){
          updateNumericInput(session, inputId = 'selectedDose', value = newSelectedDose )
          DUEenv$selectedDose = newSelectedDose
@@ -578,7 +578,7 @@ server <- function(input, output, session) {
   
   observe({
     if(is.numeric(input$selectedDose))
-      DUEenv$selectedDose = input$selectedDose
+      DUEenv$selectedDose = round(input$selectedDose)
   })
   
   observeEvent(DUEenv$doseTicks, {
