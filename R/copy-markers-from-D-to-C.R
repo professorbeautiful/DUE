@@ -24,7 +24,8 @@ cmProjName = 'DUE tour video, in progress'
 #'    Other markers on tracks will still be there.
 #'  Step 5:  In C, remove previous versions of the D export, 
 #'           and add media:   the previously downloaded published mp4.
-#'  
+#'        In C, separate audio and visual.  
+#'        Usually, C supersedes most or all of D visually.
 #'  This should work whether there were previously markers or not.
 #'  If there were, they will be overwritten, which is what we want.
 
