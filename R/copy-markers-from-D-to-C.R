@@ -7,15 +7,23 @@
 #'      Set variables:
 projectLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
 cmProjName = 'DUE tour video, in progress'
-#'  Step 1:  In Descript, export transcript as markdown.
-#'      Publish->Export->Transcript
+#'  Step 1:  In Descript, 
+#'    A) Publish-> click Update, click Download.
+#'        Wait until downloaded.   Save under any name desired.
+#'        I pick, e.g. 2024-06-18 DUE tour video, in progress.mp4
+#'    B) Publish->Export->Transcript
+#'      Export transcript as markdown.
 #'      Toggle on Include markers
 #'      Under Timecodes, toggle on Markers.
 #'  Step 2: Make sure that the cmproj project is closed.
 #'  Step 3: run  copy_markers_from_D_to_C() to extract the marker info.
 #'      This will save a BACKUP inside cmproj, AND copy newFile over the
 #'      previous tscproj
-#'  Step 4:  reopen the project.
+#'  Step 4:  reopen the project in C.  
+#'    The markers from C will be there on the timeline; previous ones gone.
+#'    Other markers on tracks will still be there.
+#'  Step 5:  In C, remove previous versions of the D export, 
+#'           and add media:   the previously downloaded published mp4.
 #'  
 #'  This should work whether there were previously markers or not.
 #'  If there were, they will be overwritten, which is what we want.
@@ -31,7 +39,7 @@ copy_markers_from_D_to_C =  function(  )  {
   if( ! file.exists(tscprojPath))
     stop('TSC file not found')
   hasAnyMarkers = function(){
-    0 == (system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
+    0 == invisible(system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
   } 
   if(hasAnyMarkers()) {
     answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
@@ -134,6 +142,7 @@ copy_markers_from_D_to_C =  function(  )  {
   writeLines(newFile, tscprojPath)
   # Now you can reopen the C project.
   system(paste0('open "' , cmProjPath, '"'))
+  # Careful, when Camtasia is updated, update the default "open".
 }
 
 #'  
