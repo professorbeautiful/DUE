@@ -39,7 +39,8 @@ copy_markers_from_D_to_C =  function(  )  {
   if( ! file.exists(tscprojPath))
     stop('TSC file not found')
   hasAnyMarkers = function(){
-    0 == invisible(system(intern = F, paste0( "grep '\"toc\"' '", tscprojPath, "'")))
+    0 == invisible(system(intern = F, ignore.stdout=T,
+                          paste0( "grep '\"toc\"' '", tscprojPath, "'")))
   } 
   if(hasAnyMarkers()) {
     answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
