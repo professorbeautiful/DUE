@@ -264,12 +264,14 @@ server <- function(input, output, session) {
     DUEenv$U.rT = TheseUvalues$U.rT
     DUEenv$U.RT = TheseUvalues$U.RT
     choiceMatch = ""
+    try({
     for(choice in names(DUEenv$utilityChoices)) {
       if(all(TheseUvalues == DUEenv$utilityChoices[[choice]]))
         primpMyChoice(choiceMatch<-choice)
       else
         unprimpMyChoice(choice)
     }
+    })
     ##### DUEenv$utilityChoiceMatch = choiceMatch  ####
     DUEenv$utilityChoiceMatch = choiceMatch
     # This line makes the box-primping work, 
