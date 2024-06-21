@@ -7,6 +7,7 @@
 #'      Set variables:
 projectLocation = '/Users/Roger/Google Drive/_HOME/DUE/DUE tour video/'
 cmProjName = 'DUE tour video, in progress'
+#'  Step 0:  If you've edited this file-- source it first! 
 #'  Step 1:  In Descript, 
 #'    A) Publish-> click Update, click Download.
 #'        Wait until downloaded.   Save under any name desired.
@@ -22,9 +23,11 @@ cmProjName = 'DUE tour video, in progress'
 #'  Step 4:  reopen the project in C.  
 #'    The markers from C will be there on the timeline; previous ones gone.
 #'    Other markers on tracks will still be there.
-#'  Step 5:  In C, remove previous versions of the D export, 
-#'           and add media:   the previously downloaded published mp4.
+#'  Step 5:  In C,  add media:   the previously downloaded published mp4.
+#'           LOOK IN DOWNLOADS - D forgets where you are.
 #'        In C, separate audio and visual.  
+#'           Before removing previous versions of the D export, 
+#'           you might want to copy animations - 
 #'        Usually, C supersedes most or all of D visually.
 #'  This should work whether there were previously markers or not.
 #'  If there were, they will be overwritten, which is what we want.
