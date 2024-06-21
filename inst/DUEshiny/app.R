@@ -1026,7 +1026,7 @@ server <- function(input, output, session) {
     EU = probabilityVectors['EU', ]
     phase_one_summary = as.data.frame(
       phase_one_exact(PrTox = toxProbabilities) )
-    print(toxProbabilities)
+    # print(toxProbabilities)
     #print(phase_one_summary)
     #show the expected expected utility across all enrolled patients.
     # 3 enter initially, plus 3 more if neither Term_1 nor Go_1.

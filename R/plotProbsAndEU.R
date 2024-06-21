@@ -54,7 +54,7 @@ plotProbsAndEU <-function(DUEenv=DUEenv, context='shiny') {
   EUindex = 8
   nDoses = length(DUEenv$doseValues)
   shortlist <- c(1, round(nDoses/2), nDoses)
-  print(str(eightprobs))
+  # print(str(eightprobs))
   for(i in 1:8) {
     if(linewidths[i] > 0) {
       outcome.string = rt.outcome.strings(i)

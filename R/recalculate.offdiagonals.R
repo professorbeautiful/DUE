@@ -10,7 +10,7 @@ recalculate.offdiagonals <- function (correl, .thisPop)
   }
   if (!missing(correl)) {
     DUEenv$the.correlations.pop[[DUEenv$thisPop]] <- correl
-    print(DUEenv$the.correlations.pop)
+    # print(DUEenv$the.correlations.pop)
   }
   
   DUEenv$the.variances.pop[[.thisPop]][2, 1] <- 

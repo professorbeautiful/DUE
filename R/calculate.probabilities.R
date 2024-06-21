@@ -143,10 +143,10 @@ calculate.probabilities <-  ### We will remove utility & EU from this in the fut
                  , message="Let's check on utility")) {
       #browser()
       cat("---- ", exp(logdose), " ----\n")
-      print(pQuadrants)
-      print(utility)
-      print(DUEenv$utility)
-      print(expected.utility)
+      # print(pQuadrants)
+      # print(utility)
+      # print(DUEenv$utility)
+      # print(expected.utility)
     }
     probability.vector <- c(
       R=p.R.marginal,
