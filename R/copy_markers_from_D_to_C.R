@@ -22,6 +22,8 @@ cmProjName = 'DUE tour video, in progress'
 #'  Step 3: run  copy_markers_from_D_to_C() to extract the marker info.
 #'      This will save a BACKUP inside cmproj, AND copy newFile over the
 #'      previous tscproj
+#'      ALTERNATIVE:  
+#'      R --vanilla --quiet -e "source('../R/copy_markers_from_D_to_C.R'); copy_markers_from_D_to_C()"
 #'  Step 4:  reopen the project in C.  
 #'    The markers from C will be there on the timeline; previous ones gone.
 #'    Other markers on tracks will still be there.
@@ -51,7 +53,7 @@ copy_markers_from_D_to_C =  function(  )  {
   } 
   if(hasAnyMarkers()) {
     cat("Reminder: Current timeline markers will be replaced. \n")
-
+    
     # answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
     # answer = print(ifelse( (answer !='') & (toupper(substr(answer, 1, 1)) != 'Y'),
     #                  'Abort',  'OK') )
