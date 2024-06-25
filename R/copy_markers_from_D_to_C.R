@@ -10,25 +10,28 @@ cmProjName = 'DUE tour video, in progress'
 #'  Step 0:  If you've edited this file-- source it first! 
 #'  Step 1:  In Descript, 
 #'    A) Publish-> click Update, click Download.
-#'        Wait until downloaded.   Save under any name desired.
+#'        Save under any name desired.
 #'        I pick, e.g. 2024-06-18 DUE tour video, in progress.mp4
+#'        You need not wait until downloaded; see step 5.   
 #'    B) Publish->Export->Transcript
 #'      Export transcript as markdown.
 #'      Toggle on Include markers
 #'      Under Timecodes, toggle on Markers.
 #'  Step 2: Make sure that the cmproj project is closed.
+#'      (You don't have to quit Camtasia.)
 #'  Step 3: run  copy_markers_from_D_to_C() to extract the marker info.
 #'      This will save a BACKUP inside cmproj, AND copy newFile over the
 #'      previous tscproj
 #'  Step 4:  reopen the project in C.  
 #'    The markers from C will be there on the timeline; previous ones gone.
 #'    Other markers on tracks will still be there.
-#'  Step 5:  In C,  add media:   the previously downloaded published mp4.
-#'           LOOK IN DOWNLOADS - D forgets where you are.
-#'        In C, separate audio and visual.  
+#'  Step 5:  In C,  add media:   the previously downloaded  mp4 published by D.
+#'           LOOK IN DOWNLOADS - D might have forgotten where you are.
+#'        In C, add to playhead at T=0. Make another track,
+#'         so you can separate audio and visual. 
 #'           Before removing previous versions of the D export, 
-#'           you might want to copy animations - 
-#'        Usually, C supersedes most or all of D visually.
+#'           you might want to copy animations from previous versions.- 
+#'        Usually, your additions in C supersede most or all of D visually.
 #'  This should work whether there were previously markers or not.
 #'  If there were, they will be overwritten, which is what we want.
 
@@ -47,11 +50,13 @@ copy_markers_from_D_to_C =  function(  )  {
                           paste0( "grep '\"toc\"' '", tscprojPath, "'")))
   } 
   if(hasAnyMarkers()) {
-    answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
-    answer = print(ifelse( (answer !='') & (toupper(substr(answer, 1, 1)) != 'Y'),
-                     'Abort',  'OK') )
-    if(answer=='Abort')
-      stop ("OK, aborting\n"); 
+    cat("Reminder: Current timeline markers will be replaced. \n")
+
+    # answer = readline("Current timeline markers will be replaced. OK? [y or newline = OK ; otherwise, abort]")
+    # answer = print(ifelse( (answer !='') & (toupper(substr(answer, 1, 1)) != 'Y'),
+    #                  'Abort',  'OK') )
+    # if(answer=='Abort')
+    #   stop ("OK, aborting\n"); 
   }
   
   # make a BACKUP just in case
